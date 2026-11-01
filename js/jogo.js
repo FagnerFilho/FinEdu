@@ -1,8 +1,8 @@
 // ============================================================
 // jogo.js — As regras do FinEdu
 // ============================================================
-// XP, moedas, vidas, sequência de dias, o que está liberado na
-// trilha, o aquecimento, a revisão, a recarga, o treino e o baú.
+// XP, níveis, moedas, vidas, sequência de dias, o que está liberado
+// na trilha, o aquecimento, a revisão, a recarga, o treino e o baú.
 // Este arquivo só faz contas e decide regras: não desenha nada
 // (isso é o telas.js) e não salva nada (quem salva é o app.js,
 // usando o armazenamento.js).
@@ -37,6 +37,17 @@ const QUESTOES_POR_DIFICULDADE = { facil: 2, media: 2, dificil: 1 };
 // Ordem em que os níveis aparecem e o nome de cada um na tela
 const ORDEM_DAS_DIFICULDADES = ['facil', 'media', 'dificil'];
 const NOME_DA_DIFICULDADE = { facil: 'Fácil', media: 'Média', dificil: 'Difícil' };
+
+// Níveis do aluno: o nível começa quando o XP total chega ao valor ao
+// lado. Cada nível pede 25 XP a mais que o anterior (75, 100, 125, 150).
+// Quem faz a Unidade 1 sem errar chega ao nível 3 na última lição.
+const NIVEIS = [
+  { nome: 'Aprendiz', xp: 0 },
+  { nome: 'Poupador', xp: 75 },
+  { nome: 'Planejador', xp: 175 },
+  { nome: 'Estrategista', xp: 300 },
+  { nome: 'Investidor', xp: 450 }
+];
 
 
 // ============================================================
@@ -157,6 +168,23 @@ function registrarDiaDeEstudo(progresso, hoje = hojeComoTexto()) {
 function precisaoGeral(progresso) {
   if (progresso.respostasDadas === 0) return 0;
   return Math.round((progresso.respostasCertas / progresso.respostasDadas) * 100);
+}
+
+// O nível para um total de XP (ver NIVEIS):
+//   { numero, nome, proximo: { numero, nome, xp } ou null, faltam }
+// "faltam" é o XP que falta para o próximo nível (0 no mais alto).
+function nivelDoXp(xp) {
+  let indice = 0;
+  NIVEIS.forEach((nivel, i) => {
+    if (xp >= nivel.xp) indice = i;
+  });
+  const proximo = NIVEIS[indice + 1];
+  return {
+    numero: indice + 1,
+    nome: NIVEIS[indice].nome,
+    proximo: proximo ? { numero: indice + 2, nome: proximo.nome, xp: proximo.xp } : null,
+    faltam: proximo ? proximo.xp - xp : 0
+  };
 }
 
 
@@ -468,10 +496,12 @@ function avancarQuestao(progresso, sessao) {
 // não ganha), a lição fica concluída e o dia conta na sequência.
 // A precisão conta só as respostas de primeira.
 // No treino não entra XP nem moeda: as vidas voltam todas.
+// O resumo diz também o nível e se o aluno subiu de nível.
 function concluirLicao(progresso, sessao, hoje = hojeComoTexto()) {
   const total = sessao.questoes.length;
   const perfeita = sessao.acertos === total;
   const vidasAntes = progresso.vidas;
+  const nivelAntes = nivelDoXp(progresso.xp).numero;
   let xp = 0;
   let moedas = 0;
 
@@ -492,6 +522,7 @@ function concluirLicao(progresso, sessao, hoje = hojeComoTexto()) {
 
   const sequenciaAntes = progresso.sequencia;
   registrarDiaDeEstudo(progresso, hoje);
+  const nivel = nivelDoXp(progresso.xp);
 
   return {
     titulo: sessao.licao.titulo,
@@ -503,7 +534,9 @@ function concluirLicao(progresso, sessao, hoje = hojeComoTexto()) {
     vidas: progresso.vidas,
     vidasVoltaram: progresso.vidas > vidasAntes,
     sequencia: progresso.sequencia,
-    sequenciaSubiu: progresso.sequencia > sequenciaAntes
+    sequenciaSubiu: progresso.sequencia > sequenciaAntes,
+    nivel,
+    subiuDeNivel: nivel.numero > nivelAntes
   };
 }
 
@@ -565,13 +598,16 @@ function licaoParaTreinar(progresso) {
 // 7. BAÚ
 // ============================================================
 
-// Abre o baú, se estiver liberado. Devolve a recompensa (ou null).
+// Abre o baú, se estiver liberado. Devolve a recompensa (ou null),
+// com o nível e se o XP do baú fez o aluno subir de nível.
 function abrirBau(progresso, unidade) {
   if (situacaoDoBau(progresso, unidade) !== 'liberado') return null;
+  const nivelAntes = nivelDoXp(progresso.xp).numero;
   progresso.xp += XP_DO_BAU;
   progresso.moedas += MOEDAS_DO_BAU;
   progresso.bausAbertos.push(unidade.id);
-  return { xp: XP_DO_BAU, moedas: MOEDAS_DO_BAU };
+  const nivel = nivelDoXp(progresso.xp);
+  return { xp: XP_DO_BAU, moedas: MOEDAS_DO_BAU, nivel, subiuDeNivel: nivel.numero > nivelAntes };
 }
 
 

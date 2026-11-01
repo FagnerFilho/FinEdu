@@ -299,6 +299,8 @@ function tocarNoBau(idUnidade) {
   estado.recompensaDoBau = {
     xp: recompensa.xp,
     moedas: recompensa.moedas,
+    nivel: recompensa.nivel,
+    subiuDeNivel: recompensa.subiuDeNivel,
     tituloDaUnidade: unidade.titulo
   };
   abrirTelaDeFoco('bau');

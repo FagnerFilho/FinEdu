@@ -541,6 +541,12 @@ function desenharSequenciaQueSubiu(resumo) {
     <p class="comemoracao-sequencia">${icone('sequencia')} Sequência de ${contarCom(resumo.sequencia, 'dia', 'dias')}</p>` : '';
 }
 
+// O aviso de nível novo, quando o XP da lição (ou do baú) faz subir
+function desenharNivelQueSubiu(resumo) {
+  return resumo.subiuDeNivel ? `
+    <p class="comemoracao-nivel">${icone('nivel')} Subiu para o nível ${resumo.nivel.numero}: ${resumo.nivel.nome}!</p>` : '';
+}
+
 function desenharResultado(lugar, resumo) {
   if (resumo.treino) {
     desenharFimDoTreino(lugar, resumo);
@@ -568,6 +574,7 @@ function desenharResultado(lugar, resumo) {
         </div>
       </div>
 
+      ${desenharNivelQueSubiu(resumo)}
       ${desenharSequenciaQueSubiu(resumo)}
 
       <button type="button" class="botao" data-acao="voltar-trilha">Continuar</button>
@@ -612,6 +619,8 @@ function desenharBauAberto(lugar, recompensa) {
           <p class="placar-valor">${icone('moeda')}+${recompensa.moedas}</p>
         </div>
       </div>
+
+      ${desenharNivelQueSubiu(recompensa)}
 
       <button type="button" class="botao" data-acao="voltar-trilha">Continuar</button>
     </div>`;
@@ -705,6 +714,8 @@ function desenharEstatistica(tipo, nomeDoIcone, valor, nome) {
 
 function desenharPerfil(lugar, progresso, podeSalvar) {
   const licoes = contarLicoes(progresso);
+  const nivel = nivelDoXp(progresso.xp);
+  const falta = nivel.proximo ? `Faltam ${nivel.faltam} XP para o nível ${nivel.proximo.numero}` : 'O nível mais alto';
 
   lugar.innerHTML = `
     <div class="perfil">
@@ -719,6 +730,7 @@ function desenharPerfil(lugar, progresso, podeSalvar) {
       <section aria-labelledby="titulo-estatisticas">
         <h2 class="secao-titulo" id="titulo-estatisticas">Estatísticas</h2>
         <ul class="estatisticas">
+          ${desenharEstatistica('nivel', 'nivel', `Nível ${nivel.numero}: ${nivel.nome}`, falta)}
           ${desenharEstatistica('sequencia', 'sequencia', progresso.sequencia, progresso.sequencia === 1 ? 'dia seguido' : 'dias seguidos')}
           ${desenharEstatistica('xp', 'xp', progresso.xp, 'XP no total')}
           ${desenharEstatistica('moedas', 'moeda', progresso.moedas, 'moedas')}

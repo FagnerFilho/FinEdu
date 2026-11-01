@@ -1213,6 +1213,18 @@ h2:focus {
   font-weight: 700;
 }
 
+/* Aviso de nível novo: é informação, então tem borda (sem sombra) */
+.comemoracao-nivel {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-p);
+  padding: var(--espaco-p) var(--espaco-g);
+  border: var(--borda) solid var(--cor-xp);
+  border-radius: var(--raio-m);
+  color: var(--cor-xp);
+  font-weight: 800;
+}
+
 .comemoracao .botao {
   margin-top: var(--espaco-g);
 }
@@ -1372,6 +1384,12 @@ h2:focus {
   font-size: var(--tamanho-pequeno);
 }
 
+/* O nível ocupa a linha inteira, em cima das outras */
+.estatistica--nivel {
+  grid-column: 1 / -1;
+}
+
+.estatistica--nivel .icone     { color: var(--cor-xp); }
 .estatistica--sequencia .icone { color: var(--cor-sequencia); }
 .estatistica--xp .icone        { color: var(--cor-xp); }
 .estatistica--moedas .icone    { color: var(--cor-moeda); }

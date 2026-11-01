@@ -317,6 +317,44 @@
     });
 
 
+    grupo('Níveis');
+
+    teste('Os 5 níveis começam em 0, 75, 175, 300 e 450 XP', () => {
+      confere(NIVEIS.map(nivel => nivel.nome), ['Aprendiz', 'Poupador', 'Planejador', 'Estrategista', 'Investidor'], 'nomes');
+      const tabela = [[0, 1], [74, 1], [75, 2], [174, 2], [175, 3], [299, 3], [300, 4], [449, 4], [450, 5], [2000, 5]];
+      for (const [xp, numero] of tabela) confere(nivelDoXp(xp).numero, numero, `nível com ${xp} XP`);
+    });
+
+    teste('Quanto falta: com 105 XP, nível 2 (Poupador) e faltam 70 para o 3 (Planejador)', () => {
+      confere(nivelDoXp(105), { numero: 2, nome: 'Poupador', proximo: { numero: 3, nome: 'Planejador', xp: 175 }, faltam: 70 }, '105 XP');
+      const maximo = nivelDoXp(500);
+      confere([maximo.numero, maximo.proximo, maximo.faltam], [5, null, 0], 'no nível mais alto');
+    });
+
+    teste('Fim da lição: avisa quando sobe de nível, e só nessa hora (o treino nunca sobe)', () => {
+      const progresso = novoProgresso();
+      const primeira = concluirAcertandoTudo(progresso, LICAO_1);   // 50 XP
+      confere([primeira.nivel.numero, primeira.subiuDeNivel], [1, false], 'lição 1');
+      const segunda = concluirAcertandoTudo(progresso, LICAO_2);    // 105 XP
+      confere([segunda.nivel.numero, segunda.nivel.nome, segunda.subiuDeNivel], [2, 'Poupador', true], 'lição 2');
+      const treino = concluirAcertandoTudo(progresso, LICAO_2);     // treino: não vale XP
+      confere([treino.treino, treino.nivel.numero, treino.subiuDeNivel], [true, 2, false], 'treino da lição 2');
+    });
+
+    teste('Baú: avisa quando os 20 XP dele fazem subir de nível', () => {
+      const progresso = novoProgresso();
+      progresso.licoesConcluidas = UNIDADE.licoes.map(licao => licao.id);
+      progresso.xp = 160;
+      const recompensa = abrirBau(progresso, UNIDADE);
+      confere([progresso.xp, recompensa.nivel.numero, recompensa.subiuDeNivel], [180, 3, true], 'baú com 160 XP');
+
+      const outro = novoProgresso();
+      outro.licoesConcluidas = UNIDADE.licoes.map(licao => licao.id);
+      outro.xp = 100;
+      confere(abrirBau(outro, UNIDADE).subiuDeNivel, false, 'baú com 100 XP');
+    });
+
+
     grupo('Sem vidas: recarga e treino');
 
     teste('Recarga: só com 0 vidas e pelo menos 20 moedas', () => {
@@ -581,11 +619,13 @@
     // recomeça a lição. Começa com a mesada de boas-vindas (20 moedas),
     // faz a Unidade 1 inteira e abre o baú. "respondidas" conta todas
     // as vezes que ele apertou "Verificar" (aquecimento, novas, revisão
-    // e treino), para estimar o tempo da aula.
+    // e treino), para estimar o tempo da aula. "subidas" diz onde ele
+    // subiu de nível.
     function simularAluno(erraDePrimeira, pagaSePuder = true) {
       const progresso = novoProgresso();
       const vistas = new Set();
       const contagem = { compras: 0, treinos: 0, respondidas: 0 };
+      const subidas = [];
 
       function acertar(sessao) {
         const questao = questaoAtual(sessao);
@@ -596,7 +636,7 @@
         return jaViu || !erraDePrimeira.includes(questao.posicao);
       }
 
-      for (const licao of UNIDADE.licoes) {
+      UNIDADE.licoes.forEach((licao, i) => {
         for (let tentativa = 1; ; tentativa++) {
           if (tentativa > 10) throw new Error(`não passou da lição "${licao.titulo}"`);
           const sessao = abrir(progresso, licao);
@@ -608,7 +648,8 @@
           }
           contagem.respondidas += sessao.respondidas;
           if (proximo === 'fim') {
-            concluirLicao(progresso, sessao, HOJE);
+            const resumo = concluirLicao(progresso, sessao, HOJE);
+            if (resumo.subiuDeNivel) subidas.push(`lição ${i + 1}: nível ${resumo.nivel.numero}`);
             break;
           }
           const paraTreinar = licaoParaTreinar(progresso);
@@ -619,27 +660,35 @@
           concluirLicao(progresso, treino, HOJE);
           contagem.treinos += 1;
         }
-      }
-      abrirBau(progresso, UNIDADE);
-      return { vidas: progresso.vidas, moedas: progresso.moedas, xp: progresso.xp, ...contagem };
+      });
+      const bau = abrirBau(progresso, UNIDADE);
+      if (bau.subiuDeNivel) subidas.push(`baú: nível ${bau.nivel.numero}`);
+      return {
+        vidas: progresso.vidas, moedas: progresso.moedas, xp: progresso.xp,
+        nivel: nivelDoXp(progresso.xp).numero, ...contagem, subidas
+      };
     }
 
-    teste('Aluno A, acerta tudo: 5 vidas, 100 moedas, 235 XP, 23 questões', () => {
-      confere(simularAluno([]), { vidas: 5, moedas: 100, xp: 235, compras: 0, treinos: 0, respondidas: 23 }, 'fim da unidade');
+    teste('Aluno A, acerta tudo: 5 vidas, 100 moedas, 235 XP, nível 3, 23 questões; sobe na lição 2 e na 4', () => {
+      confere(simularAluno([]), { vidas: 5, moedas: 100, xp: 235, nivel: 3, compras: 0, treinos: 0, respondidas: 23,
+        subidas: ['lição 2: nível 2', 'lição 4: nível 3'] }, 'fim da unidade');
     });
 
-    teste('Aluno B, erra 2: 2 vidas, 60 moedas, 195 XP, 1 recarga, 31 questões', () => {
-      confere(simularAluno([3, 4]), { vidas: 2, moedas: 60, xp: 195, compras: 1, treinos: 0, respondidas: 31 }, 'fim da unidade');
+    teste('Aluno B, erra 2: 2 vidas, 60 moedas, 195 XP, nível 3, 1 recarga, 31 questões; sobe na lição 2 e na 4', () => {
+      confere(simularAluno([3, 4]), { vidas: 2, moedas: 60, xp: 195, nivel: 3, compras: 1, treinos: 0, respondidas: 31,
+        subidas: ['lição 2: nível 2', 'lição 4: nível 3'] }, 'fim da unidade');
     });
 
-    teste('Aluno B guardando as moedas: 2 vidas, 80 moedas, 200 XP, 1 treino, 41 questões', () => {
-      confere(simularAluno([3, 4], false), { vidas: 2, moedas: 80, xp: 200, compras: 0, treinos: 1, respondidas: 41 }, 'fim da unidade');
+    teste('Aluno B guardando as moedas: 2 vidas, 80 moedas, 200 XP, nível 3, 1 treino, 41 questões; sobe na lição 2 e na 4', () => {
+      confere(simularAluno([3, 4], false), { vidas: 2, moedas: 80, xp: 200, nivel: 3, compras: 0, treinos: 1, respondidas: 41,
+        subidas: ['lição 2: nível 2', 'lição 4: nível 3'] }, 'fim da unidade');
     });
 
     // Só o C erra 3 ou mais por lição: ele ganha o aquecimento duplo nas
     // lições 2, 3 e 4 (+10 XP, porque a 1ª tentativa da lição 4 ele larga)
-    teste('Aluno C, erra 4: 4 vidas, 40 moedas, 180 XP, 2 recargas e 1 treino, 50 questões', () => {
-      confere(simularAluno([1, 2, 3, 4]), { vidas: 4, moedas: 40, xp: 180, compras: 2, treinos: 1, respondidas: 50 }, 'fim da unidade');
+    teste('Aluno C, erra 4: 4 vidas, 40 moedas, 180 XP, nível 3, 2 recargas e 1 treino, 50 questões; sobe na lição 3 e no baú', () => {
+      confere(simularAluno([1, 2, 3, 4]), { vidas: 4, moedas: 40, xp: 180, nivel: 3, compras: 2, treinos: 1, respondidas: 50,
+        subidas: ['lição 3: nível 2', 'baú: nível 3'] }, 'fim da unidade');
     });
 
 
@@ -658,7 +707,8 @@
       confere(situacaoDoBau(progresso, UNIDADE), 'trancado', 'antes');
       progresso.licoesConcluidas = UNIDADE.licoes.map(licao => licao.id);
       confere(situacaoDoBau(progresso, UNIDADE), 'liberado', 'com as 4 lições');
-      confere(abrirBau(progresso, UNIDADE), { xp: 20, moedas: 20 }, 'recompensa');
+      const recompensa = abrirBau(progresso, UNIDADE);
+      confere([recompensa.xp, recompensa.moedas], [20, 20], 'recompensa');
       confere(abrirBau(progresso, UNIDADE), null, 'abrir de novo');
       confere([progresso.xp, progresso.moedas], [20, 40], 'XP e moedas (com as 20 da mesada)');
     });
