@@ -50,11 +50,13 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 
 1. ~~**GitHub e GitHub Pages.**~~ Feito em 01/11: repositório Fagneraposo/FinEduu (renomeado para FinEdu no mesmo dia), Pages na `main`, pasta raiz. O teste no tablet ficou nas pendências do documento-mestre.
 2. ~~**Gamificação (conversa 05).**~~ Feito em 01/11: revisão das erradas, aquecimento, recarga de vidas com moedas e treino. Plano em `projeto/plano-gamificacao.md`, regras na seção 6 do arquitetura.md, testes no `testes.html`. Push feito em 01/11; o teste no celular e no tablet ficou nas pendências do documento-mestre.
+   - Complemento em 01/11 (gamificação 2): aquecimento duplo, níveis por XP, painel "Como funciona" nos contadores e aviso de boas-vindas (seção 9 do plano-gamificacao.md).
 3. **Design.** Na branch `experimento-design`:
    - Aplicar a paleta do João (está no documento-mestre) e conferir o contraste de cada combinação. O roxo sobre o preto fosco dá só 2,5: não serve para texto nem ícone no fundo escuro.
    - Trocar as fontes e a logo quando o João mandar os arquivos (as fontes precisam ficar salvas em `css/fontes/`, para funcionar sem internet).
    - **Tirar o mascote** (decisão da equipe): a função `desenharEstrela` e tudo que a usa; "Dica da Estrela" vira "Dica do dia". Atualizar a regra 9 do arquitetura.md.
    - Deixar o app mais vivo **sem 3D de verdade e sem biblioteca externa**: profundidade com sombra sólida, botões que afundam, trilha com relevo e uma comemoração caprichada no fim da lição. **Sem gradiente** (com paleta roxa, gradiente é a "cara de IA").
+   - Incluir as janelas da gamificação 2 (painel "Como funciona" e boas-vindas) e decidir se os contadores, que agora são botões, ganham a sombra sólida de "tocável".
    - Use as skills de design de front-end e de revisão de acessibilidade, se estiverem disponíveis.
 4. **09/11:** teste completo no tablet de verdade e ensaio. **10/11:** código congelado, só correção de erro.
 

@@ -6,16 +6,16 @@ Regras do código do FinEdu. Todo código novo segue este arquivo. Se uma mudan�
 
 | Arquivo | Faz | Não faz |
 |---|---|---|
-| `index.html` | Esqueleto: menu, barra de cima, uma `<section class="tela">` por tela, coluna da direita, estojo de ícones (`<symbol id="i-nome">`), ordem dos scripts | Conteúdo, lógica |
+| `index.html` | Esqueleto: menu, barra de cima, uma `<section class="tela">` por tela, coluna da direita, janelas (`<dialog>` do painel e das boas-vindas), estojo de ícones (`<symbol id="i-nome">`), ordem dos scripts | Conteúdo, lógica |
 | `css/estilo.css` | Todo o visual. Variáveis no `:root`, no topo | Valores soltos fora das variáveis |
 | `css/fontes/` | Baloo 2 (títulos e números) e Figtree (texto). Arquivos variáveis, subconjunto latino, licença SIL OFL | — |
 | `js/dados-licoes.js` | Constante `CONTEUDO`: trilhas, unidades, lições, questões e `dicasDaEstrela` | Lógica |
 | `js/armazenamento.js` | `carregarProgresso()`, `salvarProgresso(progresso)`, `reiniciarProgresso()`, `armazenamentoDisponivel()` | Saber o que tem dentro do progresso |
-| `js/jogo.js` | Regras: constantes de valores, progresso inicial, datas, liberação, sessão da lição (aquecimento, questões novas e revisão), recarga e treino, baú, dica do dia, `conferirConteudo()` | Mexer na tela ou no localStorage |
-| `js/telas.js` | Monta o HTML de cada tela, ícones (`icone()`), mascote (`desenharEstrela()`), avisos | Decidir regra, salvar |
+| `js/jogo.js` | Regras: constantes de valores, níveis, progresso inicial, datas, liberação, sessão da lição (aquecimento, questões novas e revisão), recarga e treino, baú, dica do dia, `conferirConteudo()` | Mexer na tela ou no localStorage |
+| `js/telas.js` | Monta o HTML de cada tela, ícones (`icone()`), mascote (`desenharEstrela()`), avisos e janelas (painel "Como funciona" e boas-vindas) | Decidir regra, salvar |
 | `js/app.js` | Estado (`estado`), navegação por `#`, cliques (`data-acao`), teclado; é quem chama `salvarProgresso()` | Montar HTML, guardar regra |
 | `img/` | `favicon.svg`. Depois: logo e mascote finais do designer | — |
-| `testes.html` | Testes das regras do `jogo.js`, no navegador (passou/falhou). Abre com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação | Mexer no progresso salvo ou na tela do app |
+| `testes.html` | Testes das regras do `jogo.js`, no navegador (passou/falhou). Abre com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação. Confere também os textos do painel, das boas-vindas e do feedback do erro (`telas.js`), montados numa caixa fora da página | Mexer no progresso salvo ou na tela do app |
 | `README.md` | Como abrir, testar e publicar | — |
 | `CLAUDE.md` | Instruções para o Claude Code: como trabalhar, Git, fila de tarefas | Regra de código (fica neste arquivo) |
 | `projeto/` | `documento-mestre.md` (decisões e pendências) e este `arquitetura.md`, versão oficial dos dois. Também os planos de tarefa (ex.: `plano-gamificacao.md`) | Código |
@@ -34,13 +34,14 @@ Ordem dos scripts no `index.html`: dados-licoes → armazenamento → jogo → t
 8. **Ícones** são `<symbol id="i-nome">` no `index.html`, usados com `icone('nome')`. Nunca emoji como ícone.
 9. **Mascote** só na função `desenharEstrela(expressao)` do `telas.js` (`'feliz'`, `'comemorando'`, `'triste'`). (O mascote foi removido pela equipe em 31/10; sai do código na tarefa de design, e esta regra muda junto.)
 10. **Botões não têm código de clique próprio.** Cada um tem `data-acao="..."`, e o `switch` de `tratarClique()` no `app.js` lista todas as ações. Navegação entre telas do menu usa link `<a href="#tela">`.
-11. **Toque:** tudo que é tocável tem pelo menos 48px (`--alvo-minimo`). A "sombra sólida" embaixo de um elemento significa "dá para tocar"; informação parada usa borda de 2px, nunca sombra difusa.
+11. **Toque:** tudo que é tocável tem pelo menos 48px (`--alvo-minimo`). A "sombra sólida" embaixo de um elemento significa "dá para tocar"; informação parada usa borda de 2px, nunca sombra difusa. Os contadores (barra de cima e coluna da direita) são botões que abrem o painel "Como funciona"; por enquanto só ganham um fundo ao apertar, e a tarefa de design decide se ganham a sombra.
 12. **Só modo escuro.** Sem gradiente roxo, sem efeito de vidro, sem fontes manjadas (Inter, Nunito, Poppins).
 13. **Texto da interface em letra normal**, sem rótulos em MAIÚSCULAS e sem "A · B · C". Ação tem o mesmo nome do começo ao fim (botão "Reiniciar progresso" → aviso "Progresso reiniciado").
 14. **Nomes em português**, sem acento nos nomes de variáveis, funções e classes. Comentários em português.
 15. **Sem cadastro e sem dado pessoal** (LGPD). O progresso não sai do aparelho.
 16. **Acessibilidade:** contraste mínimo 4,5:1 em texto e 3:1 em ícone; foco visível; `aria-label` em botão que só tem ícone; `prefers-reduced-motion` respeitado.
 17. **Movimento** só para responder ao toque, mais a comemoração do fim da lição. Nada de animação de entrada em cada seção.
+18. **Janelas** por cima da tela (painel "Como funciona" e boas-vindas) são `<dialog class="folha">` no `index.html`, com o conteúdo montado pelo `telas.js` e abertas com `abrirJanela()`, que usa `showModal()`: o Esc fecha sozinho, o Tab não sai da janela e, ao fechar, o foco volta para quem abriu. Tocar no fundo escuro fecha (`app.js`). Não use o evento `close` para salvar nada: o navegador só o dispara no próximo quadro de animação. (A confirmação de saída da lição continua sendo um `<div>` dentro da lição.)
 
 ## 3. Formato do conteúdo
 
@@ -106,16 +107,18 @@ Chave `finedu-progresso` no localStorage, em JSON:
 { versao: 1, xp, moedas, vidas, diaDasVidas: 'AAAA-MM-DD', sequencia,
   ultimoDiaDeEstudo: 'AAAA-MM-DD' | null, licoesConcluidas: [ids],
   bausAbertos: [ids de unidade], respostasCertas, respostasDadas,
-  errosPorLicao: { 'id-da-licao': [posições] } }
+  errosPorLicao: { 'id-da-licao': [posições] }, boasVindasVistas: true | false }
 ```
 
-`errosPorLicao` guarda, para cada lição, a posição (no `dados-licoes.js`) das questões que o aluno errou de primeira da última vez que concluiu a lição. O aquecimento usa essa lista. Se o conteúdo mudar, o pior que acontece é o aquecimento trazer outra questão da mesma lição.
+`errosPorLicao` guarda, para cada lição, a posição (no `dados-licoes.js`) das questões que o aluno errou de primeira da última vez que concluiu a lição. O aquecimento usa essa lista (e conta quantas são, para o aquecimento duplo). Se o conteúdo mudar, o pior que acontece é o aquecimento trazer outra questão da mesma lição.
 
-Campo novo: acrescente em `criarProgressoInicial()`. Progressos antigos ganham o valor inicial sozinhos (`prepararProgresso()`), e dados estragados voltam ao inicial.
+`boasVindasVistas` diz se o aviso de boas-vindas já apareceu. Progresso novo ou reiniciado começa com `false`; um progresso salvo antes de o campo existir ganha `true`, para quem já está jogando não ver o aviso.
 
-## 6. Regras do jogo (tarefa 2, 01/11)
+Campo novo: acrescente em `criarProgressoInicial()`. Progressos antigos ganham o valor inicial sozinhos (`prepararProgresso()`), e dados estragados voltam ao inicial. A exceção é o `boasVindasVistas`, explicado acima.
 
-Decididas no `projeto/plano-gamificacao.md`. Constantes no topo do `jogo.js`:
+## 6. Regras do jogo (tarefa 2 e gamificação 2, 01/11)
+
+Decididas no `projeto/plano-gamificacao.md` (a gamificação 2 está na seção 9 dele). Constantes no topo do `jogo.js`:
 
 | Constante | Valor |
 |---|---|
@@ -127,10 +130,12 @@ Decididas no `projeto/plano-gamificacao.md`. Constantes no topo do `jogo.js`:
 | `VIDAS_MAXIMAS` | 5 |
 | `PRECO_DA_RECARGA` | 20 moedas |
 | `MESADA_DE_BOAS_VINDAS` | 20 (moedas com que o progresso começa: pagam 1 recarga) |
+| `ERROS_PARA_AQUECIMENTO_DUPLO` | 3 (errou 3 ou mais de primeira na lição anterior: o aquecimento traz 2 delas) |
+| `NIVEIS` | Aprendiz 0, Poupador 75, Planejador 175, Estrategista 300, Investidor 450 (o XP em que cada nível começa) |
 
 **A lição é uma fila.** A primeira da fila é a vez atual, e cada vez tem um tipo:
 
-- `aquecimento`: 1 questão da lição anterior na mesma trilha, antes das outras. Prefere uma que o aluno errou de primeira da última vez (`errosPorLicao`); se ele não errou nenhuma, uma fácil ou média. Não tira vida, não conta na precisão e não volta na revisão. Certo vale 5 XP e tira a questão da lista de erradas. A primeira lição da trilha não tem.
+- `aquecimento`: 1 ou 2 questões da lição anterior na mesma trilha, antes das outras (o índice da vez aponta para `sessao.aquecimento`). Prefere as que o aluno errou de primeira da última vez (`errosPorLicao`): com `ERROS_PARA_AQUECIMENTO_DUPLO` ou mais erradas, vêm 2 delas (aquecimento duplo), diferentes, da mais fácil para a mais difícil; com 1 ou 2 erradas, vem 1 delas; sem nenhuma, 1 fácil ou média. Não tira vida, não conta na precisão e não volta na revisão. Cada questão certa vale 5 XP e sai da lista de erradas. A primeira lição da trilha não tem.
 - `nova`: as 5 questões da lição, do fácil para o difícil. Erro tira 1 vida na hora (e fica salvo).
 - `revisao`: a errada volta no fim da fila, com as alternativas em outra ordem, até o aluno acertar. Errar na revisão não tira vida. A lição só termina com a fila vazia.
 
@@ -149,6 +154,10 @@ Regra de bolso: **só perde vida quem erra questão nova; ficou sem vidas, recar
 - Sequência: +1 por dia com pelo menos uma lição (ou treino) concluída; se passar um dia sem concluir, volta a 0.
 - Liberação: uma lição libera quando a anterior da mesma trilha está concluída. A primeira de cada trilha começa liberada. Lição concluída pode ser refeita, como treino.
 - Baú: libera quando todas as lições da unidade estão concluídas; abre uma vez só.
+- Níveis: `nivelDoXp(xp)` devolve o número, o nome, o próximo nível e quanto XP falta. `concluirLicao()` e `abrirBau()` dizem se o aluno subiu de nível (`subiuDeNivel`), para o aviso da vitória e do baú. O treino nunca sobe (não vale XP).
+- Onde errar não tira vida (revisão, aquecimento e treino), o feedback do erro diz isso na hora (`textoDepoisDoErro()`, no `telas.js`).
+- Painel "Como funciona" (`desenharPainel()`, no `telas.js`): os textos usam as constantes acima, então mudam junto com elas. Ele só explica: a recarga continua só na tela "sem vidas".
+- Boas-vindas: aparecem numa tela do menu enquanto `boasVindasVistas` for `false`, e ficam marcadas como vistas (`marcarBoasVindasVistas()`) assim que aparecem.
 - Funções que dependem da data recebem `hoje` como último parâmetro (para testar datas).
 - Regra nova ou mudada ganha teste no `testes.html`.
 
@@ -158,6 +167,7 @@ Regra de bolso: **só perde vida quem erra questão nova; ficou sem vidas, recar
 - `irPara(tela)`, `abrirTelaDeFoco(tela)` e `voltarParaTrilha()` no `app.js`. O botão voltar do Android navega entre as telas; voltar durante a lição abandona a lição.
 - Tela de foco aberta sem os dados dela (ex.: página recarregada em `#licao`) volta para `#aprender`.
 - A tela `#sem-vidas` guarda a lição parada, para ela continuar depois da recarga. "Treinar de graça" e a lição depois da recarga entram no lugar dela no histórico (`irPara(tela, true)`). Sair por "Voltar para a trilha" ou pelo voltar do Android abandona a lição.
+- Trocar de tela (inclusive pelo voltar do Android) fecha qualquer janela aberta: `fecharJanelas()`, no começo de `mostrarTelaDoEndereco()`.
 
 ## 8. Layout
 
@@ -167,7 +177,7 @@ Regra de bolso: **só perde vida quem erra questão nova; ficou sem vidas, recar
 | Deitado e com 768px ou mais | `@media (orientation: landscape) and (min-width: 768px)` | Menu vira coluna à esquerda |
 | Deitado e com 1200px ou mais | `@media (orientation: landscape) and (min-width: 1200px)` | Coluna da direita com contadores e Dica da Estrela |
 
-A troca é pela orientação porque tablet Samsung em pé tem uns 800px de largura e precisa manter o menu embaixo. Conteúdo com no máximo 600px (lição: 680px), centralizado.
+A troca é pela orientação porque tablet Samsung em pé tem uns 800px de largura e precisa manter o menu embaixo. Conteúdo com no máximo 600px (lição: 680px), centralizado. As janelas (`.folha`) sobem de baixo no celular e ficam no centro a partir de 720px.
 
 ## 9. Antes de entregar uma mudança
 
@@ -175,4 +185,5 @@ A troca é pela orientação porque tablet Samsung em pé tem uns 800px de largu
 2. Abrir o `testes.html`: todos os testes passam.
 3. Fazer uma lição inteira, errando uma questão (ela volta na revisão).
 4. Testar em pé e deitado (no notebook, F12 → modo dispositivo).
-5. Perfil → Reiniciar progresso funciona.
+5. Perfil → Reiniciar progresso funciona (e as boas-vindas aparecem de novo).
+6. Tocar num contador abre o painel "Como funciona", e o Esc fecha.

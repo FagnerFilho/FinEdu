@@ -99,7 +99,8 @@ function voltarParaTrilha() {
 function mostrarTelaDoEndereco() {
   const tela = location.hash.slice(1) || 'aprender';
 
-  // Trocou de tela (inclusive pelo voltar do Android): fecha o painel
+  // Trocou de tela (inclusive pelo voltar do Android): fecha qualquer
+  // janela aberta (o painel ou as boas-vindas)
   fecharJanelas();
 
   if (!TELAS_DO_MENU.includes(tela) && !TELAS_DE_FOCO.includes(tela)) {

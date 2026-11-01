@@ -1,6 +1,6 @@
 # Plano · Gamificação (tarefa 2 da fila)
 
-> Escrito em 01/11/2026. O Fagner aprovou os ajustes e os números no mesmo dia, e o plano foi codado (revisão, tela "sem vidas" e aquecimento). As regras finais estão na seção 6 do arquitetura.md, e o testes.html confere as simulações da seção 4. Depois, ainda em 01/11, entrou a mesada de boas-vindas (todo aluno começa com 20 moedas), e a seção 4 foi refeita com ela.
+> Escrito em 01/11/2026. O Fagner aprovou os ajustes e os números no mesmo dia, e o plano foi codado (revisão, tela "sem vidas" e aquecimento). As regras finais estão na seção 6 do arquitetura.md, e o testes.html confere as simulações da seção 4. Depois, ainda em 01/11, entrou a mesada de boas-vindas (todo aluno começa com 20 moedas), e a seção 4 foi refeita com ela. Por último, também em 01/11, veio a gamificação 2 (aquecimento duplo, níveis, painel "Como funciona" e boas-vindas): seção 9, e a seção 4 refeita de novo.
 
 ## Resumo
 
@@ -58,6 +58,8 @@ Regra de bolso para explicar ao aluno: **só perde vida quem erra questão nova;
 | `VIDAS_MAXIMAS` | 5 | 5 |
 | `PRECO_DA_RECARGA` (nova) | — | 20 moedas |
 | `MESADA_DE_BOAS_VINDAS` (nova, depois do plano) | — | 20 moedas no começo |
+| `ERROS_PARA_AQUECIMENTO_DUPLO` (gamificação 2) | — | 3 erradas na lição anterior: o aquecimento traz 2 delas |
+| `NIVEIS` (gamificação 2) | — | Aprendiz 0, Poupador 75, Planejador 175, Estrategista 300, Investidor 450 XP |
 
 Por que esses números:
 
@@ -69,6 +71,8 @@ Por que esses números:
 ## 4. Simulação dos 3 alunos
 
 > Refeita em 01/11 com a mesada de boas-vindas. Sem ela (a versão aprovada no plano), os números eram: A com 80 moedas; B com 40; B guardando com 60; C com 175 XP, 40 moedas, 1 compra e 2 treinos, em 54 questões.
+>
+> Refeita de novo em 01/11 com a gamificação 2 (seção 9). Só o C muda, porque só ele erra 3 ou mais por lição: com o aquecimento duplo, ele termina com 180 XP (eram 170) e responde 50 questões (eram 47). Os níveis entraram em todos.
 
 ### Combinado
 
@@ -78,6 +82,8 @@ Por que esses números:
 - Questão que o aluno já viu explicada, ele acerta (na repetição, no aquecimento, no treino e quando recomeça uma lição). Na vida real ele erra algumas de novo; na proposta isso só custa tempo, não vida.
 - Ficou sem vidas: se tem 20 moedas, paga; se não tem, treina a lição concluída mais recente e depois recomeça.
 - XP só entra quando a lição termina (lição largada no meio não soma nada).
+- Quem errou 3 ou mais de primeira na lição anterior faz o aquecimento duplo (2 questões das erradas).
+- Níveis: 2 a partir de 75 XP, 3 a partir de 175 (seção 9).
 - Tempo: uns 20 segundos por questão respondida (estimativa).
 
 ### Aluno A · acerta tudo
@@ -93,6 +99,8 @@ Por que esses números:
 
 23 questões (uns 8 min), precisão 100%. Das novidades, só vê o aquecimento. Termina com 100 moedas e nada em que gastar.
 
+Nível: sobe para o 2 (Poupador) na lição 2, com 105 XP, e para o 3 (Planejador) na lição 4, com 215. Termina no nível 3, a 65 XP do 4.
+
 ### Aluno B · erra 2
 
 | Passo | O que acontece | Vidas | Moedas | XP |
@@ -104,9 +112,11 @@ Por que esses números:
 | 4 | Lição 4: aquecimento (+5), +30, −2 vidas, repetição +10. +10 moedas | 2 | 40 | 175 |
 | 5 | Baú | 2 | 60 | 195 |
 
-31 questões (uns 10 min), precisão 60%. Conclui a unidade na mesma aula, com 1 compra. Refez os 8 erros no fim das lições e reviu 3 deles no aquecimento.
+31 questões (uns 10 min), precisão 60%. Conclui a unidade na mesma aula, com 1 compra. Refez os 8 erros no fim das lições e reviu 3 deles no aquecimento. Como erra só 2 por lição, nunca ganha o aquecimento duplo.
 
-O outro caminho, guardando as moedas: no passo 3, em vez de pagar, ele treina a lição 2 (vidas voltam a 5, sem XP), recomeça a lição 3 e só erra a 5. Termina com **80 moedas e 200 XP**, mas responde 10 questões a mais (uns 3 min). É exatamente a escolha "gastar ou guardar": pagar compra tempo.
+Nível: sobe para o 2 na lição 2 (85 XP) e para o 3 na lição 4 (175 XP, cravado).
+
+O outro caminho, guardando as moedas: no passo 3, em vez de pagar, ele treina a lição 2 (vidas voltam a 5, sem XP), recomeça a lição 3 e só erra a 5. Termina com **80 moedas e 200 XP**, mas responde 10 questões a mais (uns 3 min). É exatamente a escolha "gastar ou guardar": pagar compra tempo. Também sobe para o 2 na lição 2 e para o 3 na lição 4 (180 XP).
 
 ### Aluno C · erra 4
 
@@ -114,26 +124,28 @@ O outro caminho, guardando as moedas: no passo 3, em vez de pagar, ele treina a 
 |---|---|---|---|---|
 | 0 | Começa com a mesada | 5 | 20 | 0 |
 | 1 | Lição 1: acerta a 1 (+10), erra 2 a 5 (−4 vidas). Repetição: 4 × 5 = +20. +10 moedas | 1 | 30 | 30 |
-| 2 | Lição 2: aquecimento certo (+5), acerta a 1 (+10), erra a 2: **sem vidas**. Com a mesada, tem 30 moedas: paga 20, as vidas voltam a 5. Erra 3 a 5 (−3). Repetição: 4 × 5 = +20. +10 moedas | 2 | 20 | 65 |
-| 3 | Lição 3: aquecimento (+5), acerta a 1 (+10), erra 2 e 3: **sem vidas**. Paga 20, as vidas voltam a 5. Erra 4 e 5 (−2). Repetição +20. +10 moedas | 3 | 10 | 100 |
-| 4 | Lição 4: aquecimento, acerta a 1, erra 2, 3 e 4: **sem vidas**. Com 10 moedas não paga. Larga a lição 4 | 0 | 10 | 100 |
-| 5 | Treino da lição 3. As vidas voltam a 5 | 5 | 10 | 100 |
-| 6 | Lição 4 de novo: aquecimento (+5), acerta 1 a 4 (+40), erra a 5 (−1). Repetição +5. +10 moedas | 4 | 20 | 150 |
-| 7 | Baú | 4 | 40 | 170 |
+| 2 | Lição 2: **aquecimento duplo** (errou 4 na lição 1): 2 questões certas (+10). Acerta a 1 (+10), erra a 2: **sem vidas**. Com a mesada, tem 30 moedas: paga 20, as vidas voltam a 5. Erra 3 a 5 (−3). Repetição: 4 × 5 = +20. +10 moedas | 2 | 20 | 70 |
+| 3 | Lição 3: **aquecimento duplo** (+10), acerta a 1 (+10), erra 2 e 3: **sem vidas**. Paga 20, as vidas voltam a 5. Erra 4 e 5 (−2). Repetição +20. +10 moedas. **Sobe para o nível 2** | 3 | 10 | 110 |
+| 4 | Lição 4: aquecimento duplo, acerta a 1, erra 2, 3 e 4: **sem vidas**. Com 10 moedas não paga. Larga a lição 4 | 0 | 10 | 110 |
+| 5 | Treino da lição 3 (aquecimento simples: a lista de erradas da lição 2 ficou com 2). As vidas voltam a 5 | 5 | 10 | 110 |
+| 6 | Lição 4 de novo: aquecimento simples (+5; o treino limpou as erradas da lição 3), acerta 1 a 4 (+40), erra a 5 (−1). Repetição +5. +10 moedas | 4 | 20 | 160 |
+| 7 | Baú. **Sobe para o nível 3** | 4 | 40 | 180 |
 
-47 questões (uns 16 min). Precisão nas lições: 20%, 20%, 20% e 80%. Conclui a unidade na mesma aula, com 2 compras e 1 treino, e acertou cada questão pelo menos uma vez.
+50 questões (uns 17 min). Precisão nas lições: 20%, 20%, 20% e 80%. Conclui a unidade na mesma aula, com 2 compras e 1 treino, e acertou cada questão pelo menos uma vez.
 
-Sem a mesada, o C não teria como pagar na lição 2: treinaria a lição 1 e recomeçaria a lição 2 (54 questões, 175 XP, 1 compra e 2 treinos). A mesada troca esse treino por uma recarga: ele responde 7 questões a menos e faz 5 XP a menos. É a mesma escolha "gastar ou guardar" do aluno B.
+O aquecimento duplo dá ao C 3 questões a mais (nas lições 2 e 3 e na tentativa largada da lição 4) e 10 XP a mais (a tentativa largada não vale XP). Ele revê 2 erros por lição em vez de 1: é o "quem tem mais dificuldade revisa mais".
+
+Sem a mesada (e antes do aquecimento duplo), o C não teria como pagar na lição 2: treinaria a lição 1 e recomeçaria a lição 2 (54 questões, 175 XP, 1 compra e 2 treinos). A mesada troca esse treino por uma recarga. É a mesma escolha "gastar ou guardar" do aluno B.
 
 ### Comparação com hoje (mesmos alunos, mesma aula)
 
 | Aluno | Hoje | Proposta |
 |---|---|---|
-| A · acerta tudo | Unidade inteira. 220 XP, 80 moedas, ~7 min | Unidade inteira. 235 XP, 100 moedas, ~8 min |
-| B · erra 2 | Fica sem vidas na lição 3 ("voltam amanhã"): 2 lições, 60 XP, 20 moedas. Termina a unidade no 2º dia, e 7 das 20 questões ele nunca acertou | Unidade inteira na aula. 195 XP, 60 moedas. Acertou todas |
-| C · erra 4 | Conclui a lição 1 acertando 1 de 5 e fica sem vidas na lição 2: 10 XP, 10 moedas. Termina a unidade no 4º dia, e metade das questões ele nunca acertou | Unidade inteira na aula (~16 min). 170 XP, 40 moedas. Acertou todas |
+| A · acerta tudo | Unidade inteira. 220 XP, 80 moedas, ~7 min | Unidade inteira. 235 XP, 100 moedas, nível 3, ~8 min |
+| B · erra 2 | Fica sem vidas na lição 3 ("voltam amanhã"): 2 lições, 60 XP, 20 moedas. Termina a unidade no 2º dia, e 7 das 20 questões ele nunca acertou | Unidade inteira na aula. 195 XP, 60 moedas, nível 3. Acertou todas |
+| C · erra 4 | Conclui a lição 1 acertando 1 de 5 e fica sem vidas na lição 2: 10 XP, 10 moedas. Termina a unidade no 4º dia, e metade das questões ele nunca acertou | Unidade inteira na aula (~17 min). 180 XP, 40 moedas, nível 3 (só no baú). Acertou todas |
 
-O XP fica na ordem certa (A 235 > B 195 > C 170), e quem erra mais gasta mais tempo, não fica travado.
+O XP fica na ordem certa (A 235 > B 195 > C 180), e quem erra mais gasta mais tempo, não fica travado. Os 3 terminam no nível 3, mas quem erra mais chega lá depois.
 
 ## 5. Opinião sincera
 
@@ -216,3 +228,77 @@ Escrever com a skill de UX copy na hora de codar:
 2. Os números: revisão 5 XP, recarga 20 moedas, sem relógio.
 3. Um detalhe que a proposta 4 não dizia: quando o aluno não errou nenhuma questão da lição anterior, o aquecimento usa uma fácil ou média.
 4. Depois do plano, no mesmo dia: a mesada de boas-vindas (todo aluno começa com 20 moedas), avaliada antes de codar. A seção 4 já está com ela.
+5. Também em 01/11: a gamificação 2 (seção 9), com o plano mostrado antes de codar, e o extra do feedback do erro. A seção 4 já está com ela.
+
+## 9. Gamificação 2 (01/11)
+
+Complemento da tarefa 2, pedido pelo Fagner com 4 partes já aprovadas. Objetivo comum: o aluno entender sozinho como o jogo funciona, e quem tem mais dificuldade revisar mais.
+
+Motivo: o Fagner e o Eufy não acharam onde usar as moedas, e o Eufy achou que os corações tinham travado (ele errava na revisão, onde errar não tira vida).
+
+### As 4 partes
+
+1. **Aquecimento duplo.** Quem errou 3 ou mais de primeira na lição anterior faz 2 questões delas no aquecimento (diferentes, da mais fácil para a mais difícil). Com 0, 1 ou 2 erradas, continua com 1. A conta usa a mesma lista que o aquecimento já usava: as erradas da última vez que o aluno concluiu a lição, menos as que ele já acertou num aquecimento. Mesmas regras: não tira vida, não conta na precisão e vale 5 XP cada.
+2. **Painel "Como funciona".** Tocar num contador (vidas, moedas, XP ou sequência), na barra de cima ou na coluna da direita, abre um painel que explica os 4, com os números do aluno, já na parte do contador tocado. Só explica: a recarga continua só na tela "sem vidas".
+3. **Níveis por XP.** Aparecem no painel, no Perfil e num aviso na vitória (e no baú) quando o aluno sobe.
+4. **Boas-vindas.** Na primeira vez que o aluno abre o app (e depois de "Reiniciar progresso"), um aviso curto explica a mesada e os contadores. Aparece uma vez só, nunca no meio da lição. Quem já tinha progresso salvo não vê.
+
+Extra, aprovado junto com o plano: o feedback do erro diz na hora quando errar não tirou vida (revisão, aquecimento e treino). A confusão do Eufy aconteceu dentro da lição, onde o painel não aparece.
+
+### Níveis
+
+| Nível | Nome | A partir de |
+|---|---|---|
+| 1 | Aprendiz | 0 XP |
+| 2 | Poupador | 75 XP |
+| 3 | Planejador | 175 XP |
+| 4 | Estrategista | 300 XP |
+| 5 | Investidor | 450 XP |
+
+- Cada nível pede 25 XP a mais que o anterior (75, 100, 125, 150).
+- Quem faz a Unidade 1 sem errar vira Poupador na lição 2 e Planejador na lição 4 (pedido: "chegar mais ou menos ao nível 3").
+- Os 3 alunos da seção 4 terminam a unidade no nível 3: o A e o B sobem na lição 2 e na 4; o C, na lição 3 e no baú. O nível mede o caminho; quem errou menos fica na frente no XP e na precisão.
+- Os níveis 4 e 5 ficam para depois: com a Unidade 2 (3 lições), quem acerta tudo chega a uns 420 XP, no nível 4. O Investidor chega junto com a trilha de investimentos.
+- Alternativa descartada: 100/200/350/550. O aluno B terminaria a Unidade 1 com 195 XP, a 5 do nível 3, sem ter como ganhar mais XP na versão 1 (a Unidade 2 está em breve).
+- Nomes: os do Fagner. Seguem as lições (poupar na 2, planejar na 3), e o Investidor casa com a Trilha 2. Ponto conhecido: Poupador, Planejador e Investidor são masculinos e o app não sabe quem joga; nenhum nome neutro ficou tão claro.
+
+### Textos (skill de UX copy)
+
+Painel (entre colchetes, o que muda com o progresso):
+
+> **Como funciona**
+>
+> **Vidas: [3] de 5**
+> Você perde 1 vida quando erra uma questão numa lição nova. Na revisão, no aquecimento e no treino, errar não tira vida.
+> Acabaram? Dá para recarregar com moedas ou treinar de graça uma lição que você já fez. E amanhã elas voltam todas.
+>
+> **Moedas: [35]**
+> São a sua reserva: se as vidas acabarem no meio de uma lição, 20 moedas recarregam as 5.
+> Você começou com uma mesada de 20 e ganha mais ao concluir uma lição nova (10, ou 15 se acertar todas de primeira) e ao abrir o baú (20).
+>
+> **XP: [105]**
+> Nível [2], [Poupador]. Faltam [70] XP para o nível [3], [Planejador].
+> XP são pontos de experiência: quanto mais você junta, maior o nível. Você ganha 10 por acerto de primeira numa lição nova, 5 por questão consertada na revisão ou certa no aquecimento, e 20 no baú.
+>
+> **Sequência: [1 dia]**
+> Conclua pelo menos uma lição por dia (treino também vale) para ela subir. Se passar um dia sem, volta a zero.
+>
+> [Entendi]
+
+- No nível 5: "Nível 5, Investidor: o mais alto." Sem lição nova para fazer: "As próximas lições chegam em breve."
+- Os contadores dizem para o leitor de tela, por exemplo, "3 de 5 vidas. Ver como funciona".
+
+Boas-vindas:
+
+> **Boas-vindas ao FinEdu!**
+> Você ganhou uma mesada de 20 moedas. Ela é a sua reserva para quando as vidas acabarem.
+> Na dúvida, toque nos contadores para entender vidas, moedas e XP.
+> [os 4 contadores desenhados, como na tela]
+> [Entendi]
+
+Outros:
+
+- Aquecimento duplo: etiqueta "Aquecimento 1 de 2" e "Aquecimento 2 de 2", com a nota "Questões da lição anterior. Errar não tira vida."
+- Subiu de nível (vitória e baú): "Subiu para o nível 2: Poupador!"
+- Perfil: "Nível 2: Poupador" / "Faltam 70 XP para o nível 3" (no nível 5: "O nível mais alto").
+- Feedback do erro: na revisão, "Ela volta de novo no fim. Na revisão, errar não tira vida."; no aquecimento, "No aquecimento, errar não tira vida."; no treino, "Ela volta no fim para você acertar. No treino, errar não tira vida."

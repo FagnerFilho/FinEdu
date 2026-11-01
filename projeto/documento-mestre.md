@@ -29,7 +29,7 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - No erro, o feedback mostra por que a escolhida está errada e por que a certa está certa.
 - Concluir uma lição desbloqueia a próxima da mesma trilha. Lição concluída pode ser refeita, como treino.
 - Cada unidade termina com um baú, que libera quando todas as lições da unidade estão concluídas.
-- Gamificação: XP, moedas, vidas, sequência de dias, aquecimento, revisão das erradas, recarga e treino (regras na seção Gamificação, decididas na tarefa 2).
+- Gamificação: XP e níveis, moedas, vidas, sequência de dias, aquecimento (duplo para quem errou muito), revisão das erradas, recarga e treino, painel "Como funciona" nos contadores e aviso de boas-vindas (regras na seção Gamificação, decididas na tarefa 2 e na gamificação 2).
 
 ## Mascote
 - Removido (decisão da equipe em reunião, 31/10): a Estrela não foi aprovada e não há tempo de desenhar outro até a apresentação.
@@ -72,10 +72,12 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 
 ## Telas da versão 1
 - Aprender (trilha): nome da trilha, cartão da unidade, caminho curvo de bolinhas, "Começar" na lição atual, Estrela com balão, baú no fim.
-- Lição: barra com 5 partes (verde quando acerta, vermelha quando erra; a vermelha fica verde quando o aluno acerta na revisão), etiqueta Fácil/Média/Difícil (ou Aquecimento e Revisão, com uma nota dizendo que errar ali não tira vida), botão Verificar embaixo, feedback com o porquê. No notebook: teclas 1 a 4 (ou A a D), Enter e Esc.
-- Vitória: XP, moedas, precisão e sequência. Fim do treino: as vidas que voltaram.
+- Lição: barra com 5 partes (verde quando acerta, vermelha quando erra; a vermelha fica verde quando o aluno acerta na revisão), etiqueta Fácil/Média/Difícil (ou Aquecimento e Revisão, com uma nota dizendo que errar ali não tira vida; no aquecimento duplo, "Aquecimento 1 de 2"), botão Verificar embaixo, feedback com o porquê (na revisão, no aquecimento e no treino, o feedback do erro diz que errar ali não tira vida). No notebook: teclas 1 a 4 (ou A a D), Enter e Esc.
+- Vitória: XP, moedas, precisão, sequência e, quando o aluno sobe de nível, o aviso "Subiu para o nível 2: Poupador!" (o baú aberto também mostra). Fim do treino: as vidas que voltaram.
 - Baú aberto, Sem vidas (recarregar com moedas ou treinar de graça), e confirmação ao sair no meio da lição ou do treino.
-- Perfil (sem dado pessoal): estatísticas, Configurações ("Reiniciar progresso" com confirmação na tela) e Sobre.
+- Perfil (sem dado pessoal): nível e quanto falta para o próximo, estatísticas, Configurações ("Reiniciar progresso" com confirmação na tela) e Sobre.
+- Contadores (barra de cima e coluna da direita): cada um é um botão que abre o painel "Como funciona" (vidas, moedas, XP e nível, sequência).
+- Boas-vindas: aviso na primeira vez que o aluno abre o app (e depois de "Reiniciar progresso"), com a mesada de 20 moedas e a dica de tocar nos contadores.
 - Calculadora e Guia: só a tela "Em breve" (vêm na conversa 08).
 
 ## Estrutura do código
@@ -83,7 +85,7 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - HTML, CSS e JS puro, código próprio escrito do zero na conversa 02 (Antigravity só como referência).
 - Estrutura: index.html, css/estilo.css, css/fontes/, js/dados-licoes.js, js/armazenamento.js, js/jogo.js, js/telas.js, js/app.js, img/favicon.svg, testes.html, README.md, CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, projeto/plano-gamificacao.md.
 - Funciona abrindo o index.html com dois cliques (sem servidor).
-- testes.html (tarefa 2): testes das regras do jogo no navegador, com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação.
+- testes.html (tarefa 2): testes das regras do jogo no navegador, com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação. Desde a gamificação 2, confere também os textos do painel "Como funciona", das boas-vindas e do feedback do erro (telas.js).
 - O arquitetura.md (gerado na conversa 02) guarda as regras do código e o passo a passo para criar lições. A versão oficial fica em projeto/arquitetura.md, no código; o Contexto do Projeto tem uma cópia.
 - O app confere o dados-licoes.js e mostra um aviso vermelho no topo se algo estiver fora do padrão.
 - Depois de 2 ou 3 conversas usando o arquitetura.md, as regras viram uma skill de arquiteto.
@@ -105,13 +107,14 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - Publicado de graça no GitHub Pages (repositório público, branch main, pasta raiz): https://fagneraposo.github.io/FinEdu/ (o link antigo, com FinEduu, dá 404 desde a troca de nome do repositório, em 01/11)
 - Perfil → Configurações → "Reiniciar progresso", para zerar entre uma apresentação e outra.
 
-## Gamificação (tarefa 2, 01/11)
-Plano, simulação e motivos em projeto/plano-gamificacao.md. Regras do código na seção 6 do arquitetura.md.
+## Gamificação (tarefa 2 e gamificação 2, 01/11)
+Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 está na seção 9). Regras do código na seção 6 do arquitetura.md.
 - Regra de bolso: só perde vida quem erra questão nova; ficou sem vidas, recarrega ou treina.
-- Aquecimento: no começo de cada lição (menos a primeira da trilha), 1 questão da lição anterior, de preferência uma que o aluno errou. Não tira vida e não conta na precisão.
+- Aquecimento: no começo de cada lição (menos a primeira da trilha), 1 questão da lição anterior, de preferência uma que o aluno errou. Quem errou 3 ou mais de primeira na lição anterior faz 2 delas (aquecimento duplo, gamificação 2). Não tira vida, não conta na precisão e vale 5 XP cada questão certa.
 - Revisão: a errada volta no fim da lição, até o aluno acertar. Errar na revisão não tira vida. Só conclui com todas certas.
 - Precisão: só a primeira resposta de cada questão nova.
-- XP: +10 por questão nova certa de primeira; +5 por errada consertada na revisão e pelo aquecimento certo.
+- XP: +10 por questão nova certa de primeira; +5 por errada consertada na revisão e por questão certa no aquecimento.
+- Níveis por XP (gamificação 2): 1 Aprendiz (0 XP), 2 Poupador (75), 3 Planejador (175), 4 Estrategista (300), 5 Investidor (450). Cada nível pede 25 XP a mais que o anterior. Quem faz a Unidade 1 sem errar vira Poupador na lição 2 e Planejador na lição 4. O nível aparece no painel e no Perfil, e um aviso na vitória (e no baú) diz quando o aluno sobe.
 - Moedas: +10 por lição concluída, +5 se acertar as 5 de primeira, só na primeira vez que conclui.
 - Mesada de boas-vindas: todo aluno começa com 20 moedas, o preço de 1 recarga. Assim, quem erra as 5 questões da lição 1 (e ainda não tem lição para treinar) não fica sem saída. "Reiniciar progresso" devolve a mesada.
 - Baú: +20 XP e +20 moedas.
@@ -124,6 +127,9 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md. Regras do código 
 - Sequência: +1 por dia com pelo menos uma lição (ou treino) concluída; zera se passar um dia sem.
 - Os valores são constantes no topo do js/jogo.js.
 - Na tela "sem vidas", as moedas são apresentadas como a "reserva" (liga com a lição de planejamento e orçamento).
+- Painel "Como funciona" (gamificação 2): tocar num contador (barra de cima ou coluna da direita) abre a explicação de vidas, moedas (a reserva), XP e nível, e sequência, com os números do aluno. Só explica: a recarga continua só na tela "sem vidas".
+- Feedback do erro (gamificação 2): na revisão, no aquecimento e no treino, diz na hora que errar não tirou vida.
+- Boas-vindas (gamificação 2): na primeira vez (e depois de "Reiniciar progresso"), um aviso diz que o aluno ganhou uma mesada de 20 moedas, a reserva para quando as vidas acabarem, e que tocando nos contadores ele entende vidas, moedas e XP. Aparece uma vez só, numa tela do menu (nunca no meio da lição). Quem já tinha progresso salvo antes não vê.
 
 ## Conteúdo
 - Trilha 1 · Unidade 1 "Primeiros passos" (título provisório), 4 lições completas + baú:
@@ -199,6 +205,24 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md. Regras do código 
 - Push em 01/11, com o OK do líder: os commits de 807aa52 a cf3bcf9. No GitHub Pages, o app abre com o código novo, sem caixa vermelha nem erro no console, e os 40 testes do testes.html passam.
 - O repositório foi renomeado de FinEduu para FinEdu (o GitHub avisou no push). O endereço do repositório antigo redireciona para o novo, mas o do site não: https://fagneraposo.github.io/FinEduu/ dá 404, e o site agora é https://fagneraposo.github.io/FinEdu/.
 
+### Gamificação 2 (01/11, complemento da tarefa 2)
+- Pedido do líder, com 4 partes aprovadas: aquecimento duplo, painel "Como funciona", níveis por XP e aviso de boas-vindas. Objetivo: o aluno entender sozinho como o jogo funciona, e quem tem mais dificuldade revisar mais.
+- Motivo: o líder e o Eufy não acharam onde usar as moedas, e o Eufy achou que os corações tinham travado (ele errava na revisão, onde errar não tira vida).
+- O plano foi mostrado antes de codar (limites e nomes dos níveis, textos, simulação) e aprovado pelo líder, junto com um extra proposto pelo Claude Code: o feedback do erro diz na hora quando errar não tirou vida (revisão, aquecimento e treino), porque a confusão do Eufy aconteceu dentro da lição, onde o painel não aparece.
+- Níveis: 0/75/175/300/450 XP (cada nível pede 25 XP a mais). A alternativa 100/200/350/550 foi descartada: o aluno B terminaria a Unidade 1 a 5 XP do nível 3, sem ter como ganhar mais XP na versão 1. Os nomes do líder ficaram (seguem as lições, e o Investidor casa com a Trilha 2). Ponto conhecido: Poupador, Planejador e Investidor são masculinos; nenhum nome neutro ficou tão claro.
+- Simulação refeita (seção 4 do plano-gamificacao.md): só o C muda (180 XP em vez de 170, 50 questões em vez de 47). Os 3 alunos terminam a unidade no nível 3: o A e o B sobem na lição 2 e na lição 4; o C, na lição 3 e no baú.
+- Detalhes decididos na hora de codar:
+  - as 2 questões do aquecimento duplo vêm da mais fácil para a mais difícil, com a etiqueta "Aquecimento 1 de 2";
+  - o aviso de nível aparece também no baú aberto (os 20 XP do baú podem fazer subir, que é o caso do C);
+  - no Perfil, "Nível 2: Poupador" com dois-pontos, e não com "·" (regra 13 do arquitetura.md);
+  - o painel e as boas-vindas usam a janela pronta do navegador (`<dialog>`): o Esc fecha, o Tab não escapa e o foco volta para quem abriu;
+  - as boas-vindas ficam salvas como vistas assim que aparecem: o navegador só avisa que a janela fechou no próximo quadro de animação, e no teste esse aviso não chegou;
+  - os contadores continuam com o visual de antes (só ganham um fundo ao apertar); a sombra sólida de "tocável" fica para a tarefa de design;
+  - quem já tinha progresso salvo (os aparelhos da equipe) não vê as boas-vindas; vê depois de "Reiniciar progresso".
+- Textos escritos com a skill de UX copy (seção 9 do plano-gamificacao.md).
+- testes.html: 58 testes, todos passando (eram 40). Conferido no navegador (servidor local): celular (375 e 320 px), tablet em pé (800 × 1280) e deitado (1280 × 800), teclado, "Reiniciar progresso", sem caixa vermelha e sem erro no console.
+- 4 commits, um por parte, mais o dos documentos. Push esperando o OK do líder.
+
 ## Pendências
 - Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEdu/). O celular Android do líder já passou (01/11), ainda no link antigo.
 - Trocar o link antigo do site (com FinEduu, agora dá 404) onde ele foi divulgado: Contexto e Instruções do Projeto do Claude, mensagens da equipe, favorito no tablet e QR code, se tiver.
@@ -208,7 +232,8 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md. Regras do código 
 - João: nomes e arquivos das fontes, logo em SVG (versão clara para fundo escuro), aprovar o roxo mais claro para texto e definir o fundo.
 - Título final da Unidade 1.
 - Tarefa 2 (gamificação): abrir com dois cliques no notebook (index.html e testes.html) e testar no celular e no tablet pelo link do Pages. O push já foi feito (01/11). "Meta do dia" e conquistas ficam para depois da apresentação.
-- Roteiro da demonstração (ensaio de 09/11). Com a mesada, o aluno tem 20 moedas desde o começo: a recarga aparece na primeira vez que as vidas acabam, até na lição 1.
-- Conversa de design: paleta nova, fontes novas, tirar o mascote, profundidade.
+- Gamificação 2: push dos commits (esperando o OK do líder). Depois, testar no celular e no tablet: tocar nos contadores, o voltar do Android com o painel aberto, as boas-vindas depois de "Reiniciar progresso" e o aviso de nível na lição 2 sem erro.
+- Roteiro da demonstração (ensaio de 09/11). Com a mesada, o aluno tem 20 moedas desde o começo: a recarga aparece na primeira vez que as vidas acabam, até na lição 1. Dá para mostrar também as boas-vindas (logo depois de "Reiniciar progresso"), o painel (tocando num contador) e o nível subindo (lição 2 sem erro).
+- Conversa de design: paleta nova, fontes novas, tirar o mascote, profundidade. Incluir as janelas novas (painel e boas-vindas) e decidir se os contadores, que agora são botões, ganham a sombra sólida de "tocável".
 - Depois da apresentação: Trilha 2 (conversa 07), com as "moedas que rendem"; Calculadora e Guia (conversa 08); Unidade 2.
 - Instruções do Projeto: trocar "Menu embaixo em telas estreitas e na lateral em telas largas" pela regra da orientação (ver Layout), tirar a linha do mascote e trocar as cores da seção DESIGN pela paleta do João.
