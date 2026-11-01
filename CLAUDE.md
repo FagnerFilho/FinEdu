@@ -24,7 +24,7 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 
 ## Onde mora cada coisa
 
-- **Código:** esta pasta. Versionada com Git e enviada para o repositório do Elfi no GitHub.
+- **Código:** esta pasta. Versionada com Git e enviada para o repositório do Fagner no GitHub, que é o oficial: github.com/Fagneraposo/FinEduu (o Elfi é colaborador). Site: https://fagneraposo.github.io/FinEduu/
 - **Decisões do projeto:** `projeto/documento-mestre.md`. É a versão oficial.
 - **Regras do código:** `projeto/arquitetura.md`. Todo código segue esse arquivo. Se uma mudança precisar quebrar uma regra, discuta antes e atualize o arquivo junto.
 - O planejamento e o conteúdo também são feitos num Projeto do Claude (no app). O Fagner copia o documento-mestre de lá para cá e daqui para lá. Se você notar decisões conflitantes, avise.
@@ -48,7 +48,7 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 
 ## Fila de tarefas até 11/11
 
-1. **GitHub e GitHub Pages.** Colocar esta pasta no repositório do Elfi e publicar no Pages (branch `main`, pasta raiz). Conferir que o link abre o site. É urgente: hoje o código só existe no computador do Fagner.
+1. ~~**GitHub e GitHub Pages.**~~ Feito em 01/11: repositório Fagneraposo/FinEduu, Pages na `main`, pasta raiz. O teste no tablet ficou nas pendências do documento-mestre.
 2. **Gamificação (conversa 05).** Resolver:
    - Hoje dá para concluir uma lição acertando só 1 de 5. Proposta: repetir as erradas no fim, até acertar todas; a precisão conta só a primeira tentativa.
    - As moedas não servem para nada. Proposta: comprar vidas com moedas (liga o jogo ao tema: gastar ou guardar).

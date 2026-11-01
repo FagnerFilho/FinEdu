@@ -11,11 +11,12 @@ Projeto de extensão de Engenharia de Computação (Uni-CET).
 Fagner (líder), João, Elfi, William, Samuel de Assunção, Samuel Medeiros.
 - João: design (identidade visual, no Figma).
 - Samuel de Assunção: conteúdo das lições.
-- Elfi: repositório no GitHub.
+- Elfi: colaborador no repositório do GitHub (o repositório oficial é o do líder).
 - O líder distribui as tarefas entre a equipe de propósito, em vez de fazer tudo com IA.
 
 ## Ferramentas e onde mora cada coisa (decidido em 01/11)
-- Código: Claude Code, trabalhando direto na pasta finedu no computador do líder, com Git, e enviando para o repositório do Elfi no GitHub.
+- Código: Claude Code, trabalhando direto na pasta finedu no computador do líder, com Git, e enviando para o repositório do líder no GitHub, que é o oficial: github.com/Fagneraposo/FinEduu (público). O Elfi entra como colaborador.
+- Commits com o e-mail privado do GitHub (noreply), para o e-mail do líder não aparecer no repositório público. Já configurado no Git da pasta finedu.
 - Planejamento, conteúdo e decisões: Projeto "FineEdu" no Claude.
 - Este documento-mestre e o arquitetura.md ficam também dentro do código, na pasta projeto/. A versão oficial é a da pasta do código: o Claude Code atualiza ao fim de cada tarefa, e o líder copia para o Contexto do Projeto.
 - O Claude Code lê as regras do arquivo CLAUDE.md, na raiz da pasta finedu.
@@ -100,7 +101,7 @@ Fagner (líder), João, Elfi, William, Samuel de Assunção, Samuel Medeiros.
 - Roda num tablet Samsung (Android) e num notebook. Vai ter internet no local.
 - No notebook: dois cliques no index.html.
 - No tablet: abrir pelo link do GitHub Pages. Abrir o arquivo direto no Android costuma falhar.
-- Publicar de graça no GitHub Pages (repositório público, conteúdo da pasta finedu na raiz).
+- Publicado de graça no GitHub Pages (repositório público, branch main, pasta raiz): https://fagneraposo.github.io/FinEduu/
 - Perfil → Configurações → "Reiniciar progresso", para zerar entre uma apresentação e outra.
 
 ## Gamificação (provisória; regras finais na conversa 05)
@@ -149,8 +150,14 @@ Fagner (líder), João, Elfi, William, Samuel de Assunção, Samuel Medeiros.
 - Lições do Samuel adaptadas e colocadas no dados-licoes.js: a Unidade 1 tem 4 lições completas e o baú já pode ser aberto.
 - Regra das contas: no máximo 1 por lição, só em fácil ou média.
 
+### Tarefa 1 · GitHub e Pages (01/11)
+- Repositório oficial no GitHub do líder (Fagneraposo/FinEduu, público), no lugar do repositório do Elfi. O Elfi entra como colaborador.
+- GitHub Pages na branch main, pasta raiz: https://fagneraposo.github.io/FinEduu/
+- Conferido no navegador: o site abre, sem caixa vermelha nem erro no console, e a lição 1 começa.
+
 ## Pendências
-- Publicar no GitHub Pages e testar no tablet. Urgente: hoje o código só existe no computador do líder.
+- Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEduu/).
+- Convidar o Elfi como colaborador no repositório (Settings → Collaborators). Precisa do nome de usuário dele no GitHub.
 - Líder revisar as adaptações das lições; professor revisar o conteúdo da Unidade 1.
 - João: nomes e arquivos das fontes, logo em SVG (versão clara para fundo escuro), aprovar o roxo mais claro para texto e definir o fundo.
 - Título final da Unidade 1.
