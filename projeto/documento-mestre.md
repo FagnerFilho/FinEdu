@@ -221,7 +221,8 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 
   - quem já tinha progresso salvo (os aparelhos da equipe) não vê as boas-vindas; vê depois de "Reiniciar progresso".
 - Textos escritos com a skill de UX copy (seção 9 do plano-gamificacao.md).
 - testes.html: 58 testes, todos passando (eram 40). Conferido no navegador (servidor local): celular (375 e 320 px), tablet em pé (800 × 1280) e deitado (1280 × 800), teclado, "Reiniciar progresso", sem caixa vermelha e sem erro no console.
-- 4 commits, um por parte, mais o dos documentos. Push esperando o OK do líder.
+- 4 commits, um por parte, mais o dos documentos. Push em 01/11, com o OK do líder ("Pode fazer o push"): de d224d24 para dc37685, sem --force.
+- No GitHub Pages (publicado uns 2 minutos depois do push): os 58 testes do testes.html passam, e o app abre com o código novo (os contadores abrem o painel, e o Esc fecha), sem caixa vermelha nem erro no console. As boas-vindas não apareceram no navegador do Claude, porque ele já tinha um progresso salvo de antes; é a regra funcionando.
 
 ## Pendências
 - Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEdu/). O celular Android do líder já passou (01/11), ainda no link antigo.
@@ -232,7 +233,7 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 
 - João: nomes e arquivos das fontes, logo em SVG (versão clara para fundo escuro), aprovar o roxo mais claro para texto e definir o fundo.
 - Título final da Unidade 1.
 - Tarefa 2 (gamificação): abrir com dois cliques no notebook (index.html e testes.html) e testar no celular e no tablet pelo link do Pages. O push já foi feito (01/11). "Meta do dia" e conquistas ficam para depois da apresentação.
-- Gamificação 2: push dos commits (esperando o OK do líder). Depois, testar no celular e no tablet: tocar nos contadores, o voltar do Android com o painel aberto, as boas-vindas depois de "Reiniciar progresso" e o aviso de nível na lição 2 sem erro.
+- Gamificação 2 (push feito em 01/11): testar no celular e no tablet pelo link do Pages: tocar nos contadores, o voltar do Android com o painel aberto, as boas-vindas depois de "Reiniciar progresso" e o aviso de nível na lição 2 sem erro.
 - Roteiro da demonstração (ensaio de 09/11). Com a mesada, o aluno tem 20 moedas desde o começo: a recarga aparece na primeira vez que as vidas acabam, até na lição 1. Dá para mostrar também as boas-vindas (logo depois de "Reiniciar progresso"), o painel (tocando num contador) e o nível subindo (lição 2 sem erro).
 - Conversa de design: paleta nova, fontes novas, tirar o mascote, profundidade. Incluir as janelas novas (painel e boas-vindas) e decidir se os contadores, que agora são botões, ganham a sombra sólida de "tocável".
 - Depois da apresentação: Trilha 2 (conversa 07), com as "moedas que rendem"; Calculadora e Guia (conversa 08); Unidade 2.
