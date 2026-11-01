@@ -1408,8 +1408,8 @@ dialog.folha::backdrop {
 /* Seletor de abas no topo da calculadora */
 .calculadora-abas {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--espaco-p);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--espaco-pp);
   padding: var(--espaco-pp);
   border: var(--borda) solid var(--cor-borda);
   border-radius: var(--raio-g);
@@ -1421,7 +1421,7 @@ dialog.folha::backdrop {
   align-items: center;
   justify-content: center;
   min-height: var(--alvo-minimo);
-  padding: var(--espaco-p) var(--espaco-m);
+  padding: var(--espaco-p) var(--espaco-pp);
   border: var(--borda) solid transparent;
   border-radius: var(--raio-m);
   color: var(--cor-texto-menu);
@@ -1581,6 +1581,47 @@ dialog.folha::backdrop {
   border-radius: var(--raio-total);
   background: var(--cor-acerto);
   transition: width var(--tempo-medio);
+}
+
+.proporcao-trilho {
+  display: flex;
+  width: 100%;
+  height: var(--espaco-m);
+  border-radius: var(--raio-total);
+  background: var(--cor-borda);
+  overflow: hidden;
+}
+
+.proporcao-parte {
+  display: block;
+  height: 100%;
+  transition: width var(--tempo-medio);
+}
+
+.proporcao-parte--bolso {
+  background: var(--cor-destaque);
+}
+
+.proporcao-parte--juros {
+  background: var(--cor-acerto);
+}
+
+.proporcao-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--espaco-p);
+  font-size: var(--tamanho-pequeno);
+}
+
+.proporcao-legenda-item--bolso {
+  color: var(--cor-destaque);
+  font-weight: 700;
+}
+
+.proporcao-legenda-item--juros {
+  color: var(--cor-acerto);
+  font-weight: 700;
 }
 
 .calculadora-botoes {

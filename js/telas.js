@@ -728,16 +728,70 @@ function desenharBarraProgressoDaMeta(resultado) {
     </div>`;
 }
 
-// Monta o cartão de resultado (Aba 1: Sem Juros ou Aba 2: Com Rendimento)
+// Formata o trecho de meses em HTML, acrescentando os anos entre parênteses acima de 12 meses
+function desenharPrazoEmMeses(resultado) {
+  const equivalente = resultado.equivalenteAnos !== undefined
+    ? resultado.equivalenteAnos
+    : descreverEquivalenteEmAnos(resultado.meses);
+  const textoMeses = contarCom(resultado.meses, 'mês', 'meses');
+  return equivalente
+    ? `<strong>${textoMeses}</strong> (${escaparHtml(equivalente)})`
+    : `<strong>${textoMeses}</strong>`;
+}
+
+// Monta o cartão de resultado (Aba 1: Sem Juros, Aba 2: Com Juros ou Aba 3: Simular Futuro)
 function desenharResultadoCalculadora(resultado) {
   if (!resultado || !resultado.valido) return '';
 
   const comJuros = resultado.modo === 'com-juros';
-  const avisoFixo = comJuros ? `
+  const simularFuturoModo = resultado.modo === 'simular-futuro';
+  const avisoFixo = (comJuros || simularFuturoModo) ? `
     <p class="calculadora-aviso">
       ${icone('info')}
       <span>Simulação. O rendimento de verdade muda com o tempo. Menor de idade investe com um responsável.</span>
     </p>` : '';
+
+  if (simularFuturoModo) {
+    return `
+      <section class="painel calculadora-resultado" aria-label="Resultado da simulação de futuro">
+        <p class="calculadora-destaque">
+          Guardando <strong>${escaparHtml(resultado.aporteFormatado)} por mês</strong> durante <strong>${contarCom(resultado.anos, 'ano', 'anos')}</strong> (${resultado.meses} meses), você vai acumular <strong>${escaparHtml(resultado.montanteFinalComJurosFormatado)}</strong>!
+        </p>
+
+        <div class="rendimento-comparativo">
+          <div class="rendimento-item">
+            <p class="rendimento-rotulo">Total que você depositou</p>
+            <p class="rendimento-valor">${escaparHtml(resultado.totalInvestidoDoBolsoFormatado)}</p>
+            <p class="rendimento-detalhe">Saído do seu bolso (na gaveta)</p>
+          </div>
+          <div class="rendimento-item rendimento-item--juros">
+            <p class="rendimento-rotulo">Com Juros Compostos</p>
+            <p class="rendimento-valor">${escaparHtml(resultado.montanteFinalComJurosFormatado)}</p>
+            <p class="rendimento-detalhe">+ ${escaparHtml(resultado.rendimentoTotalFormatado)} só de juros trabalhando pra você</p>
+          </div>
+        </div>
+
+        <div class="meta-progresso proporcao-futuro">
+          <p class="meta-progresso-texto">
+            <strong>${resultado.porcentagemRendimento}%</strong> do seu dinheiro final veio só dos rendimentos!
+          </p>
+          <div class="proporcao-trilho" role="img"
+            aria-label="${resultado.porcentagemBolso}% saiu do seu bolso e ${resultado.porcentagemRendimento}% veio dos rendimentos">
+            <span class="proporcao-parte proporcao-parte--bolso" style="width: ${resultado.porcentagemBolso}%"></span>
+            <span class="proporcao-parte proporcao-parte--juros" style="width: ${resultado.porcentagemRendimento}%"></span>
+          </div>
+          <div class="proporcao-legenda" aria-hidden="true">
+            <span class="proporcao-legenda-item proporcao-legenda-item--bolso">Do seu bolso (${resultado.porcentagemBolso}%)</span>
+            <span class="proporcao-legenda-item proporcao-legenda-item--juros">Dos rendimentos (${resultado.porcentagemRendimento}%)</span>
+          </div>
+        </div>
+
+        ${avisoFixo}
+        <div class="calculadora-botoes">
+          <button type="button" class="botao botao--contorno" data-acao="limpar-calculadora">Limpar / Nova meta</button>
+        </div>
+      </section>`;
+  }
 
   if (resultado.metaAtingida) {
     const sobra = resultado.sobra > 0
@@ -755,12 +809,13 @@ function desenharResultadoCalculadora(resultado) {
   }
 
   const barraProgresso = desenharBarraProgressoDaMeta(resultado);
+  const prazoHtml = desenharPrazoEmMeses(resultado);
 
   if (comJuros) {
     return `
       <section class="painel calculadora-resultado" aria-label="Resultado da meta com juros">
         <p class="calculadora-destaque">
-          Guardando <strong>${escaparHtml(resultado.mensalFormatado)} por mês</strong>, você chega lá em <strong>${contarCom(resultado.meses, 'mês', 'meses')}</strong>.
+          Guardando <strong>${escaparHtml(resultado.mensalFormatado)} por mês</strong>, você chega lá em ${prazoHtml}.
         </p>
         <p class="calculadora-subtexto">
           Isso dá uns <strong>${escaparHtml(resultado.semanalFormatado)} por semana</strong> — você economiza <strong>${escaparHtml(resultado.economiaMensalFormatada)} por mês</strong> (<strong>${escaparHtml(resultado.economiaTotalFormatada)} no total</strong>) em relação a guardar sem juros.
@@ -788,7 +843,7 @@ function desenharResultadoCalculadora(resultado) {
   return `
     <section class="painel calculadora-resultado" aria-label="Resultado da meta">
       <p class="calculadora-destaque">
-        Guardando <strong>${escaparHtml(resultado.mensalFormatado)} por mês</strong>, você chega lá em <strong>${contarCom(resultado.meses, 'mês', 'meses')}</strong>.
+        Guardando <strong>${escaparHtml(resultado.mensalFormatado)} por mês</strong>, você chega lá em ${prazoHtml}.
       </p>
       <p class="calculadora-subtexto">
         Isso dá uns <strong>${escaparHtml(resultado.semanalFormatado)} por semana</strong>.
@@ -800,23 +855,65 @@ function desenharResultadoCalculadora(resultado) {
     </section>`;
 }
 
-// Monta a tela completa da Calculadora de Metas com as 2 abas independentes
+// Monta a tela completa da Calculadora de Metas com as 3 abas independentes
 function desenharCalculadora(lugar, dados = {}) {
-  const aba = dados.aba === 'com-juros' ? 'com-juros' : 'sem-juros';
+  const abasValidas = ['sem-juros', 'com-juros', 'simular-futuro'];
+  const aba = abasValidas.includes(dados.aba) ? dados.aba : 'sem-juros';
   const comJuros = aba === 'com-juros';
+  const modoFuturo = aba === 'simular-futuro';
+
   const custo = dados.custo !== undefined ? String(dados.custo) : '';
   const meses = dados.meses !== undefined ? String(dados.meses) : '';
+  const aporte = dados.aporte !== undefined ? String(dados.aporte) : '';
+  const anos = dados.anos !== undefined ? String(dados.anos) : '';
   const guardado = dados.guardado !== undefined ? String(dados.guardado) : '';
   const taxa = dados.taxa !== undefined ? String(dados.taxa) : '0,8';
   const resultado = dados.resultado || null;
   const temErro = Boolean(resultado && !resultado.valido);
 
-  const rotuloCusto = 'Qual valor você quer atingir?';
-  const rotuloMeses = comJuros
-    ? 'Em quantos meses você quer atingir essa meta?'
-    : 'Em quantos meses você quer chegar lá?';
+  let camposDoFormulario = '';
+  let botaoPrincipal = '';
 
-  const campoTaxa = comJuros ? `
+  if (modoFuturo) {
+    camposDoFormulario = `
+        <div class="campo">
+          <label class="campo-rotulo" for="campo-aporte">
+            Quanto você vai guardar por mês? <span class="campo-detalhe">(em R$)</span>
+          </label>
+          <input class="campo-entrada" id="campo-aporte" name="aporte" type="text" inputmode="decimal"
+            autocomplete="off" placeholder="Ex.: 200 ou 50,00" value="${escaparHtml(aporte)}">
+        </div>
+
+        <div class="campo">
+          <label class="campo-rotulo" for="campo-anos">
+            Por quantos anos você vai guardar? <span class="campo-detalhe">(em anos)</span>
+          </label>
+          <input class="campo-entrada" id="campo-anos" name="anos" type="text" inputmode="numeric"
+            autocomplete="off" placeholder="Ex.: 5" value="${escaparHtml(anos)}">
+        </div>
+
+        <div class="campo">
+          <label class="campo-rotulo" for="campo-guardado">
+            Quanto você já tem guardado hoje? <span class="campo-detalhe">(em R$, opcional)</span>
+          </label>
+          <input class="campo-entrada" id="campo-guardado" name="guardado" type="text" inputmode="decimal"
+            autocomplete="off" placeholder="Ex.: 0" value="${escaparHtml(guardado)}">
+        </div>
+
+        <div class="campo">
+          <label class="campo-rotulo" for="campo-taxa">
+            Taxa de juros ao mês (%) <span class="campo-detalhe">(só um exemplo, não é taxa real)</span>
+          </label>
+          <input class="campo-entrada" id="campo-taxa" name="taxa" type="text" inputmode="decimal"
+            autocomplete="off" placeholder="Ex.: 0,8" value="${escaparHtml(taxa)}">
+        </div>`;
+    botaoPrincipal = '<button type="button" class="botao" data-acao="calcular-futuro">Simular Futuro</button>';
+  } else {
+    const rotuloCusto = 'Qual valor você quer atingir?';
+    const rotuloMeses = comJuros
+      ? 'Em quantos meses você quer atingir essa meta?'
+      : 'Em quantos meses você quer chegar lá?';
+    const campoTaxa = comJuros ? `
         <div class="campo">
           <label class="campo-rotulo" for="campo-taxa">
             Taxa de juros ao mês (%) <span class="campo-detalhe">(só um exemplo, não é taxa real)</span>
@@ -825,28 +922,7 @@ function desenharCalculadora(lugar, dados = {}) {
             autocomplete="off" placeholder="Ex.: 0,8" value="${escaparHtml(taxa)}">
         </div>` : '';
 
-  const botaoCalcular = comJuros
-    ? '<button type="button" class="botao" data-acao="calcular-meta-juros">Calcular com Juros</button>'
-    : '<button type="button" class="botao" data-acao="calcular-meta">Calcular</button>';
-
-  const html = `
-    <div class="calculadora" data-aba-ativa="${aba}">
-      <header class="calculadora-topo">
-        <h1 class="calculadora-titulo">Calculadora de Metas</h1>
-        <p class="calculadora-sub">Descubra quanto guardar por mês para chegar na sua meta.</p>
-      </header>
-
-      <div class="calculadora-abas" role="tablist" aria-label="Modo da calculadora">
-        <button type="button" class="calculadora-aba${!comJuros ? ' calculadora-aba--ativa' : ''}"
-          role="tab" id="aba-sem-juros" aria-selected="${!comJuros}" aria-controls="painel-calculadora"
-          data-acao="aba-sem-juros">Sem Juros (Na Gaveta)</button>
-        <button type="button" class="calculadora-aba${comJuros ? ' calculadora-aba--ativa' : ''}"
-          role="tab" id="aba-com-juros" aria-selected="${comJuros}" aria-controls="painel-calculadora"
-          data-acao="aba-com-juros">Com Rendimento (Juros)</button>
-      </div>
-
-      <div class="painel calculadora-formulario" id="painel-calculadora" role="tabpanel"
-        aria-labelledby="${comJuros ? 'aba-com-juros' : 'aba-sem-juros'}">
+    camposDoFormulario = `
         <div class="campo">
           <label class="campo-rotulo" for="campo-custo">
             ${rotuloCusto} <span class="campo-detalhe">(em R$)</span>
@@ -857,10 +933,10 @@ function desenharCalculadora(lugar, dados = {}) {
 
         <div class="campo">
           <label class="campo-rotulo" for="campo-meses">
-            ${rotuloMeses} <span class="campo-detalhe">(de 1 a 36)</span>
+            ${rotuloMeses} <span class="campo-detalhe">(a partir de 1 mês)</span>
           </label>
           <input class="campo-entrada" id="campo-meses" name="meses" type="text" inputmode="numeric"
-            autocomplete="off" placeholder="Ex.: 6" value="${escaparHtml(meses)}">
+            autocomplete="off" placeholder="Ex.: 6 ou 24" value="${escaparHtml(meses)}">
         </div>
 
         <div class="campo">
@@ -870,8 +946,36 @@ function desenharCalculadora(lugar, dados = {}) {
           <input class="campo-entrada" id="campo-guardado" name="guardado" type="text" inputmode="decimal"
             autocomplete="off" placeholder="Ex.: 0" value="${escaparHtml(guardado)}">
         </div>
-        ${campoTaxa}
-        ${botaoCalcular}
+        ${campoTaxa}`;
+
+    botaoPrincipal = comJuros
+      ? '<button type="button" class="botao" data-acao="calcular-meta-juros">Calcular com Juros</button>'
+      : '<button type="button" class="botao" data-acao="calcular-meta">Calcular</button>';
+  }
+
+  const html = `
+    <div class="calculadora" data-aba-ativa="${aba}">
+      <header class="calculadora-topo">
+        <h1 class="calculadora-titulo">Calculadora de Metas</h1>
+        <p class="calculadora-sub">Planeje uma meta ou simule quanto seu dinheiro pode render no futuro.</p>
+      </header>
+
+      <div class="calculadora-abas" role="tablist" aria-label="Modo da calculadora">
+        <button type="button" class="calculadora-aba${aba === 'sem-juros' ? ' calculadora-aba--ativa' : ''}"
+          role="tab" id="aba-sem-juros" aria-selected="${aba === 'sem-juros'}" aria-controls="painel-calculadora"
+          data-acao="aba-sem-juros">Meta (Na Gaveta)</button>
+        <button type="button" class="calculadora-aba${aba === 'com-juros' ? ' calculadora-aba--ativa' : ''}"
+          role="tab" id="aba-com-juros" aria-selected="${aba === 'com-juros'}" aria-controls="painel-calculadora"
+          data-acao="aba-com-juros">Meta (Com Juros)</button>
+        <button type="button" class="calculadora-aba${aba === 'simular-futuro' ? ' calculadora-aba--ativa' : ''}"
+          role="tab" id="aba-simular-futuro" aria-selected="${aba === 'simular-futuro'}" aria-controls="painel-calculadora"
+          data-acao="aba-simular-futuro">Simular Futuro</button>
+      </div>
+
+      <div class="painel calculadora-formulario" id="painel-calculadora" role="tabpanel"
+        aria-labelledby="aba-${aba}">
+        ${camposDoFormulario}
+        ${botaoPrincipal}
       </div>
 
       <div class="calculadora-erro" id="calculadora-erro" role="alert" aria-live="polite"${temErro ? '' : ' hidden'}>

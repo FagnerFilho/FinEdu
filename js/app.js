@@ -323,27 +323,44 @@ function tocarNoBau(idUnidade) {
 // 6. CALCULADORA E PERFIL
 // ============================================================
 
-let taxaEmMemoria = '0,8';
+let camposCalculadoraEmMemoria = {
+  custo: '',
+  meses: '',
+  aporte: '',
+  anos: '',
+  guardado: '',
+  taxa: '0,8'
+};
 
 function lerCamposDaCalculadora() {
   const container = document.querySelector('#tela-calculadora .calculadora');
   const custo = document.getElementById('campo-custo');
   const meses = document.getElementById('campo-meses');
+  const aporte = document.getElementById('campo-aporte');
+  const anos = document.getElementById('campo-anos');
   const guardado = document.getElementById('campo-guardado');
   const taxa = document.getElementById('campo-taxa');
 
-  if (taxa) taxaEmMemoria = taxa.value;
+  if (custo) camposCalculadoraEmMemoria.custo = custo.value;
+  if (meses) camposCalculadoraEmMemoria.meses = meses.value;
+  if (aporte) camposCalculadoraEmMemoria.aporte = aporte.value;
+  if (anos) camposCalculadoraEmMemoria.anos = anos.value;
+  if (guardado) camposCalculadoraEmMemoria.guardado = guardado.value;
+  if (taxa) camposCalculadoraEmMemoria.taxa = taxa.value;
+
+  const abaNoDom = container ? container.dataset.abaAtiva : 'sem-juros';
+  const aba = (abaNoDom === 'com-juros' || abaNoDom === 'simular-futuro') ? abaNoDom : 'sem-juros';
 
   return {
-    aba: container && container.dataset.abaAtiva === 'com-juros' ? 'com-juros' : 'sem-juros',
-    custo: custo ? custo.value : '',
-    meses: meses ? meses.value : '',
-    guardado: guardado ? guardado.value : '',
-    taxa: taxa ? taxa.value : taxaEmMemoria
+    ...camposCalculadoraEmMemoria,
+    aba
   };
 }
 
 function calcularPorModo(aba, campos) {
+  if (aba === 'simular-futuro') {
+    return simularFuturo(campos.aporte, campos.anos, campos.guardado, campos.taxa);
+  }
   if (aba === 'com-juros') {
     return calcularMetaComJuros(campos.custo, campos.meses, campos.guardado, campos.taxa);
   }
@@ -357,6 +374,13 @@ function calcularMetaNaTela(modoForcado) {
   mostrarResultadoCalculadora(resultado);
 }
 
+function temCamposObrigatoriosDaAba(aba, campos) {
+  if (aba === 'simular-futuro') {
+    return campos.aporte.trim() !== '' && campos.anos.trim() !== '';
+  }
+  return campos.custo.trim() !== '' && campos.meses.trim() !== '';
+}
+
 function trocarAbaCalculadora(novaAba) {
   const lugar = document.getElementById('tela-calculadora');
   if (!lugar) return;
@@ -365,7 +389,7 @@ function trocarAbaCalculadora(novaAba) {
   const jaTinhaResultado = Boolean(document.querySelector('#calculadora-resultado .calculadora-resultado'));
   let resultado = null;
 
-  if (jaTinhaResultado && campos.custo.trim() !== '' && campos.meses.trim() !== '') {
+  if (jaTinhaResultado && temCamposObrigatoriosDaAba(novaAba, campos)) {
     const calculado = calcularPorModo(novaAba, campos);
     if (calculado.valido) resultado = calculado;
   }
@@ -381,9 +405,16 @@ function limparCalculadoraNaTela() {
   const lugar = document.getElementById('tela-calculadora');
   if (!lugar) return;
   const { aba } = lerCamposDaCalculadora();
-  taxaEmMemoria = '0,8';
+  camposCalculadoraEmMemoria = {
+    custo: '',
+    meses: '',
+    aporte: '',
+    anos: '',
+    guardado: '',
+    taxa: '0,8'
+  };
   desenharCalculadora(lugar, { aba });
-  const primeiroCampo = document.getElementById('campo-custo');
+  const primeiroCampo = document.getElementById(aba === 'simular-futuro' ? 'campo-aporte' : 'campo-custo');
   if (primeiroCampo) primeiroCampo.focus();
 }
 
@@ -430,8 +461,10 @@ function tratarClique(evento) {
     case 'fechar-boas-vindas':   fecharJanela('boas-vindas'); break;
     case 'aba-sem-juros':        trocarAbaCalculadora('sem-juros'); break;
     case 'aba-com-juros':        trocarAbaCalculadora('com-juros'); break;
+    case 'aba-simular-futuro':   trocarAbaCalculadora('simular-futuro'); break;
     case 'calcular-meta':        calcularMetaNaTela('sem-juros'); break;
     case 'calcular-meta-juros':  calcularMetaNaTela('com-juros'); break;
+    case 'calcular-futuro':      calcularMetaNaTela('simular-futuro'); break;
     case 'limpar-calculadora':   limparCalculadoraNaTela(); break;
     case 'reiniciar':            mostrarConfirmacaoDeReinicio(true); break;
     case 'cancelar-reinicio':    mostrarConfirmacaoDeReinicio(false); break;

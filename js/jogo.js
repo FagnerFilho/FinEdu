@@ -51,7 +51,9 @@ const NIVEIS = [
 
 // Calculadora de Metas
 const MESES_MINIMOS_META = 1;
-const MESES_MAXIMOS_META = 36;
+const MESES_MAXIMOS_META = 1200;   // teto técnico de segurança (100 anos)
+const ANOS_MINIMOS_FUTURO = 1;
+const ANOS_MAXIMOS_FUTURO = 100;
 const SEMANAS_POR_MES = 30 / 7;    // mês comercial de 30 dias dividido por 7 dias
 const TAXA_EXEMPLO_PADRAO = 0.8;   // taxa mensal (%) inicial do simulador educativo
 const TAXA_EXEMPLO_MAXIMA = 20;    // limite superior da taxa de exemplo (% ao mês)
@@ -100,7 +102,7 @@ function criarProgressoInicial(hoje = hojeComoTexto()) {
     respostasCertas: 0,        // para a precisão do Perfil
     respostasDadas: 0,
     errosPorLicao: {},         // id da lição → posições das questões que o aluno
-                               // errou de primeira da última vez (para o aquecimento)
+    // errou de primeira da última vez (para o aquecimento)
     boasVindasVistas: false    // o aviso de boas-vindas já apareceu?
   };
 }
@@ -158,7 +160,7 @@ function atualizarDia(progresso, hoje = hojeComoTexto()) {
 
   // Passou mais de um dia sem concluir lição: a sequência zera
   if (progresso.sequencia > 0 && progresso.ultimoDiaDeEstudo &&
-      diasEntre(progresso.ultimoDiaDeEstudo, hoje) > 1) {
+    diasEntre(progresso.ultimoDiaDeEstudo, hoje) > 1) {
     progresso.sequencia = 0;
     mudou = true;
   }
@@ -776,6 +778,25 @@ function formatarMoeda(valor) {
   return `${sinal}R$ ${reaisComPonto},${centavos}`;
 }
 
+// Quando o prazo passa de 12 meses, devolve o equivalente em anos
+// (ex.: 24 → "2 anos", 18 → "1 ano e 6 meses"). Até 12, devolve "".
+function descreverEquivalenteEmAnos(meses) {
+  if (!Number.isInteger(meses) || meses <= 12) return '';
+  const anos = Math.floor(meses / 12);
+  const restoMeses = meses % 12;
+  const textoAnos = anos === 1 ? '1 ano' : `${anos} anos`;
+  if (restoMeses === 0) return textoAnos;
+  const textoResto = restoMeses === 1 ? '1 mês' : `${restoMeses} meses`;
+  return `${textoAnos} e ${textoResto}`;
+}
+
+// "1 mês", "6 meses", "24 meses (2 anos)" ou "18 meses (1 ano e 6 meses)"
+function formatarPrazoMeses(meses) {
+  const base = meses === 1 ? '1 mês' : `${meses} meses`;
+  const equivalente = descreverEquivalenteEmAnos(meses);
+  return equivalente ? `${base} (${equivalente})` : base;
+}
+
 // Calcula quanto guardar por mês e por semana para atingir uma meta.
 // Aceita (custo, meses, guardado) ou ({ custo, meses, guardado }).
 function calcularMeta(custoEntrada, mesesEntrada, guardadoEntrada = 0) {
@@ -807,18 +828,24 @@ function calcularMeta(custoEntrada, mesesEntrada, guardadoEntrada = 0) {
   if (meses === 'vazio' || !Number.isInteger(meses) || meses < MESES_MINIMOS_META || meses > MESES_MAXIMOS_META) {
     return {
       valido: false,
-      erro: 'Escolha entre 1 e 36 meses.'
+      erro: 'Escolha um prazo inteiro a partir de 1 mês.'
     };
   }
+
+  const equivalenteAnos = descreverEquivalenteEmAnos(meses);
+  const prazoTexto = formatarPrazoMeses(meses);
 
   if (guardado >= custo) {
     const sobra = Math.round((guardado - custo) * 100) / 100;
     return {
       valido: true,
       erro: null,
+      modo: 'sem-juros',
       metaAtingida: true,
       custo,
       meses,
+      equivalenteAnos,
+      prazoTexto,
       guardado,
       falta: 0,
       sobra,
@@ -838,16 +865,18 @@ function calcularMeta(custoEntrada, mesesEntrada, guardadoEntrada = 0) {
   const porcentagemGuardada = guardado > 0
     ? Math.min(99, Math.max(1, Math.round((guardado / custo) * 100)))
     : 0;
-  const prazoTexto = meses === 1 ? '1 mês' : `${meses} meses`;
   const mensalFormatado = formatarMoeda(mensal);
   const semanalFormatado = formatarMoeda(semanal);
 
   return {
     valido: true,
     erro: null,
+    modo: 'sem-juros',
     metaAtingida: false,
     custo,
     meses,
+    equivalenteAnos,
+    prazoTexto,
     guardado,
     falta,
     sobra: 0,
@@ -985,7 +1014,8 @@ function calcularMetaComJuros(custoEntrada, mesesEntrada, guardadoEntrada = 0, t
   const economiaMensal = Math.max(0, Math.round((mensalSemJuros - mensalComJuros) * 100) / 100);
   const economiaTotal = Math.max(0, Math.round((totalSemJuros - totalTiradoDoBolso) * 100) / 100);
 
-  const prazoTexto = meses === 1 ? '1 mês' : `${meses} meses`;
+  const equivalenteAnos = base.equivalenteAnos;
+  const prazoTexto = base.prazoTexto;
   const mensalFormatado = formatarMoeda(mensalComJuros);
   const semanalFormatado = formatarMoeda(semanalComJuros);
   const mensalSemJurosFormatado = formatarMoeda(mensalSemJuros);
@@ -1003,6 +1033,8 @@ function calcularMetaComJuros(custoEntrada, mesesEntrada, guardadoEntrada = 0, t
     metaAtingida: false,
     custo,
     meses,
+    equivalenteAnos,
+    prazoTexto,
     guardado,
     taxa: taxaLida,
     falta: base.falta,
@@ -1033,6 +1065,99 @@ function calcularMetaComJuros(custoEntrada, mesesEntrada, guardadoEntrada = 0, t
     porcentagemGuardada: base.porcentagemGuardada,
     mensagem: `Guardando ${mensalFormatado} por mês, você chega lá em ${prazoTexto}.`,
     subtexto: `Isso dá uns ${semanalFormatado} por semana.`,
+    aviso
+  };
+}
+
+// Simula quanto dinheiro será acumulado guardando um valor fixo por
+// mês durante N anos com juros compostos (Aba 3: "Simular Futuro").
+function simularFuturo(aporteEntrada, anosEntrada, guardadoEntrada = 0, taxaEntrada = TAXA_EXEMPLO_PADRAO) {
+  if (typeof aporteEntrada === 'object' && aporteEntrada !== null) {
+    anosEntrada = aporteEntrada.anos;
+    guardadoEntrada = aporteEntrada.guardado !== undefined ? aporteEntrada.guardado : 0;
+    taxaEntrada = aporteEntrada.taxa !== undefined ? aporteEntrada.taxa : TAXA_EXEMPLO_PADRAO;
+    aporteEntrada = aporteEntrada.aporteMensal !== undefined ? aporteEntrada.aporteMensal : aporteEntrada.aporte;
+  }
+
+  const aporteMensal = lerNumeroCalculadora(aporteEntrada);
+  const anos = lerNumeroCalculadora(anosEntrada);
+  const guardadoLido = lerNumeroCalculadora(guardadoEntrada);
+  const guardado = guardadoLido === 'vazio' ? 0 : guardadoLido;
+  const taxaLida = lerNumeroCalculadora(taxaEntrada);
+
+  if (aporteMensal === 'invalido' || anos === 'invalido' || guardado === 'invalido' || taxaLida === 'invalido') {
+    return {
+      valido: false,
+      erro: 'Use só números, como 200 ou 12,50.'
+    };
+  }
+
+  if (aporteMensal === 'vazio' || (aporteMensal === 0 && guardado === 0)) {
+    return {
+      valido: false,
+      erro: 'Digite quanto você vai guardar por mês.'
+    };
+  }
+
+  if (anos === 'vazio' || !Number.isInteger(anos) || anos < ANOS_MINIMOS_FUTURO || anos > ANOS_MAXIMOS_FUTURO) {
+    return {
+      valido: false,
+      erro: `Escolha um prazo inteiro entre ${ANOS_MINIMOS_FUTURO} e ${ANOS_MAXIMOS_FUTURO} anos.`
+    };
+  }
+
+  if (taxaLida === 'vazio' || taxaLida < 0 || taxaLida > TAXA_EXEMPLO_MAXIMA) {
+    return {
+      valido: false,
+      erro: `Informe uma taxa de juros usando só números (de 0 a ${TAXA_EXEMPLO_MAXIMA}), como 0,8 ou 1.`
+    };
+  }
+
+  const meses = anos * 12;
+  const taxa = taxaLida / 100;
+  const totalInvestidoDoBolso = Math.round((guardado + (aporteMensal * meses)) * 100) / 100;
+
+  let montanteFinalBruto;
+  if (taxa === 0) {
+    montanteFinalBruto = totalInvestidoDoBolso;
+  } else {
+    const fator = Math.pow(1 + taxa, meses);
+    montanteFinalBruto = guardado * fator + aporteMensal * ((fator - 1) / taxa);
+  }
+
+  const montanteFinalComJuros = Math.round(montanteFinalBruto * 100) / 100;
+  const rendimentoTotal = Math.max(0, Math.round((montanteFinalComJuros - totalInvestidoDoBolso) * 100) / 100);
+  const porcentagemRendimento = montanteFinalComJuros > 0
+    ? Math.min(100, Math.max(0, Math.round((rendimentoTotal / montanteFinalComJuros) * 100)))
+    : 0;
+  const porcentagemBolso = 100 - porcentagemRendimento;
+
+  const aporteFormatado = formatarMoeda(aporteMensal);
+  const totalInvestidoDoBolsoFormatado = formatarMoeda(totalInvestidoDoBolso);
+  const montanteFinalComJurosFormatado = formatarMoeda(montanteFinalComJuros);
+  const rendimentoTotalFormatado = formatarMoeda(rendimentoTotal);
+  const textoAnos = anos === 1 ? '1 ano' : `${anos} anos`;
+  const aviso = 'Simulação. O rendimento de verdade muda com o tempo. Menor de idade investe com um responsável.';
+
+  return {
+    valido: true,
+    erro: null,
+    modo: 'simular-futuro',
+    aporteMensal,
+    anos,
+    meses,
+    guardado,
+    taxa: taxaLida,
+    totalInvestidoDoBolso,
+    montanteFinalComJuros,
+    rendimentoTotal,
+    porcentagemRendimento,
+    porcentagemBolso,
+    aporteFormatado,
+    totalInvestidoDoBolsoFormatado,
+    montanteFinalComJurosFormatado,
+    rendimentoTotalFormatado,
+    mensagem: `Guardando ${aporteFormatado} por mês durante ${textoAnos} (${meses} meses), você vai acumular ${montanteFinalComJurosFormatado}!`,
     aviso
   };
 }
