@@ -334,17 +334,47 @@ function desenharNoDoBau(progresso, unidade, nome, posicao, estrela) {
 // 5. LIÇÃO
 // ============================================================
 
+// Uma parte da barra para cada questão: verde quando o aluno acerta
+// (de primeira ou na revisão), vermelha enquanto está errada e azul
+// na vez dela
+function classeDaParte(sessao, i) {
+  const vez = vezAtual(sessao);
+  if (sessao.resultados[i] === true || sessao.consertadas.includes(i)) return 'barra-parte barra-parte--certa';
+  if (vez.indice === i) return 'barra-parte barra-parte--atual';
+  if (sessao.resultados[i] === false) return 'barra-parte barra-parte--errada';
+  return 'barra-parte';
+}
+
+// O que o leitor de tela fala sobre a barra
+function textoDaBarra(sessao) {
+  const vez = vezAtual(sessao);
+  const total = sessao.questoes.length;
+  if (vez.tipo === 'revisao') {
+    const faltam = total - sessao.acertos - sessao.consertadas.length;
+    return `Revisão: ${faltam === 1 ? 'falta 1 questão' : `faltam ${faltam} questões`}`;
+  }
+  return `Questão ${vez.indice + 1} de ${total}`;
+}
+
+// Etiqueta em cima da pergunta (nível ou revisão) e a nota ao lado
+function desenharRotulos(sessao, questao) {
+  const vez = vezAtual(sessao);
+  if (vez.tipo === 'revisao') {
+    return `
+      <p class="etiqueta etiqueta--revisao">Revisão</p>
+      <p class="licao-nota">Acerte para concluir a lição. Errar não tira vida.</p>`;
+  }
+  return `<p class="etiqueta etiqueta--${questao.dificuldade}">${NOME_DA_DIFICULDADE[questao.dificuldade]}</p>`;
+}
+
 function desenharLicao(lugar, sessao, progresso) {
   const questao = questaoAtual(sessao);
   const total = sessao.questoes.length;
+  const certas = sessao.acertos + sessao.consertadas.length;
 
-  // Uma parte da barra para cada questão
-  const partesDaBarra = sessao.questoes.map((_, i) => {
-    let classe = 'barra-parte';
-    if (i < sessao.resultados.length) classe += sessao.resultados[i] ? ' barra-parte--certa' : ' barra-parte--errada';
-    else if (i === sessao.indice) classe += ' barra-parte--atual';
-    return `<span class="${classe}"></span>`;
-  }).join('');
+  const partesDaBarra = sessao.questoes
+    .map((_, i) => `<span class="${classeDaParte(sessao, i)}"></span>`)
+    .join('');
 
   const alternativas = questao.alternativas.map((alternativa, i) => `
     <button type="button" class="alternativa" data-acao="escolher" data-indice="${i}" aria-pressed="false">
@@ -358,14 +388,14 @@ function desenharLicao(lugar, sessao, progresso) {
         <div class="licao-topo">
           <button type="button" class="botao-icone" data-acao="sair-licao" aria-label="Sair da lição">${icone('fechar')}</button>
           <div class="barra" role="progressbar" aria-label="Progresso da lição"
-            aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${sessao.indice}"
-            aria-valuetext="Questão ${sessao.indice + 1} de ${total}">${partesDaBarra}</div>
+            aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${certas}"
+            aria-valuetext="${textoDaBarra(sessao)}">${partesDaBarra}</div>
           <p class="licao-vidas" id="licao-vidas">
             ${icone('vida')}<span id="licao-vidas-numero">${progresso.vidas}</span><span class="visualmente-oculto">vidas</span>
           </p>
         </div>
 
-        <p class="etiqueta etiqueta--${questao.dificuldade}">${NOME_DA_DIFICULDADE[questao.dificuldade]}</p>
+        <div class="licao-rotulos">${desenharRotulos(sessao, questao)}</div>
         <h1 class="licao-pergunta">${escaparHtml(questao.pergunta)}</h1>
         <div class="alternativas" role="group" aria-label="Alternativas">${alternativas}</div>
       </div>
@@ -402,12 +432,12 @@ function mostrarCorrecao(resultado, sessao, progresso) {
   });
 
   // 2. Atualiza a barra de progresso e as vidas
-  const parte = document.querySelectorAll('.barra-parte')[sessao.indice];
+  const parte = document.querySelectorAll('.barra-parte')[vezAtual(sessao).indice];
   if (parte) {
     parte.classList.remove('barra-parte--atual');
     parte.classList.add(resultado.acertou ? 'barra-parte--certa' : 'barra-parte--errada');
   }
-  if (!resultado.acertou) {
+  if (resultado.perdeuVida) {
     document.getElementById('licao-vidas-numero').textContent = progresso.vidas;
     document.getElementById('licao-vidas').classList.add('licao-vidas--perdeu');
   }
@@ -421,12 +451,17 @@ function mostrarCorrecao(resultado, sessao, progresso) {
     explicacao = `<p class="feedback-texto">${escaparHtml(resultado.correta.explicacao)}</p>`;
     textoParaLer = `${titulo} ${resultado.correta.explicacao}`;
   } else {
+    // A errada volta no fim da lição (na revisão). Se as vidas
+    // acabaram, a próxima tela explica o que fazer.
+    let volta = resultado.tipo === 'revisao' ? 'Ela volta de novo no fim.' : 'Ela volta no fim para você acertar.';
+    if (resultado.acabaramAsVidas) volta = '';
     explicacao = `
       <p class="feedback-texto"><strong>Por que não:</strong> ${escaparHtml(resultado.escolhida.explicacao)}</p>
       <p class="feedback-texto"><strong>Resposta certa:</strong> ${escaparHtml(resultado.correta.texto)}</p>
-      <p class="feedback-texto">${escaparHtml(resultado.correta.explicacao)}</p>`;
+      <p class="feedback-texto">${escaparHtml(resultado.correta.explicacao)}</p>
+      ${volta ? `<p class="feedback-texto">${volta}</p>` : ''}`;
     textoParaLer = `${titulo} Por que não: ${resultado.escolhida.explicacao} ` +
-      `Resposta certa: ${resultado.correta.texto}. ${resultado.correta.explicacao}`;
+      `Resposta certa: ${resultado.correta.texto}. ${resultado.correta.explicacao} ${volta}`;
   }
 
   const tipo = resultado.acertou ? 'acerto' : 'erro';

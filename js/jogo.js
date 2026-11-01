@@ -19,7 +19,8 @@
 // 1. VALORES DO JOGO
 // ============================================================
 
-const XP_POR_ACERTO = 10;          // cada resposta certa
+const XP_POR_ACERTO = 10;          // cada questão nova certa de primeira
+const XP_DE_REVISAO = 5;           // cada errada que o aluno acerta na revisão
 const MOEDAS_POR_LICAO = 10;       // ao concluir uma lição
 const MOEDAS_LICAO_PERFEITA = 5;   // extra se acertar todas
 const XP_DO_BAU = 20;              // ao abrir o baú da unidade
@@ -258,8 +259,15 @@ function contarLicoes(progresso) {
 // 5. LIÇÃO EM ANDAMENTO
 // ============================================================
 // Quando o aluno abre uma lição, criamos uma "sessão": um objeto
-// que guarda em que questão ele está e quantas acertou. Ela só
+// que guarda o que falta responder e como ele está indo. Ela só
 // existe enquanto a lição está aberta (não é salva).
+//
+// A sessão tem uma fila com a vez de cada questão. A primeira da
+// fila é a vez atual. Cada vez tem um tipo:
+//   'nova'    → as 5 questões da lição, do fácil para o difícil
+//   'revisao' → uma questão que o aluno errou, de novo no fim da
+//               fila, até ele acertar. Errar na revisão não tira vida.
+// A lição só termina quando a fila esvazia.
 
 function iniciarLicao(licao) {
   const questoes = ordenarPorDificuldade(licao.questoes).map(questao => ({
@@ -271,11 +279,13 @@ function iniciarLicao(licao) {
   return {
     licao,
     questoes,
-    indice: 0,          // questão atual (0 é a primeira)
+    fila: questoes.map((_, indice) => ({ tipo: 'nova', indice })),
     escolhida: null,    // alternativa marcada, antes de verificar
     verificada: false,  // o aluno já apertou "Verificar"?
-    acertos: 0,
-    resultados: []      // true/false de cada questão já respondida
+    respondidas: 0,     // quantas vezes ele já apertou "Verificar"
+    acertos: 0,         // questões certas de primeira (é a precisão)
+    resultados: [],     // true/false da primeira resposta de cada questão
+    consertadas: []     // índices das erradas que ele acertou na revisão
   };
 }
 
@@ -296,8 +306,13 @@ function embaralhar(lista) {
   return copia;
 }
 
+// A vez atual: { tipo, indice }. O índice aponta para sessao.questoes.
+function vezAtual(sessao) {
+  return sessao.fila[0];
+}
+
 function questaoAtual(sessao) {
-  return sessao.questoes[sessao.indice];
+  return sessao.questoes[vezAtual(sessao).indice];
 }
 
 // Marca uma alternativa. Devolve false se não puder (já verificou,
@@ -309,53 +324,74 @@ function marcarAlternativa(sessao, indice) {
   return true;
 }
 
-// Confere a alternativa marcada. Erro tira uma vida na hora.
+// Confere a alternativa marcada. Só a questão nova tira vida (na
+// hora) e conta na precisão. Errou? A questão volta no fim da fila.
 function verificarResposta(progresso, sessao) {
   if (sessao.verificada || sessao.escolhida === null) return null;
 
+  const vez = vezAtual(sessao);
   const questao = questaoAtual(sessao);
   const escolhida = questao.alternativas[sessao.escolhida];
   const correta = questao.alternativas.find(alternativa => alternativa.correta);
   const acertou = escolhida === correta;
+  const perdeuVida = vez.tipo === 'nova' && !acertou;
 
   sessao.verificada = true;
-  sessao.resultados.push(acertou);
-  progresso.respostasDadas += 1;
+  sessao.respondidas += 1;
 
-  if (acertou) {
-    sessao.acertos += 1;
-    progresso.respostasCertas += 1;
-  } else {
-    progresso.vidas = Math.max(0, progresso.vidas - 1);
+  if (vez.tipo === 'nova') {
+    sessao.resultados.push(acertou);
+    progresso.respostasDadas += 1;
+    if (acertou) {
+      sessao.acertos += 1;
+      progresso.respostasCertas += 1;
+    }
+  } else if (acertou) {
+    sessao.consertadas.push(vez.indice);
   }
+
+  if (perdeuVida) progresso.vidas = Math.max(0, progresso.vidas - 1);
+  if (!acertou) sessao.fila.push({ tipo: 'revisao', indice: vez.indice });
 
   return {
     acertou,
     escolhida,
     correta,
     indiceDaCorreta: questao.alternativas.indexOf(correta),
-    acabaramAsVidas: progresso.vidas === 0
+    tipo: vez.tipo,
+    perdeuVida,
+    acabaramAsVidas: perdeuVida && progresso.vidas === 0
   };
 }
 
 // Depois do "Continuar". Devolve o que acontece agora:
-//   'proxima'   → vem outra questão
-//   'fim'       → a lição foi concluída
+//   'proxima'   → vem outra questão (nova ou revisão)
+//   'fim'       → a fila esvaziou: a lição foi concluída
 //   'sem-vidas' → as vidas acabaram e a lição para aqui
 function avancarQuestao(progresso, sessao) {
   if (progresso.vidas === 0) return 'sem-vidas';
-  sessao.indice += 1;
+  sessao.fila.shift();
   sessao.escolhida = null;
   sessao.verificada = false;
-  return sessao.indice < sessao.questoes.length ? 'proxima' : 'fim';
+  if (sessao.fila.length === 0) return 'fim';
+
+  // Na revisão, as alternativas voltam em outra ordem: o aluno
+  // precisa ler de novo, não só lembrar onde estava a certa
+  const vez = vezAtual(sessao);
+  if (vez.tipo === 'revisao') {
+    const questao = sessao.questoes[vez.indice];
+    questao.alternativas = embaralhar(questao.alternativas);
+  }
+  return 'proxima';
 }
 
 // Fecha a lição: o XP e as moedas entram agora (quem sai no meio
 // não ganha), a lição fica concluída e o dia conta na sequência.
+// A precisão conta só as respostas de primeira.
 function concluirLicao(progresso, sessao, hoje = hojeComoTexto()) {
   const total = sessao.questoes.length;
   const perfeita = sessao.acertos === total;
-  const xp = sessao.acertos * XP_POR_ACERTO;
+  const xp = sessao.acertos * XP_POR_ACERTO + sessao.consertadas.length * XP_DE_REVISAO;
   const moedas = MOEDAS_POR_LICAO + (perfeita ? MOEDAS_LICAO_PERFEITA : 0);
 
   progresso.xp += xp;

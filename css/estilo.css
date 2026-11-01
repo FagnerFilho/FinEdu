@@ -799,7 +799,8 @@ h2:focus {
 }
 
 /* A barra tem uma parte para cada questão. Depois de responder,
-   a parte fica verde (acertou) ou vermelha (errou). */
+   a parte fica verde (acertou) ou vermelha (errou). A vermelha
+   fica verde quando o aluno acerta a questão na revisão. */
 .barra {
   flex: 1;
   display: flex;
@@ -832,7 +833,19 @@ h2:focus {
   animation: tremer 0.45s ease-in-out;
 }
 
-/* ----- Nível da questão ----- */
+/* ----- Nível da questão (ou revisão) e a nota ao lado ----- */
+.licao-rotulos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-p) var(--espaco-m);
+}
+
+.licao-nota {
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-pequeno);
+}
+
 .etiqueta {
   display: inline-flex;
   padding: 0 var(--espaco-m);
@@ -846,6 +859,7 @@ h2:focus {
 .etiqueta--facil   { color: var(--cor-facil); }
 .etiqueta--media   { color: var(--cor-media); }
 .etiqueta--dificil { color: var(--cor-dificil); }
+.etiqueta--revisao { color: var(--cor-erro); }
 
 .licao-pergunta {
   margin: var(--espaco-m) 0 var(--espaco-gg);

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FinEdu · testes das regras</title>
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    /* Só desta página. Usa as variáveis do estilo.css. */
+    .testes {
+      max-width: var(--largura-licao);
+      margin: 0 auto;
+      padding: var(--espaco-gg) var(--espaco-g) var(--espaco-xgg);
+    }
+
+    .testes h1 {
+      margin-bottom: var(--espaco-p);
+      font-size: var(--tamanho-titulo-m);
+    }
+
+    .testes h2 {
+      margin: var(--espaco-gg) 0 var(--espaco-m);
+      font-size: var(--tamanho-titulo-p);
+    }
+
+    .testes-resumo {
+      font-weight: 800;
+      font-size: var(--tamanho-medio);
+    }
+
+    .testes-resumo--passou { color: var(--cor-acerto); }
+    .testes-resumo--falhou { color: var(--cor-erro); }
+
+    .testes-lista {
+      display: flex;
+      flex-direction: column;
+      gap: var(--espaco-p);
+    }
+
+    .teste {
+      padding: var(--espaco-m) var(--espaco-g);
+      border: var(--borda) solid var(--cor-borda);
+      border-radius: var(--raio-m);
+      background: var(--cor-cartao);
+    }
+
+    .teste-situacao {
+      margin-right: var(--espaco-p);
+      font-weight: 800;
+    }
+
+    .teste--passou .teste-situacao { color: var(--cor-acerto); }
+    .teste--falhou { border-color: var(--cor-erro); }
+    .teste--falhou .teste-situacao { color: var(--cor-erro); }
+
+    .teste-erro {
+      margin-top: var(--espaco-pp);
+      color: var(--cor-texto-secundario);
+      font-size: var(--tamanho-pequeno);
+    }
+  </style>
+</head>
+<body>
+  <main class="testes">
+    <h1>Testes das regras do FinEdu</h1>
+    <p class="testes-resumo" id="resumo">Rodando os testes...</p>
+    <div id="resultados"></div>
+  </main>
+
+  <!-- Só o conteúdo e as regras: os testes não mexem na tela do app nem no progresso salvo -->
+  <script src="js/dados-licoes.js"></script>
+  <script src="js/jogo.js"></script>
+  <script>
+    // ============================================================
+    // testes.html — Testes das regras do jogo (jogo.js)
+    // ============================================================
+    // Abra este arquivo com dois cliques. Cada teste monta uma
+    // situação, usa as funções do jogo.js e confere o resultado.
+    // Se algum falhar, ele aparece em vermelho com o motivo.
+    // ============================================================
+
+
+    // ============================================================
+    // 1. COMO OS TESTES FUNCIONAM
+    // ============================================================
+
+    const grupos = [];   // [{ nome, testes: [{ nome, funcao }] }]
+
+    function grupo(nome) {
+      grupos.push({ nome, testes: [] });
+    }
+
+    function teste(nome, funcao) {
+      grupos[grupos.length - 1].testes.push({ nome, funcao });
+    }
+
+    // Lança um erro se o valor não for o esperado
+    function confere(valor, esperado, oQue) {
+      const obtido = JSON.stringify(valor);
+      const certo = JSON.stringify(esperado);
+      if (obtido !== certo) throw new Error(`${oQue}: esperava ${certo}, veio ${obtido}`);
+    }
+
+    function rodarTestes() {
+      const lugar = document.getElementById('resultados');
+      let total = 0;
+      let passaram = 0;
+
+      for (const { nome, testes } of grupos) {
+        const titulo = document.createElement('h2');
+        titulo.textContent = nome;
+        const lista = document.createElement('ol');
+        lista.className = 'testes-lista';
+
+        for (const item of testes) {
+          let erro = null;
+          try {
+            item.funcao();
+          } catch (problema) {
+            erro = problema;
+          }
+          total += 1;
+          if (!erro) passaram += 1;
+
+          const linha = document.createElement('li');
+          linha.className = `teste teste--${erro ? 'falhou' : 'passou'}`;
+          const situacao = document.createElement('span');
+          situacao.className = 'teste-situacao';
+          situacao.textContent = erro ? 'Falhou' : 'Passou';
+          linha.append(situacao, item.nome);
+          if (erro) {
+            const motivo = document.createElement('p');
+            motivo.className = 'teste-erro';
+            motivo.textContent = erro.message;
+            linha.append(motivo);
+          }
+          lista.append(linha);
+        }
+        lugar.append(titulo, lista);
+      }
+
+      const resumo = document.getElementById('resumo');
+      const tudoCerto = passaram === total;
+      resumo.textContent = tudoCerto
+        ? `Passaram todos os ${total} testes.`
+        : `Falharam ${total - passaram} de ${total} testes.`;
+      resumo.className = `testes-resumo testes-resumo--${tudoCerto ? 'passou' : 'falhou'}`;
+    }
+
+
+    // ============================================================
+    // 2. AJUDANTES
+    // ============================================================
+
+    const HOJE = '2026-11-04';
+    const TRILHA = CONTEUDO.trilhas[0];
+    const UNIDADE = TRILHA.unidades[0];
+    const [LICAO_1, LICAO_2, LICAO_3, LICAO_4] = UNIDADE.licoes;
+
+    function novoProgresso() {
+      return criarProgressoInicial(HOJE);
+    }
+
+    function abrir(progresso, licao) {
+      return iniciarLicao(licao);
+    }
+
+    // Marca a certa (certo = true) ou uma errada e aperta "Verificar"
+    function responder(progresso, sessao, certo) {
+      const alternativas = questaoAtual(sessao).alternativas;
+      const indice = alternativas.findIndex(alternativa => Boolean(alternativa.correta) === certo);
+      marcarAlternativa(sessao, indice);
+      return verificarResposta(progresso, sessao);
+    }
+
+    // Responde e aperta "Continuar". Devolve o que vem depois.
+    function responderEContinuar(progresso, sessao, certo) {
+      responder(progresso, sessao, certo);
+      return avancarQuestao(progresso, sessao);
+    }
+
+    // Joga até a lição acabar ou as vidas acabarem. "acertar" recebe
+    // a sessão e diz se o aluno acerta a vez atual.
+    function jogar(progresso, sessao, acertar) {
+      for (let vezes = 0; vezes < 100; vezes++) {
+        const proximo = responderEContinuar(progresso, sessao, acertar(sessao));
+        if (proximo !== 'proxima') return proximo;
+      }
+      throw new Error('A lição não terminou depois de 100 respostas');
+    }
+
+    // Acerta tudo, menos as questões nas posições da lista (0 a 4),
+    // que ele erra só da primeira vez
+    function errandoDePrimeira(posicoes) {
+      return sessao => !(vezAtual(sessao).tipo === 'nova' && posicoes.includes(vezAtual(sessao).indice));
+    }
+
+
+    // ============================================================
+    // 3. OS TESTES
+    // ============================================================
+
+    grupo('Conteúdo');
+
+    teste('A Unidade 1 passa na conferência do dados-licoes.js', () => {
+      confere(conferirConteudo(), [], 'problemas encontrados');
+    });
+
+    teste('Toda lição da Unidade 1 tem 5 questões, do fácil para o difícil', () => {
+      for (const licao of UNIDADE.licoes) {
+        const sessao = abrir(novoProgresso(), licao);
+        confere(sessao.questoes.map(questao => questao.dificuldade),
+          ['facil', 'facil', 'media', 'media', 'dificil'], licao.titulo);
+      }
+    });
+
+
+    grupo('Lição e revisão');
+
+    teste('Lição toda certa: termina depois das 5 questões', () => {
+      const progresso = novoProgresso();
+      const sessao = abrir(progresso, LICAO_1);
+      confere(sessao.fila.length, 5, 'questões na fila');
+      confere(jogar(progresso, sessao, () => true), 'fim', 'o que vem depois da 5ª');
+    });
+
+    teste('A errada volta no fim, como revisão, e a lição não termina antes', () => {
+      const progresso = novoProgresso();
+      const sessao = abrir(progresso, LICAO_1);
+      const depois = [true, false, true, true, true].map(certo => responderEContinuar(progresso, sessao, certo));
+      confere(depois, ['proxima', 'proxima', 'proxima', 'proxima', 'proxima'], 'depois de cada uma das 5');
+      confere(vezAtual(sessao), { tipo: 'revisao', indice: 1 }, 'vez depois da 5ª');
+      confere(responderEContinuar(progresso, sessao, true), 'fim', 'depois de acertar a revisão');
+    });
+
+    teste('Errar na revisão não tira vida, e a questão volta de novo', () => {
+      const progresso = novoProgresso();
+      const sessao = abrir(progresso, LICAO_1);
+      [false, true, true, true, true].forEach(certo => responderEContinuar(progresso, sessao, certo));
+      confere(progresso.vidas, 4, 'vidas depois do erro na questão nova');
+      const resultado = responder(progresso, sessao, false);
+      confere([resultado.tipo, resultado.perdeuVida, progresso.vidas], ['revisao', false, 4], 'erro na revisão');
+      confere(avancarQuestao(progresso, sessao), 'proxima', 'depois do erro na revisão');
+      confere(vezAtual(sessao), { tipo: 'revisao', indice: 0 }, 'a mesma questão volta');
+      confere(responderEContinuar(progresso, sessao, true), 'fim', 'depois de acertar');
+    });
+
+    teste('Erro em questão nova tira 1 vida na hora', () => {
+      const progresso = novoProgresso();
+      const sessao = abrir(progresso, LICAO_1);
+      const resultado = responder(progresso, sessao, false);
+      confere([resultado.perdeuVida, progresso.vidas], [true, 4], 'vida perdida e vidas');
+    });
+
+    teste('Com 0 vidas a lição para e não avança', () => {
+      const progresso = novoProgresso();
+      progresso.vidas = 1;
+      const sessao = abrir(progresso, LICAO_1);
+      const resultado = responder(progresso, sessao, false);
+      confere(resultado.acabaramAsVidas, true, 'acabaram as vidas');
+      confere(avancarQuestao(progresso, sessao), 'sem-vidas', 'depois do Continuar');
+      confere(vezAtual(sessao), { tipo: 'nova', indice: 0 }, 'a vez continua a mesma');
+    });
+
+    teste('Precisão conta só a primeira resposta (erra 2: 60%, mesmo acertando na revisão)', () => {
+      const progresso = novoProgresso();
+      const sessao = abrir(progresso, LICAO_1);
+      jogar(progresso, sessao, errandoDePrimeira([3, 4]));
+      const resumo = concluirLicao(progresso, sessao, HOJE);
+      confere(resumo.precisao, 60, 'precisão da lição');
+      confere([progresso.respostasCertas, progresso.respostasDadas], [3, 5], 'respostas certas e dadas no Perfil');
+      confere(precisaoGeral(progresso), 60, 'precisão do Perfil');
+    });
+
+
+    grupo('XP e moedas');
+
+    teste('Lição perfeita: 50 XP e 15 moedas (10 + 5)', () => {
+      const progresso = novoProgresso();
+      const sessao = abrir(progresso, LICAO_1);
+      jogar(progresso, sessao, () => true);
+      const resumo = concluirLicao(progresso, sessao, HOJE);
+      confere([resumo.xp, resumo.moedas, resumo.perfeita], [50, 15, true], 'XP, moedas e perfeita');
+      confere([progresso.xp, progresso.moedas], [50, 15], 'XP e moedas no progresso');
+    });
+
+    teste('Revisão vale 5 XP por questão, uma vez só (erra 2: 30 + 10 = 40 XP, 10 moedas)', () => {
+      const progresso = novoProgresso();
+      const sessao = abrir(progresso, LICAO_1);
+      [true, true, true, false, false].forEach(certo => responderEContinuar(progresso, sessao, certo));
+      responderEContinuar(progresso, sessao, false);   // erra a primeira revisão
+      jogar(progresso, sessao, () => true);
+      const resumo = concluirLicao(progresso, sessao, HOJE);
+      confere([resumo.xp, resumo.moedas, resumo.perfeita], [40, 10, false], 'XP, moedas e perfeita');
+    });
+
+    teste('XP e moedas só entram no fim da lição', () => {
+      const progresso = novoProgresso();
+      const sessao = abrir(progresso, LICAO_1);
+      responderEContinuar(progresso, sessao, true);
+      confere([progresso.xp, progresso.moedas], [0, 0], 'XP e moedas no meio da lição');
+    });
+
+
+    grupo('Trilha, baú, sequência e vidas');
+
+    teste('A lição 2 só libera depois da lição 1', () => {
+      const progresso = novoProgresso();
+      confere(situacaoDaLicao(progresso, TRILHA, LICAO_2.id), 'bloqueada', 'antes');
+      const sessao = abrir(progresso, LICAO_1);
+      jogar(progresso, sessao, () => true);
+      concluirLicao(progresso, sessao, HOJE);
+      confere(situacaoDaLicao(progresso, TRILHA, LICAO_1.id), 'concluida', 'lição 1');
+      confere(situacaoDaLicao(progresso, TRILHA, LICAO_2.id), 'atual', 'lição 2');
+    });
+
+    teste('O baú libera com as 4 lições e abre uma vez só (+20 XP, +20 moedas)', () => {
+      const progresso = novoProgresso();
+      confere(situacaoDoBau(progresso, UNIDADE), 'trancado', 'antes');
+      progresso.licoesConcluidas = UNIDADE.licoes.map(licao => licao.id);
+      confere(situacaoDoBau(progresso, UNIDADE), 'liberado', 'com as 4 lições');
+      confere(abrirBau(progresso, UNIDADE), { xp: 20, moedas: 20 }, 'recompensa');
+      confere(abrirBau(progresso, UNIDADE), null, 'abrir de novo');
+      confere([progresso.xp, progresso.moedas], [20, 20], 'XP e moedas');
+    });
+
+    teste('Sequência: +1 por dia seguido e volta a 0 se pular um dia', () => {
+      const progresso = novoProgresso();
+      registrarDiaDeEstudo(progresso, '2026-11-04');
+      registrarDiaDeEstudo(progresso, '2026-11-04');
+      registrarDiaDeEstudo(progresso, '2026-11-05');
+      confere(progresso.sequencia, 2, 'depois de 2 dias seguidos');
+      atualizarDia(progresso, '2026-11-07');
+      confere(progresso.sequencia, 0, 'depois de pular um dia');
+    });
+
+    teste('As vidas voltam todas no dia seguinte', () => {
+      const progresso = novoProgresso();
+      progresso.vidas = 0;
+      atualizarDia(progresso, HOJE);
+      confere(progresso.vidas, 0, 'no mesmo dia');
+      atualizarDia(progresso, '2026-11-05');
+      confere(progresso.vidas, VIDAS_MAXIMAS, 'no dia seguinte');
+    });
+
+    teste('Progresso estragado volta ao valor inicial', () => {
+      const progresso = prepararProgresso({ xp: -3, moedas: 'muitas', vidas: 9, licoesConcluidas: 'x' }, HOJE);
+      confere([progresso.xp, progresso.moedas, progresso.vidas, progresso.licoesConcluidas], [0, 0, VIDAS_MAXIMAS, []], 'valores');
+    });
+
+
+    rodarTestes();
+  </script>
+</body>
+</html>

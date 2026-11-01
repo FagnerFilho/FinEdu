@@ -236,7 +236,7 @@ function continuar() {
 function pedirParaSair() {
   if (!estado.sessao) return;
   // Ainda não respondeu nada? Sai direto, sem perguntar.
-  if (estado.sessao.resultados.length === 0) {
+  if (estado.sessao.respondidas === 0) {
     sairDaLicao();
     return;
   }
