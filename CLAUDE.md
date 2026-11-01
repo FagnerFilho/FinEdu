@@ -8,7 +8,7 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 ## O projeto
 
 - **FinEdu:** site estilo Duolingo que ensina educação financeira para alunos do CETI Dom Severino (ensino fundamental e médio, Teresina-PI).
-- Projeto de extensão de Engenharia de Computação da Uni-CET. Equipe: Fagner (líder), João (design), Samuel de Assunção (conteúdo), Elfi (GitHub), William e Samuel Medeiros.
+- Projeto de extensão de Engenharia de Computação da Uni-CET. Equipe: Fagner (líder), João (design), Samuel de Assunção (conteúdo), Eufy (GitHub), William e Samuel Medeiros.
 - **Apresentação: 11/11/2026, de manhã**, num tablet Samsung (Android, pelo link do GitHub Pages) e num notebook.
 - Versão 1 pronta e testada: trilha com a Unidade 1 completa (4 lições + baú), lição com feedback por alternativa, vitória, perfil, "Reiniciar progresso". Calculadora, Guia, Unidade 2 e Trilha 2 (investimentos) aparecem como "Em breve".
 
@@ -24,7 +24,7 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 
 ## Onde mora cada coisa
 
-- **Código:** esta pasta. Versionada com Git e enviada para o repositório do Fagner no GitHub, que é o oficial: github.com/Fagneraposo/FinEduu (o Elfi é colaborador). Site: https://fagneraposo.github.io/FinEduu/
+- **Código:** esta pasta. Versionada com Git e enviada para o repositório do Fagner no GitHub, que é o oficial: github.com/Fagneraposo/FinEduu (o Eufy é colaborador). Site: https://fagneraposo.github.io/FinEduu/
 - **Decisões do projeto:** `projeto/documento-mestre.md`. É a versão oficial.
 - **Regras do código:** `projeto/arquitetura.md`. Todo código segue esse arquivo. Se uma mudança precisar quebrar uma regra, discuta antes e atualize o arquivo junto.
 - O planejamento e o conteúdo também são feitos num Projeto do Claude (no app). O Fagner copia o documento-mestre de lá para cá e daqui para lá. Se você notar decisões conflitantes, avise.
