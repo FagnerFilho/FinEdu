@@ -141,6 +141,7 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md. Regras do código 
   - Pela regra das contas: a questão da bicicleta do Pedro e a da reserva da família viraram decisões; o celular parcelado foi para média; a do valor mínimo da fatura virou a difícil, como situação; entrou uma questão de "pague-se primeiro"; saiu a questão sobre necessidade (repetida da lição 1).
   - A difícil de "Querer ou precisar?" também perdeu a conta.
   - Com a regra nova (Unidade 1 sem conta), a da capinha da Ana, a da regra 50-30-20 e a do celular parcelado viraram perguntas de conceito; as contas ficaram só nas explicações. O dados-licoes.js novo foi conferido em 01/11: o app abre sem caixa vermelha e sem erro no console.
+  - A do celular ainda pedia 10 × 120 de cabeça. Ainda em 01/11, o total entrou na pergunta ("R$ 1.000 à vista ou R$ 1.200 em 10 parcelas de R$ 120").
   - O líder revisa as adaptações (01/11), no lugar do Samuel. Falta o professor revisar (marcas // REVISAR no arquivo).
 - Unidade 2 e Trilha 2 (investimentos): "Em breve" na apresentação.
 
@@ -182,6 +183,9 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md. Regras do código 
 - testes.html criado: 38 testes das regras, todos passando, incluindo as 3 simulações do plano (dão os mesmos números).
 - Conferido no navegador (servidor local): revisão, recarga, treino e aquecimento, celular em pé (375 px) e tablet deitado (1280 × 800), "Reiniciar progresso", sem erro no console.
 - Push em 01/11, com o OK do líder. No GitHub Pages, o app abre com o código novo, sem caixa vermelha nem erro no console, e os 38 testes do testes.html passam.
+
+### Ajustes depois da tarefa 2 (01/11)
+- Questão do celular parcelado (lição "Consumo e dívidas"): o total entrou na pergunta ("R$ 1.000 à vista ou R$ 1.200 em 10 parcelas de R$ 120"), e o aluno não precisa mais fazer 10 × 120 de cabeça. As explicações das alternativas agora falam dos juros escondidos nas parcelas e de comparar sempre o total. Aprovado pelo líder; o professor confere junto com o resto da Unidade 1.
 
 ## Pendências
 - Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEduu/). O celular Android do líder já passou (01/11).

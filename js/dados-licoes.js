@@ -534,27 +534,27 @@ const CONTEUDO = {
                   ]
                 },
 
-                // Média 2 (sem conta: a pergunta é qual opção sai mais caro)
+                // Média 2 (sem conta: o total parcelado já vem na pergunta)
                 {
                   dificuldade: 'media',
-                  pergunta: 'Um celular custa R$ 1.000 à vista ou 10 parcelas de R$ 120 no cartão. O que é verdade?',
+                  pergunta: 'Um celular custa R$ 1.000 à vista ou R$ 1.200 em 10 parcelas de R$ 120 no cartão. O que é verdade?',
                   alternativas: [
                     {
                       texto: 'Parcelado sai mais caro: no total, você paga mais de R$ 1.000',
                       correta: true,
-                      explicacao: 'As 10 parcelas de R$ 120 somam R$ 1.200. São R$ 200 a mais, que são os juros escondidos nas parcelas.'
+                      explicacao: 'O mesmo celular sai R$ 200 mais caro no parcelado. Essa diferença são os juros, escondidos dentro das parcelas.'
                     },
                     {
                       texto: 'Dá no mesmo, porque o celular é o mesmo',
-                      explicacao: 'O celular é o mesmo, mas o total pago não: parcelado, você paga R$ 1.200.'
+                      explicacao: 'O celular é o mesmo, mas o preço não: à vista são R$ 1.000, e parcelado, R$ 1.200.'
                     },
                     {
                       texto: 'Parcelado sai mais barato, porque cada parcela é pequena',
-                      explicacao: 'Parcela pequena engana. O que importa é o total: parcelado, você paga R$ 1.200, mais do que à vista.'
+                      explicacao: 'Parcela pequena engana. Compare sempre o total: R$ 1.200 no parcelado contra R$ 1.000 à vista.'
                     },
                     {
                       texto: 'À vista sempre sai mais caro',
-                      explicacao: 'Aqui é o contrário: à vista custa R$ 1.000, e parcelado, R$ 1.200.'
+                      explicacao: 'Aqui é o contrário: à vista sai mais barato, porque você não paga juros.'
                     }
                   ]
                 },
