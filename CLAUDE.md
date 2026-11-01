@@ -11,6 +11,7 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 - Projeto de extensão de Engenharia de Computação da Uni-CET. Equipe: Fagner (líder), João (design), Samuel de Assunção (conteúdo), Eufy (GitHub), William e Samuel Medeiros.
 - **Apresentação: 11/11/2026, de manhã**, num tablet Samsung (Android, pelo link do GitHub Pages) e num notebook.
 - Versão 1 pronta e testada: trilha com a Unidade 1 completa (4 lições + baú), lição com feedback por alternativa, vitória, perfil, "Reiniciar progresso". Calculadora, Guia, Unidade 2 e Trilha 2 (investimentos) aparecem como "Em breve".
+- Gamificação pronta (tarefa 2 e gamificação 2): revisão das erradas, aquecimento (duplo para quem erra muito), recarga e treino, níveis por XP, painel "Como funciona" nos contadores e aviso de boas-vindas.
 
 ## Quem vai trabalhar com você
 
@@ -24,7 +25,7 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 
 ## Onde mora cada coisa
 
-- **Código:** esta pasta. Versionada com Git e enviada para o repositório do Fagner no GitHub, que é o oficial: github.com/Fagneraposo/FinEdu (o Eufy é colaborador; até 01/11 se chamava FinEduu). Site: https://fagneraposo.github.io/FinEdu/ (o link antigo, com FinEduu, dá 404)
+- **Código:** esta pasta. Versionada com Git e enviada para o repositório do Fagner no GitHub, que é o oficial: github.com/Fagneraposo/FinEdu (o Eufy vai entrar como colaborador, convite pendente; até 01/11 se chamava FinEduu). Site: https://fagneraposo.github.io/FinEdu/ (o link antigo, com FinEduu, dá 404)
 - **Decisões do projeto:** `projeto/documento-mestre.md`. É a versão oficial.
 - **Regras do código:** `projeto/arquitetura.md`. Todo código segue esse arquivo. Se uma mudança precisar quebrar uma regra, discuta antes e atualize o arquivo junto.
 - O planejamento e o conteúdo também são feitos num Projeto do Claude (no app). O Fagner copia o documento-mestre de lá para cá e daqui para lá. Se você notar decisões conflitantes, avise.
@@ -41,7 +42,7 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 
 ## Antes de entregar qualquer mudança
 
-1. Siga o checklist da seção 9 do arquitetura.md (nenhuma caixa vermelha, nenhum erro no console, uma lição inteira errando uma questão, em pé e deitado, "Reiniciar progresso").
+1. Siga o checklist da seção 9 do arquitetura.md (nenhuma caixa vermelha, nenhum erro no console, uma lição inteira errando uma questão, em pé e deitado, "Reiniciar progresso", painel dos contadores).
 2. Se existir `testes.html`, rode e confira que tudo passa.
 3. Atualize `projeto/documento-mestre.md` (decisões e pendências) e, se mudou alguma regra, o `projeto/arquitetura.md`.
 4. Termine com um resumo curto: o que mudou, em quais arquivos, o que testou e o que ficou pendente.

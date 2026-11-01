@@ -14,7 +14,7 @@ Regras do código do FinEdu. Todo código novo segue este arquivo. Se uma mudan�
 | `js/jogo.js` | Regras: constantes de valores, níveis, progresso inicial, datas, liberação, sessão da lição (aquecimento, questões novas e revisão), recarga e treino, baú, dica do dia, `conferirConteudo()` | Mexer na tela ou no localStorage |
 | `js/telas.js` | Monta o HTML de cada tela, ícones (`icone()`), mascote (`desenharEstrela()`), avisos e janelas (painel "Como funciona" e boas-vindas) | Decidir regra, salvar |
 | `js/app.js` | Estado (`estado`), navegação por `#`, cliques (`data-acao`), teclado; é quem chama `salvarProgresso()` | Montar HTML, guardar regra |
-| `img/` | `favicon.svg`. Depois: logo e mascote finais do designer | — |
+| `img/` | `favicon.svg`. Depois: a logo final do designer (o mascote foi removido) | — |
 | `testes.html` | Testes das regras do `jogo.js`, no navegador (passou/falhou). Abre com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação. Confere também os textos do painel, das boas-vindas e do feedback do erro (`telas.js`), montados numa caixa fora da página | Mexer no progresso salvo ou na tela do app |
 | `README.md` | Como abrir, testar e publicar | — |
 | `CLAUDE.md` | Instruções para o Claude Code: como trabalhar, Git, fila de tarefas | Regra de código (fica neste arquivo) |
@@ -27,7 +27,7 @@ Ordem dos scripts no `index.html`: dados-licoes → armazenamento → jogo → t
 1. **Sem servidor.** Tem que funcionar abrindo o `index.html` com dois cliques. Proibido: `type="module"`, `import`, `fetch()` de arquivo local, ferramenta de build.
 2. **HTML, CSS e JavaScript puro.** Sem framework e sem biblioteca externa. Nada carregado da internet (nem fontes).
 3. **Só o `armazenamento.js` usa `localStorage`.** Se um dia tiver servidor, só ele muda.
-4. **Texto de lição só no `dados-licoes.js`.** Textos da interface (botões, títulos, avisos) ficam no `telas.js` (ou no `app.js`, nos avisos de ação).
+4. **Texto de lição só no `dados-licoes.js`.** Textos da interface (botões, títulos, avisos) ficam no `telas.js` (ou no `app.js`, nos avisos de ação). Exceção: nomes que são dados do jogo ficam no `jogo.js`, junto dos valores (`NOME_DA_DIFICULDADE` e os nomes dos níveis em `NIVEIS`).
 5. **Cada arquivo no seu papel:** `jogo.js` não mexe na tela nem salva; `telas.js` não decide regra nem salva; `app.js` liga os dois.
 6. **Todo texto do conteúdo entra na página por `escaparHtml()`.**
 7. **Cor, fonte, espaço, raio e medida só por variável CSS.** Ícones e mascote usam `currentColor` ou classes. Única exceção: `img/favicon.svg` tem a cor escrita nele.
@@ -123,7 +123,7 @@ Decididas no `projeto/plano-gamificacao.md` (a gamificação 2 está na seção 
 | Constante | Valor |
 |---|---|
 | `XP_POR_ACERTO` | 10 (questão nova certa de primeira) |
-| `XP_DE_REVISAO` | 5 (errada que o aluno acerta na revisão, e o aquecimento certo) |
+| `XP_DE_REVISAO` | 5 (errada que o aluno acerta na revisão, e cada questão certa no aquecimento) |
 | `MOEDAS_POR_LICAO` | 10 (só na primeira vez que conclui a lição) |
 | `MOEDAS_LICAO_PERFEITA` | 5 (extra se acertar as 5 de primeira; só na primeira vez) |
 | `XP_DO_BAU` / `MOEDAS_DO_BAU` | 20 / 20 |

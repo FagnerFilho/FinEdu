@@ -11,11 +11,11 @@ Projeto de extensão de Engenharia de Computação (Uni-CET).
 Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - João: design (identidade visual, no Figma).
 - Samuel de Assunção: conteúdo das lições.
-- Eufy: colaborador no repositório do GitHub (o repositório oficial é o do líder).
+- Eufy: vai entrar como colaborador no repositório do GitHub (o repositório oficial é o do líder); o convite está nas pendências.
 - O líder distribui as tarefas entre a equipe de propósito, em vez de fazer tudo com IA.
 
 ## Ferramentas e onde mora cada coisa (decidido em 01/11)
-- Código: Claude Code, trabalhando direto na pasta finedu no computador do líder, com Git, e enviando para o repositório do líder no GitHub, que é o oficial: github.com/Fagneraposo/FinEdu (público; até 01/11 se chamava FinEduu). O Eufy entra como colaborador.
+- Código: Claude Code, trabalhando direto na pasta finedu no computador do líder, com Git, e enviando para o repositório do líder no GitHub, que é o oficial: github.com/Fagneraposo/FinEdu (público; até 01/11 se chamava FinEduu). O Eufy vai entrar como colaborador (convite pendente).
 - Commits com o e-mail privado do GitHub (noreply), para o e-mail do líder não aparecer no repositório público. Já configurado no Git da pasta finedu.
 - Planejamento, conteúdo e decisões: Projeto "FineEdu" no Claude.
 - Este documento-mestre e o arquitetura.md ficam também dentro do código, na pasta projeto/. A versão oficial é a da pasta do código: o Claude Code atualiza ao fim de cada tarefa, e o líder copia para o Contexto do Projeto.
@@ -33,7 +33,7 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 
 ## Mascote
 - Removido (decisão da equipe em reunião, 31/10): a Estrela não foi aprovada e não há tempo de desenhar outro até a apresentação.
-- Tirar do código na conversa de design: a função desenharEstrela e tudo que a usa (balão na trilha, vitória, sem vidas, Perfil). A "Dica da Estrela" vira "Dica do dia" e o campo falaDaEstrela das lições deixa de ser usado.
+- Tirar do código na conversa de design: a função desenharEstrela e tudo que a usa (balão na trilha, Dica da Estrela, vitória, fim do treino, sem vidas, confirmação de saída da lição e Perfil). As janelas da gamificação 2 (painel e boas-vindas) já não usam a Estrela. A "Dica da Estrela" vira "Dica do dia" e o campo falaDaEstrela das lições deixa de ser usado.
 - A ideia da raposa também foi descartada antes.
 
 ## Identidade visual
@@ -65,9 +65,10 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - Menu: Aprender, Calculadora, Guia, Perfil.
 - Em pé: barra de cima com a logo e os contadores; menu embaixo.
 - Deitado a partir de 768px: menu na lateral.
-- Deitado a partir de 1200px: também a coluna da direita, com os contadores e a dica do dia.
+- Deitado a partir de 1200px: também a coluna da direita, com os contadores e a Dica da Estrela (que vira "Dica do dia" na conversa de design).
+- Os contadores, na barra de cima ou na coluna da direita, são botões: abrem o painel "Como funciona".
 - A troca é pela orientação da tela, não só pela largura, porque tablet Samsung em pé tem ~800px.
-- Durante a lição, a vitória e o baú, os menus somem (modo foco).
+- Durante a lição, a vitória, o baú e a tela "sem vidas", os menus somem (modo foco).
 - O botão voltar do Android navega entre as telas (o endereço termina com #aprender, #perfil, #licao...).
 
 ## Telas da versão 1
@@ -227,7 +228,6 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 
 ## Pendências
 - Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEdu/). O celular Android do líder já passou (01/11), ainda no link antigo.
 - Trocar o link antigo do site (com FinEduu, agora dá 404) onde ele foi divulgado: Contexto e Instruções do Projeto do Claude, mensagens da equipe, favorito no tablet e QR code, se tiver.
-- Trocar o endereço do repositório no Git do computador: git remote set-url origin https://github.com/Fagneraposo/FinEdu.git (o GitHub ainda redireciona o antigo, mas pediu para usar o novo).
 - Convidar o Eufy como colaborador no repositório (Settings → Collaborators). Precisa do nome de usuário dele no GitHub.
 - Líder revisar as adaptações das lições; professor revisar o conteúdo da Unidade 1.
 - João: nomes e arquivos das fontes, logo em SVG (versão clara para fundo escuro), aprovar o roxo mais claro para texto e definir o fundo.
