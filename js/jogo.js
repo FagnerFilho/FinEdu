@@ -20,7 +20,7 @@
 // ============================================================
 
 const XP_POR_ACERTO = 10;          // cada questão nova certa de primeira
-const XP_DE_REVISAO = 5;           // cada errada que o aluno acerta na revisão
+const XP_DE_REVISAO = 5;           // cada errada que o aluno acerta na revisão, e o aquecimento certo
 const MOEDAS_POR_LICAO = 10;       // ao concluir uma lição (só da primeira vez)
 const MOEDAS_LICAO_PERFEITA = 5;   // extra se acertar todas de primeira
 const XP_DO_BAU = 20;              // ao abrir o baú da unidade
@@ -77,7 +77,9 @@ function criarProgressoInicial(hoje = hojeComoTexto()) {
     licoesConcluidas: [],      // ids das lições concluídas
     bausAbertos: [],           // ids das unidades com o baú já aberto
     respostasCertas: 0,        // para a precisão do Perfil
-    respostasDadas: 0
+    respostasDadas: 0,
+    errosPorLicao: {}          // id da lição → posições das questões que o aluno
+                               // errou de primeira da última vez (para o aquecimento)
   };
 }
 
@@ -104,6 +106,10 @@ function prepararProgresso(salvo, hoje = hojeComoTexto()) {
   }
   for (const campo of ['licoesConcluidas', 'bausAbertos']) {
     if (!Array.isArray(progresso[campo])) progresso[campo] = [];
+  }
+  const erros = progresso.errosPorLicao;
+  if (typeof erros !== 'object' || erros === null || Array.isArray(erros)) {
+    progresso.errosPorLicao = {};
   }
   progresso.vidas = Math.min(progresso.vidas, VIDAS_MAXIMAS);
 
@@ -265,32 +271,74 @@ function contarLicoes(progresso) {
 //
 // A sessão tem uma fila com a vez de cada questão. A primeira da
 // fila é a vez atual. Cada vez tem um tipo:
-//   'nova'    → as 5 questões da lição, do fácil para o difícil
-//   'revisao' → uma questão que o aluno errou, de novo no fim da
-//               fila, até ele acertar. Errar na revisão não tira vida.
+//   'aquecimento' → 1 questão da lição anterior, antes de tudo (ver
+//                   escolherAquecimento). Não tira vida, não conta na
+//                   precisão e não volta na revisão.
+//   'nova'        → as 5 questões da lição, do fácil para o difícil
+//   'revisao'     → uma questão que o aluno errou, de novo no fim da
+//                   fila, até ele acertar. Errar na revisão não tira vida.
 // A lição só termina quando a fila esvazia.
 //
 // Refazer uma lição já concluída é um treino: errar não tira vida,
 // não vale XP nem moedas e, no fim, as vidas voltam todas.
 
 function iniciarLicao(progresso, licao) {
-  const questoes = ordenarPorDificuldade(licao.questoes).map(questao => ({
+  const questoes = ordenarPorDificuldade(licao.questoes.map((questao, posicao) => ({
+    posicao,   // lugar da questão no dados-licoes.js (para lembrar as erradas)
     dificuldade: questao.dificuldade,
     pergunta: questao.pergunta,
     alternativas: embaralhar(questao.alternativas)
-  }));
+  })));
+
+  const aquecimento = escolherAquecimento(progresso, licao);
+  const fila = questoes.map((_, indice) => ({ tipo: 'nova', indice }));
+  if (aquecimento) fila.unshift({ tipo: 'aquecimento' });
 
   return {
     licao,
     treino: licaoConcluida(progresso, licao.id),
     questoes,
-    fila: questoes.map((_, indice) => ({ tipo: 'nova', indice })),
-    escolhida: null,    // alternativa marcada, antes de verificar
-    verificada: false,  // o aluno já apertou "Verificar"?
-    respondidas: 0,     // quantas vezes ele já apertou "Verificar"
-    acertos: 0,         // questões certas de primeira (é a precisão)
-    resultados: [],     // true/false da primeira resposta de cada questão
-    consertadas: []     // índices das erradas que ele acertou na revisão
+    aquecimento,              // questão da lição anterior (ou null)
+    fila,
+    escolhida: null,          // alternativa marcada, antes de verificar
+    verificada: false,        // o aluno já apertou "Verificar"?
+    respondidas: 0,           // quantas vezes ele já apertou "Verificar"
+    acertos: 0,               // questões certas de primeira (é a precisão)
+    resultados: [],           // true/false da primeira resposta de cada questão
+    consertadas: [],          // índices das erradas que ele acertou na revisão
+    aquecimentoCerto: null    // acertou o aquecimento?
+  };
+}
+
+// O aquecimento: 1 questão da lição anterior na mesma trilha. De
+// preferência, uma que o aluno errou de primeira da última vez; se
+// ele não errou nenhuma, uma fácil ou média qualquer. A primeira
+// lição da trilha não tem aquecimento (devolve null).
+function escolherAquecimento(progresso, licao) {
+  const achada = encontrarLicao(licao.id);
+  if (!achada) return null;
+  const lista = licoesDaTrilha(achada.trilha);
+  const lugar = lista.findIndex(item => item.licao.id === licao.id);
+  const anterior = lugar > 0 ? lista[lugar - 1].licao : null;
+  if (!anterior || !Array.isArray(anterior.questoes) || anterior.questoes.length === 0) return null;
+
+  const todas = anterior.questoes.map((_, posicao) => posicao);
+  const salvas = progresso.errosPorLicao[anterior.id];
+  const erradas = Array.isArray(salvas) ? salvas.filter(posicao => todas.includes(posicao)) : [];
+  const leves = todas.filter(posicao => anterior.questoes[posicao].dificuldade !== 'dificil');
+
+  let candidatas = todas;
+  if (erradas.length > 0) candidatas = erradas;
+  else if (leves.length > 0) candidatas = leves;
+
+  const posicao = sortear(candidatas);
+  const questao = anterior.questoes[posicao];
+  return {
+    idLicao: anterior.id,
+    posicao,
+    dificuldade: questao.dificuldade,
+    pergunta: questao.pergunta,
+    alternativas: embaralhar(questao.alternativas)
   };
 }
 
@@ -311,13 +359,20 @@ function embaralhar(lista) {
   return copia;
 }
 
-// A vez atual: { tipo, indice }. O índice aponta para sessao.questoes.
+// Escolhe um item ao acaso
+function sortear(lista) {
+  return lista[Math.floor(Math.random() * lista.length)];
+}
+
+// A vez atual: { tipo, indice }. O índice aponta para sessao.questoes
+// (o aquecimento não tem índice: a questão dele fica em sessao.aquecimento).
 function vezAtual(sessao) {
   return sessao.fila[0];
 }
 
 function questaoAtual(sessao) {
-  return sessao.questoes[vezAtual(sessao).indice];
+  const vez = vezAtual(sessao);
+  return vez.tipo === 'aquecimento' ? sessao.aquecimento : sessao.questoes[vez.indice];
 }
 
 // Marca uma alternativa. Devolve false se não puder (já verificou,
@@ -331,7 +386,7 @@ function marcarAlternativa(sessao, indice) {
 
 // Confere a alternativa marcada. Só a questão nova de uma lição que
 // não é treino tira vida (na hora) e conta na precisão do Perfil.
-// Errou? A questão volta no fim da fila.
+// Errou uma questão da lição? Ela volta no fim da fila.
 function verificarResposta(progresso, sessao) {
   if (sessao.verificada || sessao.escolhida === null) return null;
 
@@ -346,7 +401,9 @@ function verificarResposta(progresso, sessao) {
   sessao.verificada = true;
   sessao.respondidas += 1;
 
-  if (vez.tipo === 'nova') {
+  if (vez.tipo === 'aquecimento') {
+    sessao.aquecimentoCerto = acertou;
+  } else if (vez.tipo === 'nova') {
     sessao.resultados.push(acertou);
     if (acertou) sessao.acertos += 1;
   } else if (acertou) {
@@ -359,7 +416,7 @@ function verificarResposta(progresso, sessao) {
   }
 
   if (perdeuVida) progresso.vidas = Math.max(0, progresso.vidas - 1);
-  if (!acertou) sessao.fila.push({ tipo: 'revisao', indice: vez.indice });
+  if (!acertou && vez.tipo !== 'aquecimento') sessao.fila.push({ tipo: 'revisao', indice: vez.indice });
 
   return {
     acertou,
@@ -407,7 +464,8 @@ function concluirLicao(progresso, sessao, hoje = hojeComoTexto()) {
   if (sessao.treino) {
     progresso.vidas = VIDAS_MAXIMAS;
   } else {
-    xp = sessao.acertos * XP_POR_ACERTO + sessao.consertadas.length * XP_DE_REVISAO;
+    const revisoesCertas = sessao.consertadas.length + (sessao.aquecimentoCerto ? 1 : 0);
+    xp = sessao.acertos * XP_POR_ACERTO + revisoesCertas * XP_DE_REVISAO;
     moedas = MOEDAS_POR_LICAO + (perfeita ? MOEDAS_LICAO_PERFEITA : 0);
     progresso.xp += xp;
     progresso.moedas += moedas;
@@ -415,6 +473,8 @@ function concluirLicao(progresso, sessao, hoje = hojeComoTexto()) {
       progresso.licoesConcluidas.push(sessao.licao.id);
     }
   }
+
+  lembrarErros(progresso, sessao);
 
   const sequenciaAntes = progresso.sequencia;
   registrarDiaDeEstudo(progresso, hoje);
@@ -431,6 +491,21 @@ function concluirLicao(progresso, sessao, hoje = hojeComoTexto()) {
     sequencia: progresso.sequencia,
     sequenciaSubiu: progresso.sequencia > sequenciaAntes
   };
+}
+
+// Para o aquecimento: guarda as questões que o aluno errou de primeira
+// nesta vez (no lugar das da vez anterior) e, se ele acertou o
+// aquecimento, tira aquela questão da lista da lição anterior.
+function lembrarErros(progresso, sessao) {
+  progresso.errosPorLicao[sessao.licao.id] = sessao.questoes
+    .filter((_, i) => sessao.resultados[i] === false)
+    .map(questao => questao.posicao);
+
+  const aquecimento = sessao.aquecimento;
+  const daAnterior = aquecimento ? progresso.errosPorLicao[aquecimento.idLicao] : null;
+  if (sessao.aquecimentoCerto && Array.isArray(daAnterior)) {
+    progresso.errosPorLicao[aquecimento.idLicao] = daAnterior.filter(posicao => posicao !== aquecimento.posicao);
+  }
 }
 
 

@@ -339,13 +339,15 @@
       progresso.vidas = 1;
       progresso.moedas = 20;
       const sessao = abrir(progresso, LICAO_2);
-      confere(responderEContinuar(progresso, sessao, false), 'sem-vidas', 'depois de errar a 1ª');
+      responderEContinuar(progresso, sessao, true);   // aquecimento
+      confere(responderEContinuar(progresso, sessao, false), 'sem-vidas', 'depois de errar a 1ª questão nova');
       confere(recarregarVidas(progresso), true, 'pagou');
       confere(avancarQuestao(progresso, sessao), 'proxima', 'depois de pagar');
       confere(vezAtual(sessao), { tipo: 'nova', indice: 1 }, 'vez depois de pagar');
       confere(jogar(progresso, sessao, () => true), 'fim', 'fim da lição');
       const resumo = concluirLicao(progresso, sessao, HOJE);
-      confere([resumo.xp, resumo.moedas, progresso.vidas, progresso.moedas], [45, 10, 5, 10], 'XP, moedas ganhas, vidas e moedas');
+      // 4 certas de primeira (40) + revisão (5) + aquecimento (5)
+      confere([resumo.xp, resumo.moedas, progresso.vidas, progresso.moedas], [50, 10, 5, 10], 'XP, moedas ganhas, vidas e moedas');
     });
 
     teste('Refazer lição concluída é treino: errar não tira vida', () => {
@@ -394,6 +396,155 @@
     });
 
 
+    grupo('Aquecimento');
+
+    teste('A primeira lição da trilha não tem aquecimento', () => {
+      const sessao = abrir(novoProgresso(), LICAO_1);
+      confere([sessao.aquecimento, sessao.fila.length], [null, 5], 'aquecimento e tamanho da fila');
+    });
+
+    teste('A lição 2 começa com 1 questão da lição 1', () => {
+      const progresso = novoProgresso();
+      concluirAcertandoTudo(progresso, LICAO_1);
+      const sessao = abrir(progresso, LICAO_2);
+      confere([vezAtual(sessao).tipo, sessao.aquecimento.idLicao, sessao.fila.length], ['aquecimento', LICAO_1.id, 6], 'primeira vez');
+      const pergunta = questaoAtual(sessao).pergunta;
+      confere(LICAO_1.questoes.some(questao => questao.pergunta === pergunta), true, 'a pergunta é da lição 1');
+    });
+
+    teste('O aquecimento prefere a questão que o aluno errou na lição anterior', () => {
+      const progresso = novoProgresso();
+      const sessao = abrir(progresso, LICAO_1);
+      jogar(progresso, sessao, errandoDePrimeira([3]));
+      concluirLicao(progresso, sessao, HOJE);
+      confere(progresso.errosPorLicao[LICAO_1.id], [3], 'erradas guardadas');
+      for (let vezes = 0; vezes < 10; vezes++) {
+        confere(abrir(progresso, LICAO_2).aquecimento.posicao, 3, 'questão do aquecimento');
+      }
+    });
+
+    teste('Sem erro na lição anterior, o aquecimento é fácil ou média', () => {
+      const progresso = novoProgresso();
+      concluirAcertandoTudo(progresso, LICAO_1);
+      for (let vezes = 0; vezes < 20; vezes++) {
+        const dificuldade = abrir(progresso, LICAO_2).aquecimento.dificuldade;
+        if (dificuldade === 'dificil') throw new Error('veio uma questão difícil');
+      }
+    });
+
+    teste('Aquecimento não tira vida, não conta na precisão e não volta na revisão', () => {
+      const progresso = novoProgresso();
+      concluirAcertandoTudo(progresso, LICAO_1);
+      const antes = [progresso.respostasCertas, progresso.respostasDadas];
+      const sessao = abrir(progresso, LICAO_2);
+      const resultado = responder(progresso, sessao, false);
+      confere([resultado.tipo, resultado.perdeuVida, progresso.vidas], ['aquecimento', false, 5], 'erro no aquecimento');
+      confere([progresso.respostasCertas, progresso.respostasDadas], antes, 'precisão do Perfil');
+      avancarQuestao(progresso, sessao);
+      confere(jogar(progresso, sessao, () => true), 'fim', 'acaba sem voltar o aquecimento');
+      const resumo = concluirLicao(progresso, sessao, HOJE);
+      confere([resumo.xp, resumo.precisao], [50, 100], 'XP e precisão (aquecimento errado não vale)');
+    });
+
+    teste('Aquecimento certo vale 5 XP', () => {
+      const progresso = novoProgresso();
+      concluirAcertandoTudo(progresso, LICAO_1);
+      const resumo = concluirAcertandoTudo(progresso, LICAO_2);
+      confere(resumo.xp, 55, 'XP da lição 2 com aquecimento certo');
+    });
+
+    teste('Acertar o aquecimento tira a questão da lista de erradas', () => {
+      const progresso = novoProgresso();
+      const sessao = abrir(progresso, LICAO_1);
+      jogar(progresso, sessao, errandoDePrimeira([3, 4]));
+      concluirLicao(progresso, sessao, HOJE);
+      const segunda = abrir(progresso, LICAO_2);
+      const usada = segunda.aquecimento.posicao;
+      jogar(progresso, segunda, () => true);
+      concluirLicao(progresso, segunda, HOJE);
+      confere(progresso.errosPorLicao[LICAO_1.id], [3, 4].filter(posicao => posicao !== usada), 'erradas da lição 1');
+    });
+
+    teste('As erradas guardadas são as da última vez (o treino sem erro limpa a lista)', () => {
+      const progresso = novoProgresso();
+      const sessao = abrir(progresso, LICAO_1);
+      jogar(progresso, sessao, errandoDePrimeira([1, 2]));
+      concluirLicao(progresso, sessao, HOJE);
+      confere(progresso.errosPorLicao[LICAO_1.id], [1, 2], 'depois da lição');
+      concluirAcertandoTudo(progresso, LICAO_1);
+      confere(progresso.errosPorLicao[LICAO_1.id], [], 'depois do treino sem erro');
+    });
+
+    teste('Progresso antigo, sem a lista de erradas, ganha uma lista vazia', () => {
+      confere(prepararProgresso({ xp: 10 }, HOJE).errosPorLicao, {}, 'sem o campo');
+      confere(prepararProgresso({ errosPorLicao: [1] }, HOJE).errosPorLicao, {}, 'campo estragado');
+    });
+
+
+    grupo('Simulação dos 3 alunos (seção 4 do plano)');
+
+    // Um aluno simulado. Na primeira vez que vê uma questão, ele erra se
+    // a posição dela (0 a 4) está em "erraDePrimeira"; questão que ele já
+    // viu explicada, ele acerta. Sem vidas: paga a recarga se puder (e se
+    // "pagaSePuder"); se não, treina a lição concluída mais recente e
+    // recomeça a lição. Faz a Unidade 1 inteira e abre o baú.
+    function simularAluno(erraDePrimeira, pagaSePuder = true) {
+      const progresso = novoProgresso();
+      const vistas = new Set();
+      const contagem = { compras: 0, treinos: 0 };
+
+      function acertar(sessao) {
+        const questao = questaoAtual(sessao);
+        const idLicao = vezAtual(sessao).tipo === 'aquecimento' ? questao.idLicao : sessao.licao.id;
+        const chave = `${idLicao}:${questao.posicao}`;
+        const jaViu = vistas.has(chave);
+        vistas.add(chave);
+        return jaViu || !erraDePrimeira.includes(questao.posicao);
+      }
+
+      for (const licao of UNIDADE.licoes) {
+        for (let tentativa = 1; ; tentativa++) {
+          if (tentativa > 10) throw new Error(`não passou da lição "${licao.titulo}"`);
+          const sessao = abrir(progresso, licao);
+          let proximo = jogar(progresso, sessao, acertar);
+          while (proximo === 'sem-vidas' && pagaSePuder && recarregarVidas(progresso)) {
+            contagem.compras += 1;
+            proximo = avancarQuestao(progresso, sessao);
+            if (proximo === 'proxima') proximo = jogar(progresso, sessao, acertar);
+          }
+          if (proximo === 'fim') {
+            concluirLicao(progresso, sessao, HOJE);
+            break;
+          }
+          const paraTreinar = licaoParaTreinar(progresso);
+          if (!paraTreinar) throw new Error('ficou sem vidas e sem lição para treinar');
+          const treino = abrir(progresso, paraTreinar);
+          jogar(progresso, treino, acertar);
+          concluirLicao(progresso, treino, HOJE);
+          contagem.treinos += 1;
+        }
+      }
+      abrirBau(progresso, UNIDADE);
+      return { vidas: progresso.vidas, moedas: progresso.moedas, xp: progresso.xp, ...contagem };
+    }
+
+    teste('Aluno A, acerta tudo: 5 vidas, 80 moedas, 235 XP', () => {
+      confere(simularAluno([]), { vidas: 5, moedas: 80, xp: 235, compras: 0, treinos: 0 }, 'fim da unidade');
+    });
+
+    teste('Aluno B, erra 2: 2 vidas, 40 moedas, 195 XP, 1 recarga', () => {
+      confere(simularAluno([3, 4]), { vidas: 2, moedas: 40, xp: 195, compras: 1, treinos: 0 }, 'fim da unidade');
+    });
+
+    teste('Aluno B guardando as moedas: 2 vidas, 60 moedas, 200 XP, 1 treino', () => {
+      confere(simularAluno([3, 4], false), { vidas: 2, moedas: 60, xp: 200, compras: 0, treinos: 1 }, 'fim da unidade');
+    });
+
+    teste('Aluno C, erra 4: 4 vidas, 40 moedas, 175 XP, 1 recarga e 2 treinos', () => {
+      confere(simularAluno([1, 2, 3, 4]), { vidas: 4, moedas: 40, xp: 175, compras: 1, treinos: 2 }, 'fim da unidade');
+    });
+
+
     grupo('Trilha, baú, sequência e vidas');
 
     teste('A lição 2 só libera depois da lição 1', () => {
@@ -436,6 +587,10 @@
     teste('Progresso estragado volta ao valor inicial', () => {
       const progresso = prepararProgresso({ xp: -3, moedas: 'muitas', vidas: 9, licoesConcluidas: 'x' }, HOJE);
       confere([progresso.xp, progresso.moedas, progresso.vidas, progresso.licoesConcluidas], [0, 0, VIDAS_MAXIMAS, []], 'valores');
+    });
+
+    teste('Reiniciar progresso zera também a lista de erradas', () => {
+      confere(prepararProgresso(null, HOJE).errosPorLicao, {}, 'progresso novo');
     });
 
 

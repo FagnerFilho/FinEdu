@@ -34,11 +34,6 @@ function icone(nome, classeExtra = '') {
   return `<svg class="icone ${classeExtra}" aria-hidden="true" focusable="false"><use href="#i-${nome}"></use></svg>`;
 }
 
-// Escolhe um item ao acaso
-function sortear(lista) {
-  return lista[Math.floor(Math.random() * lista.length)];
-}
-
 // "1 dia" ou "3 dias"
 function contarCom(numero, singular, plural) {
   return `${numero} ${numero === 1 ? singular : plural}`;
@@ -349,6 +344,7 @@ function classeDaParte(sessao, i) {
 function textoDaBarra(sessao) {
   const vez = vezAtual(sessao);
   const total = sessao.questoes.length;
+  if (vez.tipo === 'aquecimento') return 'Aquecimento';
   if (vez.tipo === 'revisao') {
     const faltam = total - sessao.acertos - sessao.consertadas.length;
     return `Revisão: ${faltam === 1 ? 'falta 1 questão' : `faltam ${faltam} questões`}`;
@@ -356,9 +352,15 @@ function textoDaBarra(sessao) {
   return `Questão ${vez.indice + 1} de ${total}`;
 }
 
-// Etiqueta em cima da pergunta (nível ou revisão) e a nota ao lado
+// Etiqueta em cima da pergunta (aquecimento, nível ou revisão) e a
+// nota ao lado
 function desenharRotulos(sessao, questao) {
   const vez = vezAtual(sessao);
+  if (vez.tipo === 'aquecimento') {
+    return `
+      <p class="etiqueta etiqueta--aquecimento">Aquecimento</p>
+      <p class="licao-nota">Questão da lição anterior. Errar não tira vida.</p>`;
+  }
   if (vez.tipo === 'revisao') {
     return `
       <p class="etiqueta etiqueta--revisao">Revisão</p>
@@ -433,8 +435,10 @@ function mostrarCorrecao(resultado, sessao, progresso) {
     else botao.classList.add('alternativa--apagada');
   });
 
-  // 2. Atualiza a barra de progresso e as vidas
-  const parte = document.querySelectorAll('.barra-parte')[vezAtual(sessao).indice];
+  // 2. Atualiza a barra de progresso e as vidas (o aquecimento não
+  //    tem parte na barra)
+  const vez = vezAtual(sessao);
+  const parte = vez.tipo === 'aquecimento' ? null : document.querySelectorAll('.barra-parte')[vez.indice];
   if (parte) {
     parte.classList.remove('barra-parte--atual');
     parte.classList.add(resultado.acertou ? 'barra-parte--certa' : 'barra-parte--errada');
@@ -453,10 +457,10 @@ function mostrarCorrecao(resultado, sessao, progresso) {
     explicacao = `<p class="feedback-texto">${escaparHtml(resultado.correta.explicacao)}</p>`;
     textoParaLer = `${titulo} ${resultado.correta.explicacao}`;
   } else {
-    // A errada volta no fim da lição (na revisão). Se as vidas
-    // acabaram, a próxima tela explica o que fazer.
+    // A errada volta no fim da lição (na revisão); o aquecimento não
+    // volta. Se as vidas acabaram, a próxima tela explica o que fazer.
     let volta = resultado.tipo === 'revisao' ? 'Ela volta de novo no fim.' : 'Ela volta no fim para você acertar.';
-    if (resultado.acabaramAsVidas) volta = '';
+    if (resultado.tipo === 'aquecimento' || resultado.acabaramAsVidas) volta = '';
     explicacao = `
       <p class="feedback-texto"><strong>Por que não:</strong> ${escaparHtml(resultado.escolhida.explicacao)}</p>
       <p class="feedback-texto"><strong>Resposta certa:</strong> ${escaparHtml(resultado.correta.texto)}</p>

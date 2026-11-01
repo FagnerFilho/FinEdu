@@ -860,6 +860,7 @@ h2:focus {
 .etiqueta--media   { color: var(--cor-media); }
 .etiqueta--dificil { color: var(--cor-dificil); }
 .etiqueta--revisao { color: var(--cor-erro); }
+.etiqueta--aquecimento { color: var(--cor-destaque); }
 
 .licao-pergunta {
   margin: var(--espaco-m) 0 var(--espaco-gg);
