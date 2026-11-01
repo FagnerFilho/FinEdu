@@ -81,7 +81,7 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 ## Estrutura do código
 - Versão 1 sem back-end. Progresso em localStorage, sempre via js/armazenamento.js.
 - HTML, CSS e JS puro, código próprio escrito do zero na conversa 02 (Antigravity só como referência).
-- Estrutura: index.html, css/estilo.css, css/fontes/, js/dados-licoes.js, js/armazenamento.js, js/jogo.js, js/telas.js, js/app.js, img/favicon.svg, README.md, CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md.
+- Estrutura: index.html, css/estilo.css, css/fontes/, js/dados-licoes.js, js/armazenamento.js, js/jogo.js, js/telas.js, js/app.js, img/favicon.svg, README.md, CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, projeto/plano-gamificacao.md.
 - Funciona abrindo o index.html com dois cliques (sem servidor).
 - O arquitetura.md (gerado na conversa 02) guarda as regras do código e o passo a passo para criar lições. A versão oficial fica em projeto/arquitetura.md, no código; o Contexto do Projeto tem uma cópia.
 - O app confere o dados-licoes.js e mostra um aviso vermelho no topo se algo estiver fora do padrão.
@@ -112,6 +112,7 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - 5 vidas. Cada erro tira 1 na hora. Se zerar, a lição para e as vidas voltam no dia seguinte.
 - Sequência: +1 por dia com pelo menos uma lição concluída; zera se passar um dia sem.
 - Os valores são constantes no topo do js/jogo.js.
+- Proposta de mudança (tarefa 2) em projeto/plano-gamificacao.md, esperando o OK.
 
 ## Conteúdo
 - Trilha 1 · Unidade 1 "Primeiros passos" (título provisório), 4 lições completas + baú:
@@ -161,13 +162,17 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - Conferido no navegador: o site abre, sem caixa vermelha nem erro no console, e a lição 1 começa.
 - Testado no celular Android do líder pelo link do Pages (01/11): passou. O tablet continua pendente.
 
+### Tarefa 2 · Gamificação, planejamento (01/11)
+- 4 propostas aprovadas pelo líder: repetir as erradas no fim da lição até acertar todas (a precisão conta só a primeira tentativa); comprar vidas com moedas; suavizar a perda de vidas; aquecimento (1 questão da lição anterior no começo de cada lição, de preferência uma que o aluno errou; não tira vida e não conta na precisão; a primeira lição não tem).
+- Plano em projeto/plano-gamificacao.md: tabela de regras, simulação de 3 alunos, opinião e números. Propõe 4 ajustes para as propostas não se atrapalharem (repetição sem perder vida; refazer lição concluída devolve as 5 vidas; a compra devolve as 5 vidas por 20 moedas; XP e moedas só para lição nova). Esperando o OK antes de codar.
+
 ## Pendências
 - Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEduu/). O celular Android do líder já passou (01/11).
 - Convidar o Eufy como colaborador no repositório (Settings → Collaborators). Precisa do nome de usuário dele no GitHub.
 - Líder revisar as adaptações das lições; professor revisar o conteúdo da Unidade 1.
 - João: nomes e arquivos das fontes, logo em SVG (versão clara para fundo escuro), aprovar o roxo mais claro para texto e definir o fundo.
 - Título final da Unidade 1.
-- Conversa 05: o que fazer quando o aluno erra (hoje dá para concluir acertando 1 de 5; proposta: repetir as erradas no fim). "Meta do dia" e conquistas ficam para depois da apresentação.
+- Tarefa 2 (gamificação): dar o OK nos ajustes e nos números do projeto/plano-gamificacao.md e codar em 04 e 05/11. "Meta do dia" e conquistas ficam para depois da apresentação.
 - Conversa de design: paleta nova, fontes novas, tirar o mascote, profundidade.
 - Depois da apresentação: Trilha 2 (conversa 07), Calculadora e Guia (conversa 08), Unidade 2.
 - Instruções do Projeto: trocar "Menu embaixo em telas estreitas e na lateral em telas largas" pela regra da orientação (ver Layout), tirar a linha do mascote e trocar as cores da seção DESIGN pela paleta do João.

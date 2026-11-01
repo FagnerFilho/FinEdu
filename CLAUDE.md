@@ -54,6 +54,7 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
    - As moedas não servem para nada. Proposta: comprar vidas com moedas (liga o jogo ao tema: gastar ou guardar).
    - As vidas acabam e travam o aluno até o dia seguinte, o que é duro para uma escola. Avaliar: 1 vida a cada X minutos, ou ganhar vida refazendo lição concluída.
    - Antes de codar: tabela de regras (atual × proposta × motivo) e simulação de 3 alunos (acerta tudo, erra 2, erra 4). Esperar o OK.
+   - Planejamento feito em 01/11, com uma 4ª proposta (aquecimento): `projeto/plano-gamificacao.md`. Falta o OK do Fagner nos ajustes e nos números.
    - Fora desta tarefa: "Meta do dia", conquistas, ranking, visual e conteúdo.
    - Criar `testes.html` com os testes das regras, rodando no navegador (passou/falhou), se ainda não existir.
    - Para os textos novos da interface, use a skill de UX copy, se estiver disponível.

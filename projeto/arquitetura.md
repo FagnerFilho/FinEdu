@@ -17,7 +17,7 @@ Regras do código do FinEdu. Todo código novo segue este arquivo. Se uma mudan�
 | `img/` | `favicon.svg`. Depois: logo e mascote finais do designer | — |
 | `README.md` | Como abrir, testar e publicar | — |
 | `CLAUDE.md` | Instruções para o Claude Code: como trabalhar, Git, fila de tarefas | Regra de código (fica neste arquivo) |
-| `projeto/` | `documento-mestre.md` (decisões e pendências) e este `arquitetura.md`. Versão oficial dos dois | Código |
+| `projeto/` | `documento-mestre.md` (decisões e pendências) e este `arquitetura.md`, versão oficial dos dois. Também os planos de tarefa (ex.: `plano-gamificacao.md`) | Código |
 
 Ordem dos scripts no `index.html`: dados-licoes → armazenamento → jogo → telas → app. Cada arquivo só usa o que veio antes dele.
 
