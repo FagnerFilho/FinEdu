@@ -1,0 +1,1756 @@
+/* ============================================================
+   estilo.css — Todo o visual do FinEdu
+   ============================================================
+   Organização:
+    1. Fontes
+    2. Variáveis (cores, fontes, tamanhos, espaços) ← mude aqui
+    3. Base
+    4. Estrutura do app (tela em pé)
+    5. Menu, barra de cima e contadores
+    6. Botões
+    7. Trilha
+    8. Estrela (mascote)
+    9. Lição
+   10. Comemoração (vitória, baú, sem vidas)
+   11. Em breve
+   12. Perfil
+   13. Coluna da direita
+   14. Avisos
+   15. Tela deitada (menu lateral)
+   16. Modo foco (lição e comemorações, sem menu)
+   17. Animações e movimento reduzido
+
+   Regra: nenhuma cor, fonte ou medida "solta" no meio do
+   arquivo. Tudo sai das variáveis da seção 2.
+
+   Princípio visual: a "sombra sólida" embaixo de um elemento
+   quer dizer "dá para tocar". Informação parada usa borda.
+   ============================================================ */
+
+
+/* ============================================================
+   1. FONTES
+   Os arquivos estão em css/fontes/ (funcionam sem internet).
+   Baloo 2: títulos e números. Figtree: texto.
+   Licença: SIL Open Font License (arquivos OFL-*.txt).
+   ============================================================ */
+@font-face {
+  font-family: 'Baloo 2';
+  src: url('fontes/baloo-2-latin-wght-normal.woff2') format('woff2');
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Figtree';
+  src: url('fontes/figtree-latin-wght-normal.woff2') format('woff2');
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+/* ============================================================
+   2. VARIÁVEIS
+   ============================================================ */
+:root {
+  color-scheme: dark;
+
+  /* ---------- COR DE DESTAQUE (provisória) ----------
+     Para trocar a cor da marca, troque só este bloco.
+     Valores prontos das opções em discussão:
+       Azul clareado (atual)  #5B8DEF  sombra #3E60A3  texto em cima #0B1A2C  RGB 91, 141, 239
+       Verde                  #6DA24A  sombra #4A6E32  texto em cima #0B1A2C  RGB 109, 162, 74
+       Roxo                   #49308E  sombra #322161  texto em cima #FFFFFF  RGB 73, 48, 142
+                              (o roxo quase some no fundo escuro: contraste 1,7)
+     Nas duas linhas com rgba, troque os três números pelo RGB da cor nova.
+     Lembrete: o img/favicon.svg tem a cor escrita nele; troque lá também. */
+  --cor-destaque: #5B8DEF;
+  --cor-destaque-sombra: #3E60A3;
+  --cor-destaque-suave: rgba(91, 141, 239, 0.10);   /* fundo do item ativo: mais forte que 0.10, o texto azul em cima não passa no contraste */
+  --cor-destaque-anel: rgba(91, 141, 239, 0.35);
+  --cor-sobre-destaque: #0B1A2C;
+
+  /* ---------- Base ---------- */
+  --cor-fundo: #121F25;
+  --cor-linha: #22333B;            /* bordas da barra de cima e do menu */
+  --cor-cartao: #1B2B33;           /* cartões e balões */
+  --cor-borda: #2E4049;
+  --cor-texto: #D0D5D9;
+  --cor-texto-secundario: #8FA1AA;
+  --cor-texto-menu: #A9B6BD;
+  --cor-titulo: #E6EBEE;
+  --cor-bloqueado: #36474F;
+  --cor-bloqueado-sombra: #24333A;
+  --cor-bloqueado-icone: #8FA1AA;  /* na prévia era #6F848E; clareei para o cadeado passar no contraste mínimo de 3:1 */
+  --cor-texto-escuro: #0B1A2C;     /* texto em cima de cores claras */
+
+  /* ---------- Acerto e erro ---------- */
+  --cor-acerto: #6CC24A;
+  --cor-acerto-sombra: #4A8A30;
+  --cor-acerto-suave: rgba(108, 194, 74, 0.14);
+  --cor-acerto-fundo: #1B3324;     /* painel de feedback */
+  --cor-erro: #FF6B6B;
+  --cor-erro-sombra: #B84A4A;
+  --cor-erro-suave: rgba(255, 107, 107, 0.14);
+  --cor-erro-fundo: #3A1D22;
+
+  /* ---------- Contadores, baú e níveis ---------- */
+  --cor-sequencia: #FF9F43;
+  --cor-xp: #FFD24A;
+  --cor-moeda: #F5B83D;
+  --cor-vida: #FF6B7D;
+  --cor-bau: #F5B83D;
+  --cor-bau-sombra: #A87A1F;
+  --cor-facil: var(--cor-acerto);
+  --cor-media: var(--cor-xp);
+  --cor-dificil: var(--cor-sequencia);
+
+  /* ---------- Mascote ---------- */
+  --cor-olho-mascote: #FFFFFF;
+  --cor-sombra-mascote: #0B1418;
+
+  /* ---------- Fundos escuros por trás de janelas ---------- */
+  --cor-veu: rgba(5, 12, 15, 0.72);
+  --sombra-flutuante: 0 10px 28px rgba(0, 0, 0, 0.45);
+
+  /* ---------- Fontes ---------- */
+  --fonte-titulo: 'Baloo 2', 'Figtree', system-ui, sans-serif;
+  --fonte-texto: 'Figtree', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* ---------- Tamanhos de texto (escala clássica: 12 14 16 18 21 24 36) ---------- */
+  --tamanho-mini: 0.75rem;         /* 12px */
+  --tamanho-pequeno: 0.875rem;     /* 14px */
+  --tamanho-base: 1rem;            /* 16px */
+  --tamanho-medio: 1.125rem;       /* 18px */
+  --tamanho-titulo-p: 1.3125rem;   /* 21px */
+  --tamanho-titulo-m: 1.5rem;      /* 24px */
+  --tamanho-titulo-g: 2.25rem;     /* 36px */
+
+  /* ---------- Espaços (como tamanho de roupa) ---------- */
+  --espaco-pp: 4px;
+  --espaco-p: 8px;
+  --espaco-m: 12px;
+  --espaco-g: 16px;
+  --espaco-gg: 24px;
+  --espaco-xg: 32px;
+  --espaco-xgg: 48px;
+
+  /* ---------- Cantos arredondados ---------- */
+  --raio-p: 10px;
+  --raio-m: 14px;
+  --raio-g: 18px;
+  --raio-total: 999px;
+
+  /* ---------- Medidas ---------- */
+  --alvo-minimo: 48px;             /* tamanho mínimo de qualquer coisa tocável */
+  --borda: 2px;
+  --sombra-solida: 4px;            /* altura da sombra sólida dos botões */
+  --sombra-no: 7px;                /* altura da sombra das bolinhas da trilha */
+  --largura-conteudo: 600px;
+  --largura-licao: 680px;
+  --largura-menu-lateral: 240px;
+  --largura-coluna-direita: 320px;
+  --altura-menu-inferior: 76px;
+  --tamanho-no: 70px;              /* bolinha da trilha */
+  --amplitude-curva: 72px;         /* quanto a trilha balança para os lados */
+  --largura-estrela-guia: 104px;   /* mascote ao lado da trilha */
+  --tamanho-estrela-guia: 80px;
+
+  /* ---------- Tempo das animações ---------- */
+  --tempo-rapido: 90ms;
+  --tempo-medio: 240ms;
+
+  /* Espaço das bordas do aparelho (notch, barra de gestos) */
+  --margem-segura-baixo: env(safe-area-inset-bottom, 0px);
+  --margem-segura-cima: env(safe-area-inset-top, 0px);
+}
+
+
+/* ============================================================
+   3. BASE
+   ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: var(--fonte-texto);
+  font-size: var(--tamanho-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--fonte-titulo);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--cor-titulo);
+}
+
+button,
+a {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+svg {
+  display: block;
+}
+
+/* O atributo hidden sempre esconde, mesmo com display definido em outra regra */
+[hidden] {
+  display: none !important;
+}
+
+/* Foco visível para quem usa teclado (notebook) */
+:focus-visible {
+  outline: 3px solid var(--cor-texto);
+  outline-offset: 3px;
+  border-radius: var(--raio-p);
+}
+
+/* Títulos recebem foco ao trocar de tela (para leitores de tela), sem contorno */
+h1:focus,
+h2:focus {
+  outline: none;
+}
+
+/* Some da tela, mas leitores de tela continuam lendo */
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* O estojo de ícones não aparece; só fornece os desenhos */
+.estojo {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.icone {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+
+/* ============================================================
+   4. ESTRUTURA DO APP (tela em pé: celular e tablet em pé)
+   ============================================================ */
+.principal {
+  width: 100%;
+  max-width: var(--largura-conteudo);
+  margin: 0 auto;
+  padding: var(--espaco-g) var(--espaco-g)
+           calc(var(--altura-menu-inferior) + var(--margem-segura-baixo) + var(--espaco-gg));
+}
+
+/* A coluna da direita só aparece na tela deitada e larga (seção 15) */
+.coluna-direita {
+  display: none;
+}
+
+
+/* ============================================================
+   5. MENU, BARRA DE CIMA E CONTADORES
+   ============================================================ */
+
+/* ----- Logo ----- */
+.logo-estrela {
+  width: 32px;
+  height: 32px;
+  color: var(--cor-destaque);
+  flex-shrink: 0;
+}
+
+.logo-texto {
+  font-family: var(--fonte-titulo);
+  font-weight: 800;
+  font-size: var(--tamanho-titulo-m);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.logo-fin { color: var(--cor-texto); }
+.logo-edu { color: var(--cor-destaque); }
+
+/* ----- Barra de cima ----- */
+.topo {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-m);
+  padding: calc(var(--espaco-m) + var(--margem-segura-cima)) var(--espaco-g) var(--espaco-m);
+  background: var(--cor-fundo);
+  border-bottom: var(--borda) solid var(--cor-linha);
+}
+
+.topo-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-p);
+  min-width: var(--alvo-minimo);
+  min-height: var(--alvo-minimo);
+}
+
+/* Em celular estreito, só a estrela: o nome não cabe com os contadores */
+.topo-logo .logo-texto {
+  display: none;
+}
+
+/* ----- Contadores ----- */
+.contadores {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-g);
+}
+
+.contador {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-pp);
+  font-weight: 700;
+  font-size: var(--tamanho-base);
+  font-variant-numeric: tabular-nums;
+}
+
+.contador .icone {
+  width: 22px;
+  height: 22px;
+}
+
+.contador--sequencia { color: var(--cor-sequencia); }
+.contador--xp        { color: var(--cor-xp); }
+.contador--moedas    { color: var(--cor-moeda); }
+.contador--vidas     { color: var(--cor-vida); }
+
+/* ----- Menu (embaixo, na tela em pé) ----- */
+.menu {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--espaco-pp);
+  padding: var(--espaco-p) var(--espaco-p) calc(var(--espaco-m) + var(--margem-segura-baixo));
+  background: var(--cor-fundo);
+  border-top: var(--borda) solid var(--cor-linha);
+}
+
+/* A logo do menu só aparece no menu lateral */
+.menu-logo {
+  display: none;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 56px;
+  padding: var(--espaco-p) var(--espaco-pp);
+  border: var(--borda) solid transparent;
+  border-radius: var(--raio-m);
+  color: var(--cor-texto-menu);
+  font-weight: 700;
+  font-size: var(--tamanho-mini);
+  transition: color var(--tempo-rapido), background-color var(--tempo-rapido);
+}
+
+.menu-item .icone {
+  width: 26px;
+  height: 26px;
+}
+
+.menu-item[aria-current="page"] {
+  color: var(--cor-destaque);
+  background: var(--cor-destaque-suave);
+  border-color: var(--cor-destaque);
+}
+
+
+/* ============================================================
+   6. BOTÕES
+   Todo botão "de verdade" tem a sombra sólida embaixo. Ao
+   apertar, ele desce e a sombra some: parece uma tecla.
+   ============================================================ */
+.botao {
+  --cor-do-botao: var(--cor-destaque);
+  --sombra-do-botao: var(--cor-destaque-sombra);
+  --texto-do-botao: var(--cor-sobre-destaque);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-p);
+  width: 100%;
+  min-height: 52px;
+  padding: var(--espaco-m) var(--espaco-gg);
+  border-radius: var(--raio-m);
+  background: var(--cor-do-botao);
+  color: var(--texto-do-botao);
+  box-shadow: 0 var(--sombra-solida) 0 var(--sombra-do-botao);
+  font-weight: 800;
+  font-size: var(--tamanho-medio);
+  text-align: center;
+  transition: transform var(--tempo-rapido), box-shadow var(--tempo-rapido);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.botao:active:not(:disabled) {
+  transform: translateY(var(--sombra-solida));
+  box-shadow: 0 0 0 var(--sombra-do-botao);
+}
+
+.botao:disabled {
+  --cor-do-botao: var(--cor-bloqueado);
+  --sombra-do-botao: var(--cor-bloqueado-sombra);
+  --texto-do-botao: var(--cor-texto-secundario);
+  cursor: default;
+}
+
+.botao--acerto {
+  --cor-do-botao: var(--cor-acerto);
+  --sombra-do-botao: var(--cor-acerto-sombra);
+  --texto-do-botao: var(--cor-texto-escuro);
+}
+
+.botao--erro {
+  --cor-do-botao: var(--cor-erro);
+  --sombra-do-botao: var(--cor-erro-sombra);
+  --texto-do-botao: var(--cor-texto-escuro);
+}
+
+/* Contorno: ações secundárias (Cancelar, Ir para a trilha) */
+.botao--contorno {
+  --cor-do-botao: transparent;
+  --sombra-do-botao: var(--cor-borda);
+  --texto-do-botao: var(--cor-texto);
+  border: var(--borda) solid var(--cor-borda);
+}
+
+/* Contorno vermelho: ação que apaga algo */
+.botao--contorno-erro {
+  --cor-do-botao: transparent;
+  --sombra-do-botao: var(--cor-erro-sombra);
+  --texto-do-botao: var(--cor-erro);
+  border: var(--borda) solid var(--cor-erro);
+}
+
+/* Só texto: ação de saída, sem destaque */
+.botao--texto {
+  --cor-do-botao: transparent;
+  --sombra-do-botao: transparent;
+  --texto-do-botao: var(--cor-erro);
+}
+
+/* Botão pequeno, do tamanho do texto (Perfil) */
+.botao--compacto {
+  width: auto;
+  min-height: var(--alvo-minimo);
+  padding: var(--espaco-p) var(--espaco-g);
+  font-size: var(--tamanho-base);
+}
+
+/* Botão só com ícone (fechar) */
+.botao-icone {
+  display: grid;
+  place-items: center;
+  width: var(--alvo-minimo);
+  height: var(--alvo-minimo);
+  flex-shrink: 0;
+  border-radius: var(--raio-m);
+  color: var(--cor-texto-secundario);
+  transition: background-color var(--tempo-rapido), color var(--tempo-rapido);
+}
+
+.botao-icone:active {
+  background: var(--cor-cartao);
+  color: var(--cor-texto);
+}
+
+
+/* ============================================================
+   7. TRILHA
+   ============================================================ */
+.trilha {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-gg);
+}
+
+/* Nome da trilha: o título de cada parte do caminho */
+.trilha-nome {
+  font-size: var(--tamanho-titulo-m);
+  margin-top: var(--espaco-p);
+}
+
+.trilha + .trilha {
+  margin-top: var(--espaco-xg);
+}
+
+/* Trilha sem unidades: aparece só o nome e "Em breve" */
+.trilha-futura {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--espaco-m);
+  padding-top: var(--espaco-gg);
+  border-top: var(--borda) solid var(--cor-borda);
+}
+
+.trilha-futura .trilha-nome {
+  margin-top: 0;
+  color: var(--cor-texto-secundario);
+}
+
+/* Etiqueta "Em breve" */
+.selo {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--espaco-m);
+  border-radius: var(--raio-total);
+  background: var(--cor-destaque-suave);
+  color: var(--cor-destaque);
+  font-weight: 700;
+  font-size: var(--tamanho-pequeno);
+}
+
+/* ----- Cartão da unidade (faixa colorida, como na prévia) ----- */
+.unidade {
+  padding: var(--espaco-m) var(--espaco-g) var(--espaco-g);
+  border-radius: var(--raio-g);
+  background: var(--cor-destaque);
+  color: var(--cor-sobre-destaque);
+  box-shadow: 0 5px 0 var(--cor-destaque-sombra);
+}
+
+.unidade-rotulo {
+  font-weight: 600;
+  font-size: var(--tamanho-pequeno);
+}
+
+.unidade-titulo {
+  color: inherit;
+  font-size: var(--tamanho-titulo-m);
+}
+
+.unidade-texto {
+  margin-top: var(--espaco-pp);
+  font-size: var(--tamanho-pequeno);
+}
+
+/* Unidade sem conteúdo ainda: apagada, sem cor de destaque */
+.unidade--em-breve {
+  background: transparent;
+  color: var(--cor-texto-secundario);
+  border: var(--borda) dashed var(--cor-borda);
+  box-shadow: none;
+}
+
+.unidade--em-breve .unidade-titulo {
+  color: var(--cor-texto);
+}
+
+/* ----- O caminho de bolinhas ----- */
+.caminho {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-gg);
+  padding: var(--espaco-p) 0 var(--espaco-g);
+}
+
+/* Cada bolinha anda para os lados pelo valor de --curva
+   (de -1 a 1, definido no telas.js). É isso que faz o S. */
+.no {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-m);
+  transform: translateX(calc(var(--curva, 0) * var(--amplitude-curva)));
+  scroll-margin: 160px;
+}
+
+/* O anel: só aparece em volta da lição atual */
+.no-anel {
+  position: relative;
+  padding: 7px;
+  border: 5px solid transparent;
+  border-radius: 50%;
+}
+
+.no--atual .no-anel {
+  border-color: var(--cor-destaque-anel);
+}
+
+/* A bolinha: uma "moeda" com sombra sólida embaixo */
+.no-botao {
+  --cor-do-no: var(--cor-destaque);
+  --sombra-do-no: var(--cor-destaque-sombra);
+  --icone-do-no: var(--cor-sobre-destaque);
+
+  display: grid;
+  place-items: center;
+  width: var(--tamanho-no);
+  height: calc(var(--tamanho-no) - 8px);
+  border-radius: 50%;
+  background: var(--cor-do-no);
+  color: var(--icone-do-no);
+  box-shadow: 0 var(--sombra-no) 0 var(--sombra-do-no);
+  transition: transform var(--tempo-rapido), box-shadow var(--tempo-rapido);
+}
+
+.no-botao .icone {
+  width: 30px;
+  height: 30px;
+}
+
+.no-botao:active {
+  transform: translateY(var(--sombra-no));
+  box-shadow: 0 0 0 var(--sombra-do-no);
+}
+
+.no--bloqueada .no-botao,
+.no--em-breve .no-botao,
+.no--bau-trancado .no-botao {
+  --cor-do-no: var(--cor-bloqueado);
+  --sombra-do-no: var(--cor-bloqueado-sombra);
+  --icone-do-no: var(--cor-bloqueado-icone);
+}
+
+.no--bau-liberado .no-botao {
+  --cor-do-no: var(--cor-bau);
+  --sombra-do-no: var(--cor-bau-sombra);
+  --icone-do-no: var(--cor-texto-escuro);
+  animation: pulsar 1.8s ease-in-out infinite;
+}
+
+.no--bau-aberto .no-botao {
+  --cor-do-no: var(--cor-cartao);
+  --sombra-do-no: var(--cor-borda);
+  --icone-do-no: var(--cor-texto-secundario);
+}
+
+/* Balão "Começar" em cima da lição atual */
+.no-comecar {
+  position: relative;
+  padding: var(--espaco-pp) var(--espaco-g);
+  border: var(--borda) solid var(--cor-borda);
+  border-radius: var(--raio-m);
+  background: var(--cor-cartao);
+  color: var(--cor-destaque);
+  font-weight: 800;
+  font-size: var(--tamanho-pequeno);
+  animation: balancar 1.6s ease-in-out infinite;
+}
+
+/* Bico do balão, apontando para a bolinha */
+.no-comecar::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 12px;
+  height: 12px;
+  background: var(--cor-cartao);
+  border-right: var(--borda) solid var(--cor-borda);
+  border-bottom: var(--borda) solid var(--cor-borda);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+/* ----- Estrela ao lado do próximo passo ----- */
+.estrela-guia {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-p);
+  width: var(--largura-estrela-guia);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.estrela-guia--esquerda { right: calc(100% + 10px); }
+.estrela-guia--direita  { left: calc(100% + 10px); }
+
+.estrela-guia .estrela {
+  width: var(--tamanho-estrela-guia);
+  height: var(--tamanho-estrela-guia);
+}
+
+.balao {
+  position: relative;
+  padding: var(--espaco-p) var(--espaco-m);
+  border: var(--borda) solid var(--cor-borda);
+  border-radius: var(--raio-m);
+  background: var(--cor-cartao);
+  color: var(--cor-texto);
+  font-weight: 600;
+  font-size: 0.8125rem;   /* 13px: o balão é estreito */
+  line-height: 1.3;
+  text-align: center;
+}
+
+/* ============================================================
+   8. ESTRELA (mascote provisória)
+   O desenho fica no telas.js (função desenharEstrela); aqui
+   só as cores de cada parte.
+   ============================================================ */
+.estrela {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.estrela-sombra { fill: var(--cor-sombra-mascote); }
+.estrela-corpo  { fill: var(--cor-destaque); }
+.estrela-brilho { fill: var(--cor-olho-mascote); opacity: 0.25; }
+.estrela-olho   { fill: var(--cor-olho-mascote); }
+.estrela-pupila { fill: var(--cor-fundo); }
+.estrela-boca   { fill: var(--cor-fundo); }
+
+.estrela-traco {
+  fill: none;
+  stroke: var(--cor-fundo);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.estrela-traco--fino {
+  stroke-width: 2.4;
+}
+
+
+/* ============================================================
+   9. LIÇÃO
+   ============================================================ */
+.licao {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.licao-conteudo {
+  flex: 1;
+  width: 100%;
+  max-width: var(--largura-licao);
+  margin: 0 auto;
+  padding: calc(var(--espaco-m) + var(--margem-segura-cima)) var(--espaco-g) var(--espaco-gg);
+}
+
+/* ----- Topo: fechar, barra de progresso e vidas ----- */
+.licao-topo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-m);
+  margin-bottom: var(--espaco-gg);
+}
+
+/* A barra tem uma parte para cada questão. Depois de responder,
+   a parte fica verde (acertou) ou vermelha (errou). */
+.barra {
+  flex: 1;
+  display: flex;
+  gap: 6px;
+}
+
+.barra-parte {
+  flex: 1;
+  height: 14px;
+  border-radius: var(--raio-total);
+  background: var(--cor-borda);
+  transition: background-color var(--tempo-medio);
+}
+
+.barra-parte--atual  { background: var(--cor-destaque); }
+.barra-parte--certa  { background: var(--cor-acerto); }
+.barra-parte--errada { background: var(--cor-erro); }
+
+.licao-vidas {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-pp);
+  color: var(--cor-vida);
+  font-weight: 800;
+  font-size: var(--tamanho-medio);
+  font-variant-numeric: tabular-nums;
+}
+
+.licao-vidas--perdeu .icone {
+  animation: tremer 0.45s ease-in-out;
+}
+
+/* ----- Nível da questão ----- */
+.etiqueta {
+  display: inline-flex;
+  padding: 0 var(--espaco-m);
+  border: var(--borda) solid currentColor;
+  border-radius: var(--raio-total);
+  font-weight: 700;
+  font-size: var(--tamanho-pequeno);
+  line-height: 1.6;
+}
+
+.etiqueta--facil   { color: var(--cor-facil); }
+.etiqueta--media   { color: var(--cor-media); }
+.etiqueta--dificil { color: var(--cor-dificil); }
+
+.licao-pergunta {
+  margin: var(--espaco-m) 0 var(--espaco-gg);
+  font-weight: 700;
+  font-size: var(--tamanho-titulo-p);
+  line-height: 1.3;
+}
+
+/* ----- Alternativas ----- */
+.alternativas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-m);
+}
+
+.alternativa {
+  --cor-da-borda: var(--cor-borda);
+  --cor-da-sombra: var(--cor-borda);
+
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-m);
+  width: 100%;
+  min-height: 60px;
+  padding: var(--espaco-m) var(--espaco-g);
+  border: var(--borda) solid var(--cor-da-borda);
+  border-radius: var(--raio-m);
+  box-shadow: 0 var(--sombra-solida) 0 var(--cor-da-sombra);
+  color: var(--cor-texto);
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: left;
+  transition: transform var(--tempo-rapido), box-shadow var(--tempo-rapido),
+              border-color var(--tempo-rapido), background-color var(--tempo-rapido);
+}
+
+.alternativa:active:not(:disabled) {
+  transform: translateY(var(--sombra-solida));
+  box-shadow: 0 0 0 var(--cor-da-sombra);
+}
+
+.alternativa:disabled {
+  cursor: default;
+}
+
+/* Letra da alternativa (A, B, C, D) */
+.alternativa-letra {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border: var(--borda) solid var(--cor-da-borda);
+  border-radius: var(--raio-p);
+  color: var(--cor-texto-secundario);
+  font-weight: 800;
+  font-size: var(--tamanho-pequeno);
+}
+
+.alternativa--marcada {
+  --cor-da-borda: var(--cor-destaque);
+  --cor-da-sombra: var(--cor-destaque-sombra);
+  background: var(--cor-destaque-suave);
+}
+
+.alternativa--marcada .alternativa-letra {
+  background: var(--cor-destaque);
+  color: var(--cor-sobre-destaque);
+}
+
+.alternativa--certa {
+  --cor-da-borda: var(--cor-acerto);
+  --cor-da-sombra: var(--cor-acerto-sombra);
+  background: var(--cor-acerto-suave);
+}
+
+.alternativa--certa .alternativa-letra {
+  background: var(--cor-acerto);
+  color: var(--cor-texto-escuro);
+}
+
+.alternativa--errada {
+  --cor-da-borda: var(--cor-erro);
+  --cor-da-sombra: var(--cor-erro-sombra);
+  background: var(--cor-erro-suave);
+  animation: tremer 0.45s ease-in-out;
+}
+
+.alternativa--errada .alternativa-letra {
+  background: var(--cor-erro);
+  color: var(--cor-texto-escuro);
+}
+
+.alternativa--apagada {
+  opacity: 0.45;
+}
+
+/* No notebook, o mouse em cima mostra que dá para clicar */
+@media (hover: hover) {
+  .alternativa:hover:not(:disabled):not(.alternativa--marcada) {
+    background: var(--cor-cartao);
+  }
+}
+
+/* ----- Barra de baixo: botão Verificar e, depois, o feedback ----- */
+.licao-acoes {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  border-top: var(--borda) solid var(--cor-linha);
+  background: var(--cor-fundo);
+}
+
+.licao-acoes-dentro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-g);
+  width: 100%;
+  max-width: var(--largura-licao);
+  margin: 0 auto;
+  padding: var(--espaco-g) var(--espaco-g) calc(var(--espaco-g) + var(--margem-segura-baixo));
+}
+
+.licao-acoes--acerto,
+.licao-acoes--erro {
+  border-top-color: transparent;
+}
+
+.licao-acoes--acerto { background: var(--cor-acerto-fundo); }
+.licao-acoes--erro   { background: var(--cor-erro-fundo); }
+
+.licao-acoes--acerto .licao-acoes-dentro,
+.licao-acoes--erro .licao-acoes-dentro {
+  animation: subir var(--tempo-medio) ease-out;
+}
+
+.feedback-titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-p);
+  font-family: var(--fonte-titulo);
+  font-weight: 800;
+  font-size: var(--tamanho-titulo-m);
+  line-height: 1.2;
+}
+
+.licao-acoes--acerto .feedback-titulo { color: var(--cor-acerto); }
+.licao-acoes--erro .feedback-titulo   { color: var(--cor-erro); }
+
+/* Círculo do ícone: da cor do título, com o ícone da cor do painel */
+.feedback-icone {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.feedback-icone .icone {
+  width: 18px;
+  height: 18px;
+}
+
+.licao-acoes--acerto .feedback-icone .icone { color: var(--cor-acerto-fundo); }
+.licao-acoes--erro .feedback-icone .icone   { color: var(--cor-erro-fundo); }
+
+.feedback-texto {
+  margin-top: var(--espaco-p);
+  color: var(--cor-texto);
+}
+
+.feedback-texto strong {
+  color: var(--cor-titulo);
+}
+
+/* ----- Confirmação de saída (sobe de baixo) ----- */
+.folha {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: var(--cor-veu);
+}
+
+.folha-caixa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-m);
+  width: 100%;
+  max-width: 480px;
+  padding: var(--espaco-gg) var(--espaco-g) calc(var(--espaco-gg) + var(--margem-segura-baixo));
+  border: var(--borda) solid var(--cor-borda);
+  border-bottom: 0;
+  border-radius: var(--raio-g) var(--raio-g) 0 0;
+  background: var(--cor-cartao);
+  text-align: center;
+  animation: subir var(--tempo-medio) ease-out;
+}
+
+.folha-caixa .estrela {
+  width: 88px;
+  height: 88px;
+}
+
+.folha-titulo {
+  font-size: var(--tamanho-titulo-m);
+}
+
+.folha-texto {
+  max-width: 36ch;
+  color: var(--cor-texto-secundario);
+}
+
+.folha-botoes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-m);
+  width: 100%;
+  margin-top: var(--espaco-p);
+}
+
+
+/* ============================================================
+   10. COMEMORAÇÃO (vitória, baú aberto, sem vidas)
+   ============================================================ */
+.comemoracao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-g);
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: var(--espaco-xg) var(--espaco-g) calc(var(--espaco-xg) + var(--margem-segura-baixo));
+  text-align: center;
+}
+
+.comemoracao-figura {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 168px;
+  height: 168px;
+}
+
+.comemoracao-figura .estrela,
+.comemoracao-figura .icone-grande {
+  animation: surgir 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+.comemoracao-figura .estrela {
+  width: 100%;
+  height: 100%;
+}
+
+.icone-grande {
+  width: 120px;
+  height: 120px;
+  color: var(--cor-bau);
+}
+
+/* Faíscas em volta da Estrela: a única animação "de enfeite" do app */
+.faisca {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  color: var(--cor-xp);
+  animation: faiscar 0.9s ease-out 0.35s both;
+}
+
+.faisca--1 { top: 6%;  left: -2%; }
+.faisca--2 { top: -2%; right: 8%;  width: 16px; height: 16px; color: var(--cor-destaque); animation-delay: 0.45s; }
+.faisca--3 { bottom: 20%; right: -6%; animation-delay: 0.55s; }
+.faisca--4 { bottom: 6%; left: 6%; width: 14px; height: 14px; color: var(--cor-sequencia); animation-delay: 0.5s; }
+
+.comemoracao-titulo {
+  font-size: var(--tamanho-titulo-g);
+}
+
+.comemoracao-texto {
+  max-width: 34ch;
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-medio);
+}
+
+/* ----- Placar: XP, moedas e precisão ----- */
+.placar {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: var(--espaco-m);
+  width: 100%;
+  margin-top: var(--espaco-p);
+}
+
+.placar-item {
+  --cor-do-item: var(--cor-destaque);
+  display: flex;
+  flex-direction: column;
+  border: var(--borda) solid var(--cor-do-item);
+  border-radius: var(--raio-m);
+  overflow: hidden;
+}
+
+.placar-rotulo {
+  padding: var(--espaco-pp) var(--espaco-p);
+  background: var(--cor-do-item);
+  color: var(--cor-texto-escuro);
+  font-weight: 800;
+  font-size: var(--tamanho-pequeno);
+}
+
+.placar-valor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-pp);
+  padding: var(--espaco-m) var(--espaco-p);
+  color: var(--cor-do-item);
+  font-family: var(--fonte-titulo);
+  font-weight: 800;
+  font-size: var(--tamanho-titulo-m);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.placar-valor .icone {
+  width: 22px;
+  height: 22px;
+}
+
+.placar-item--xp       { --cor-do-item: var(--cor-xp); }
+.placar-item--moedas   { --cor-do-item: var(--cor-moeda); }
+.placar-item--precisao { --cor-do-item: var(--cor-acerto); }
+
+.comemoracao-sequencia {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-p);
+  color: var(--cor-sequencia);
+  font-weight: 700;
+}
+
+.comemoracao .botao {
+  margin-top: var(--espaco-g);
+}
+
+
+/* ============================================================
+   11. EM BREVE (Calculadora e Guia, por enquanto)
+   ============================================================ */
+.em-breve {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-g);
+  max-width: 420px;
+  margin: var(--espaco-xg) auto 0;
+  text-align: center;
+}
+
+.em-breve-figura {
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 112px;
+  border: var(--borda) dashed var(--cor-borda);
+  border-radius: 50%;
+  color: var(--cor-destaque);
+}
+
+.em-breve-figura .icone {
+  width: 52px;
+  height: 52px;
+}
+
+.em-breve-titulo {
+  font-size: var(--tamanho-titulo-m);
+}
+
+.em-breve-texto {
+  max-width: 38ch;
+  color: var(--cor-texto-secundario);
+}
+
+.em-breve .botao {
+  margin-top: var(--espaco-p);
+}
+
+
+/* ============================================================
+   12. PERFIL
+   ============================================================ */
+.perfil {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xg);
+}
+
+.perfil-topo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-g);
+}
+
+.perfil-avatar {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  flex-shrink: 0;
+  border: var(--borda) solid var(--cor-borda);
+  border-radius: 50%;
+  background: var(--cor-cartao);
+}
+
+.perfil-avatar .estrela {
+  width: 64px;
+  height: 64px;
+}
+
+.perfil-titulo {
+  font-size: var(--tamanho-titulo-g);
+}
+
+.perfil-sub {
+  color: var(--cor-texto-secundario);
+}
+
+.secao-titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-p);
+  margin-bottom: var(--espaco-m);
+  font-size: var(--tamanho-titulo-p);
+}
+
+.secao-titulo .icone {
+  color: var(--cor-texto-secundario);
+}
+
+/* ----- Estatísticas ----- */
+.estatisticas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espaco-m);
+}
+
+.estatistica {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-m);
+  padding: var(--espaco-m) var(--espaco-g);
+  border: var(--borda) solid var(--cor-borda);
+  border-radius: var(--raio-m);
+}
+
+.estatistica .icone {
+  width: 28px;
+  height: 28px;
+}
+
+.estatistica-valor {
+  display: block;
+  color: var(--cor-titulo);
+  font-family: var(--fonte-titulo);
+  font-weight: 800;
+  font-size: var(--tamanho-titulo-p);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.estatistica-nome {
+  display: block;
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-pequeno);
+}
+
+.estatistica--sequencia .icone { color: var(--cor-sequencia); }
+.estatistica--xp .icone        { color: var(--cor-xp); }
+.estatistica--moedas .icone    { color: var(--cor-moeda); }
+.estatistica--licoes .icone    { color: var(--cor-destaque); }
+.estatistica--precisao .icone  { color: var(--cor-acerto); }
+.estatistica--vidas .icone     { color: var(--cor-vida); }
+
+/* ----- Configurações e Sobre ----- */
+.painel {
+  padding: var(--espaco-g);
+  border: var(--borda) solid var(--cor-borda);
+  border-radius: var(--raio-g);
+}
+
+.config-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--espaco-m);
+}
+
+.config-nome {
+  color: var(--cor-titulo);
+  font-weight: 700;
+}
+
+.config-desc {
+  max-width: 40ch;
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-pequeno);
+}
+
+.confirmacao {
+  margin-top: var(--espaco-g);
+  padding: var(--espaco-g);
+  border: var(--borda) solid var(--cor-erro);
+  border-radius: var(--raio-m);
+  background: var(--cor-erro-fundo);
+}
+
+.confirmacao-titulo {
+  color: var(--cor-erro);
+  font-size: var(--tamanho-titulo-p);
+}
+
+.confirmacao-texto {
+  margin: var(--espaco-pp) 0 var(--espaco-g);
+}
+
+.confirmacao-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-m);
+}
+
+.confirmacao-botoes .botao {
+  flex: 1 1 160px;
+}
+
+.alerta-salvar {
+  display: flex;
+  gap: var(--espaco-p);
+  margin-top: var(--espaco-g);
+  color: var(--cor-xp);
+  font-size: var(--tamanho-pequeno);
+}
+
+.sobre {
+  color: var(--cor-texto-secundario);
+}
+
+.sobre p + p {
+  margin-top: var(--espaco-p);
+}
+
+.sobre strong {
+  color: var(--cor-texto);
+}
+
+
+/* ============================================================
+   13. COLUNA DA DIREITA (tela deitada e larga)
+   ============================================================ */
+.contadores--coluna {
+  justify-content: space-between;
+  padding: var(--espaco-m) var(--espaco-g);
+  border: var(--borda) solid var(--cor-borda);
+  border-radius: var(--raio-g);
+}
+
+.dica {
+  padding: var(--espaco-g);
+  border-radius: var(--raio-g);
+  background: var(--cor-cartao);
+}
+
+.dica-topo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-p);
+  margin-bottom: var(--espaco-p);
+}
+
+.dica-topo .estrela {
+  width: 36px;
+  height: 36px;
+}
+
+.dica-titulo {
+  color: var(--cor-destaque);
+  font-size: var(--tamanho-medio);
+}
+
+
+/* ============================================================
+   14. AVISOS
+   ============================================================ */
+
+/* Aviso rápido (ex.: "Essa lição chega em breve.") */
+.aviso {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--altura-menu-inferior) + var(--margem-segura-baixo) + var(--espaco-g));
+  z-index: 50;
+  width: max-content;
+  max-width: calc(100% - 2 * var(--espaco-g));
+  padding: var(--espaco-m) var(--espaco-g);
+  border: var(--borda) solid var(--cor-borda);
+  border-radius: var(--raio-m);
+  background: var(--cor-cartao);
+  color: var(--cor-titulo);
+  font-weight: 600;
+  text-align: center;
+  box-shadow: var(--sombra-flutuante);
+  opacity: 0;
+  transform: translate(-50%, 12px);
+  pointer-events: none;
+  transition: opacity var(--tempo-medio), transform var(--tempo-medio);
+}
+
+.aviso--visivel {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Problemas no conteúdo (só para a equipe perceber e corrigir) */
+.problemas {
+  position: fixed;
+  top: var(--espaco-m);
+  left: var(--espaco-m);
+  right: var(--espaco-m);
+  z-index: 60;
+  max-width: 720px;
+  max-height: 60vh;
+  margin: 0 auto;
+  overflow: auto;
+  padding: var(--espaco-g);
+  border: var(--borda) solid var(--cor-erro);
+  border-radius: var(--raio-m);
+  background: var(--cor-erro-fundo);
+  box-shadow: var(--sombra-flutuante);
+}
+
+.problemas-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espaco-m);
+}
+
+.problemas-titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-p);
+  color: var(--cor-erro);
+  font-weight: 800;
+}
+
+.problemas-lista {
+  margin-top: var(--espaco-p);
+  padding-left: var(--espaco-gg);
+  list-style: disc;
+  font-size: var(--tamanho-pequeno);
+}
+
+.problemas-lista li + li {
+  margin-top: var(--espaco-pp);
+}
+
+
+/* ============================================================
+   15. TELAS MAIORES
+   ============================================================ */
+
+/* Telinha muito estreita: a Estrela não cabe ao lado da trilha */
+@media (max-width: 339px) {
+  .estrela-guia { display: none; }
+  .contadores { gap: var(--espaco-m); }
+}
+
+@media (min-width: 400px) {
+  :root {
+    --largura-estrela-guia: 120px;
+    --tamanho-estrela-guia: 92px;
+  }
+}
+
+/* Cabe o nome "FinEdu" ao lado da estrela na barra de cima */
+@media (min-width: 480px) {
+  .topo-logo .logo-texto { display: inline; }
+}
+
+/* Tablet em pé: trilha mais aberta, Estrela maior */
+@media (min-width: 600px) {
+  :root {
+    --amplitude-curva: 96px;
+    --largura-estrela-guia: 150px;
+    --tamanho-estrela-guia: 112px;
+  }
+  .licao-pergunta { font-size: var(--tamanho-titulo-m); }
+}
+
+/* Lição em tela larga: feedback de um lado, botão do outro */
+@media (min-width: 720px) {
+  .licao-acoes-dentro {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--espaco-gg);
+  }
+  .licao-acoes-dentro .botao {
+    width: auto;
+    min-width: 200px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .folha { align-items: center; }
+  .folha-caixa {
+    border-bottom: var(--borda) solid var(--cor-borda);
+    border-radius: var(--raio-g);
+  }
+}
+
+/* ----- TELA DEITADA: menu vira coluna à esquerda -----
+   A troca é pela ORIENTAÇÃO, não só pela largura: tablet Samsung
+   em pé tem uns 800px de largura e precisa continuar com o menu
+   embaixo. */
+@media (orientation: landscape) and (min-width: 768px) {
+  .app {
+    display: grid;
+    grid-template-columns: var(--largura-menu-lateral) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "menu topo"
+      "menu principal";
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .menu {
+    grid-area: menu;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-p);
+    padding: var(--espaco-xg) var(--espaco-g);
+    border-top: 0;
+    border-right: var(--borda) solid var(--cor-linha);
+  }
+
+  .menu-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-m);
+    min-height: var(--alvo-minimo);
+    margin-bottom: var(--espaco-gg);
+    padding: 0 var(--espaco-m);
+  }
+
+  .menu-logo .logo-estrela {
+    width: 40px;
+    height: 40px;
+  }
+
+  .menu-logo .logo-texto {
+    font-size: var(--tamanho-titulo-g);
+  }
+
+  .menu-item {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--espaco-g);
+    min-height: 52px;
+    padding: var(--espaco-m) var(--espaco-g);
+    font-size: var(--tamanho-base);
+  }
+
+  .topo {
+    grid-area: topo;
+    justify-content: flex-end;
+    border-bottom: 0;
+  }
+
+  .topo-logo {
+    display: none;
+  }
+
+  .principal {
+    grid-area: principal;
+    padding-bottom: var(--espaco-xgg);
+  }
+
+  .aviso {
+    bottom: var(--espaco-gg);
+  }
+}
+
+/* ----- TELA DEITADA E LARGA (tablet deitado, notebook):
+   aparece a coluna da direita com contadores e dica ----- */
+@media (orientation: landscape) and (min-width: 1200px) {
+  .app {
+    grid-template-columns: var(--largura-menu-lateral) minmax(0, 1fr) var(--largura-coluna-direita);
+    grid-template-rows: 1fr;
+    grid-template-areas: "menu principal direita";
+  }
+
+  .topo {
+    display: none;
+  }
+
+  .principal {
+    padding-top: var(--espaco-xg);
+  }
+
+  .coluna-direita {
+    grid-area: direita;
+    position: sticky;
+    top: 0;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-g);
+    padding: var(--espaco-xg) var(--espaco-gg);
+  }
+}
+
+
+/* ============================================================
+   16. MODO FOCO (lição e comemorações): sem menu, sem distração
+   Fica no fim do arquivo para valer por cima das regras acima.
+   ============================================================ */
+.modo-foco .app {
+  display: block;
+}
+
+.modo-foco .menu,
+.modo-foco .topo,
+.modo-foco .coluna-direita {
+  display: none;
+}
+
+.modo-foco .principal {
+  max-width: none;
+  padding: 0;
+}
+
+.modo-foco .aviso {
+  bottom: var(--espaco-gg);
+}
+
+
+/* ============================================================
+   17. ANIMAÇÕES
+   ============================================================ */
+@keyframes balancar {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+
+@keyframes pulsar {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.06); }
+}
+
+@keyframes tremer {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px); }
+  40%      { transform: translateX(6px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(4px); }
+}
+
+@keyframes subir {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes surgir {
+  0%   { transform: scale(0.4);  opacity: 0; }
+  70%  { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes faiscar {
+  0%   { transform: scale(0) rotate(0deg);   opacity: 0; }
+  40%  { opacity: 1; }
+  100% { transform: scale(1) rotate(90deg);  opacity: 1; }
+}
+
+/* Quem desligou as animações no aparelho não vê movimento */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
