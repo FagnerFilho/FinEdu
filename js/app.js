@@ -149,7 +149,7 @@ function mostrarTela(tela) {
   const lugar = document.getElementById(`tela-${tela}`);
   switch (tela) {
     case 'aprender':    desenharTrilha(lugar, estado.progresso); break;
-    case 'calculadora': desenharEmBreve(lugar, 'calculadora'); break;
+    case 'calculadora': desenharCalculadora(lugar); break;
     case 'guia':        desenharEmBreve(lugar, 'guia'); break;
     case 'perfil':      desenharPerfil(lugar, estado.progresso, estado.podeSalvar); break;
     case 'licao':       desenharLicao(lugar, estado.sessao, estado.progresso); break;
@@ -320,8 +320,72 @@ function tocarNoBau(idUnidade) {
 
 
 // ============================================================
-// 6. PERFIL
+// 6. CALCULADORA E PERFIL
 // ============================================================
+
+let taxaEmMemoria = '0,8';
+
+function lerCamposDaCalculadora() {
+  const container = document.querySelector('#tela-calculadora .calculadora');
+  const custo = document.getElementById('campo-custo');
+  const meses = document.getElementById('campo-meses');
+  const guardado = document.getElementById('campo-guardado');
+  const taxa = document.getElementById('campo-taxa');
+
+  if (taxa) taxaEmMemoria = taxa.value;
+
+  return {
+    aba: container && container.dataset.abaAtiva === 'com-juros' ? 'com-juros' : 'sem-juros',
+    custo: custo ? custo.value : '',
+    meses: meses ? meses.value : '',
+    guardado: guardado ? guardado.value : '',
+    taxa: taxa ? taxa.value : taxaEmMemoria
+  };
+}
+
+function calcularPorModo(aba, campos) {
+  if (aba === 'com-juros') {
+    return calcularMetaComJuros(campos.custo, campos.meses, campos.guardado, campos.taxa);
+  }
+  return calcularMeta(campos.custo, campos.meses, campos.guardado);
+}
+
+function calcularMetaNaTela(modoForcado) {
+  const campos = lerCamposDaCalculadora();
+  const aba = modoForcado || campos.aba;
+  const resultado = calcularPorModo(aba, campos);
+  mostrarResultadoCalculadora(resultado);
+}
+
+function trocarAbaCalculadora(novaAba) {
+  const lugar = document.getElementById('tela-calculadora');
+  if (!lugar) return;
+
+  const campos = lerCamposDaCalculadora();
+  const jaTinhaResultado = Boolean(document.querySelector('#calculadora-resultado .calculadora-resultado'));
+  let resultado = null;
+
+  if (jaTinhaResultado && campos.custo.trim() !== '' && campos.meses.trim() !== '') {
+    const calculado = calcularPorModo(novaAba, campos);
+    if (calculado.valido) resultado = calculado;
+  }
+
+  desenharCalculadora(lugar, {
+    ...campos,
+    aba: novaAba,
+    resultado
+  });
+}
+
+function limparCalculadoraNaTela() {
+  const lugar = document.getElementById('tela-calculadora');
+  if (!lugar) return;
+  const { aba } = lerCamposDaCalculadora();
+  taxaEmMemoria = '0,8';
+  desenharCalculadora(lugar, { aba });
+  const primeiroCampo = document.getElementById('campo-custo');
+  if (primeiroCampo) primeiroCampo.focus();
+}
 
 function apagarProgresso() {
   reiniciarProgresso();
@@ -350,34 +414,51 @@ function tratarClique(evento) {
   if (!botao) return;
 
   switch (botao.dataset.acao) {
-    case 'abrir-licao':        abrirLicao(botao.dataset.id); break;
-    case 'abrir-bau':          tocarNoBau(botao.dataset.id); break;
-    case 'escolher':           escolher(Number(botao.dataset.indice)); break;
-    case 'verificar':          verificar(); break;
-    case 'continuar':          continuar(); break;
-    case 'sair-licao':         pedirParaSair(); break;
-    case 'cancelar-saida':     mostrarConfirmacaoDeSaida(false); break;
-    case 'confirmar-saida':    sairDaLicao(); break;
-    case 'recarregar-vidas':   recarregar(); break;
-    case 'treinar':            treinar(botao.dataset.id); break;
-    case 'voltar-trilha':      sairDaLicao(); break;   // a tela "sem vidas" pode ter lição parada
-    case 'abrir-painel':       mostrarPainel(estado.progresso, botao.dataset.contador); break;
-    case 'fechar-painel':      fecharJanela('painel'); break;
-    case 'fechar-boas-vindas': fecharJanela('boas-vindas'); break;
-    case 'reiniciar':          mostrarConfirmacaoDeReinicio(true); break;
-    case 'cancelar-reinicio':  mostrarConfirmacaoDeReinicio(false); break;
-    case 'confirmar-reinicio': apagarProgresso(); break;
-    case 'fechar-problemas':   esconderProblemasDoConteudo(); break;
+    case 'abrir-licao':          abrirLicao(botao.dataset.id); break;
+    case 'abrir-bau':            tocarNoBau(botao.dataset.id); break;
+    case 'escolher':             escolher(Number(botao.dataset.indice)); break;
+    case 'verificar':            verificar(); break;
+    case 'continuar':            continuar(); break;
+    case 'sair-licao':           pedirParaSair(); break;
+    case 'cancelar-saida':       mostrarConfirmacaoDeSaida(false); break;
+    case 'confirmar-saida':      sairDaLicao(); break;
+    case 'recarregar-vidas':     recarregar(); break;
+    case 'treinar':              treinar(botao.dataset.id); break;
+    case 'voltar-trilha':        sairDaLicao(); break;   // a tela "sem vidas" pode ter lição parada
+    case 'abrir-painel':         mostrarPainel(estado.progresso, botao.dataset.contador); break;
+    case 'fechar-painel':        fecharJanela('painel'); break;
+    case 'fechar-boas-vindas':   fecharJanela('boas-vindas'); break;
+    case 'aba-sem-juros':        trocarAbaCalculadora('sem-juros'); break;
+    case 'aba-com-juros':        trocarAbaCalculadora('com-juros'); break;
+    case 'calcular-meta':        calcularMetaNaTela('sem-juros'); break;
+    case 'calcular-meta-juros':  calcularMetaNaTela('com-juros'); break;
+    case 'limpar-calculadora':   limparCalculadoraNaTela(); break;
+    case 'reiniciar':            mostrarConfirmacaoDeReinicio(true); break;
+    case 'cancelar-reinicio':    mostrarConfirmacaoDeReinicio(false); break;
+    case 'confirmar-reinicio':   apagarProgresso(); break;
+    case 'fechar-problemas':     esconderProblemasDoConteudo(); break;
   }
 }
 
-// Atalhos no notebook, durante a lição:
-//   1 a 4 (ou A a D) escolhem a alternativa
-//   Enter verifica ou continua
-//   Esc pede para sair
+// Atalhos no notebook:
+//   Na calculadora: Enter em qualquer campo dispara o cálculo da aba ativa
+//   Durante a lição: 1 a 4 (ou A a D) escolhem a alternativa,
+//     Enter verifica ou continua, Esc pede para sair
 function tratarTecla(evento) {
+  if (evento.ctrlKey || evento.metaKey || evento.altKey) return;
+
+  const telaCalculadora = document.getElementById('tela-calculadora');
+  const naCalculadora = telaCalculadora && !telaCalculadora.hidden;
+  if (naCalculadora) {
+    if (evento.key === 'Enter' && evento.target.closest('input')) {
+      evento.preventDefault();
+      calcularMetaNaTela();
+    }
+    return;
+  }
+
   const naLicao = estado.sessao && !document.getElementById('tela-licao').hidden;
-  if (!naLicao || evento.ctrlKey || evento.metaKey || evento.altKey) return;
+  if (!naLicao) return;
 
   const folha = document.getElementById('confirmar-saida');
   const confirmandoSaida = folha && !folha.hidden;

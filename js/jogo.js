@@ -49,6 +49,13 @@ const NIVEIS = [
   { nome: 'Investidor', xp: 450 }
 ];
 
+// Calculadora de Metas
+const MESES_MINIMOS_META = 1;
+const MESES_MAXIMOS_META = 36;
+const SEMANAS_POR_MES = 30 / 7;    // mês comercial de 30 dias dividido por 7 dias
+const TAXA_EXEMPLO_PADRAO = 0.8;   // taxa mensal (%) inicial do simulador educativo
+const TAXA_EXEMPLO_MAXIMA = 20;    // limite superior da taxa de exemplo (% ao mês)
+
 
 // ============================================================
 // 2. DATAS
@@ -709,4 +716,323 @@ function conferirLicao(licao, problemas) {
       problemas.push(`${nome}: precisa de ${esperado} de nível ${nomeDoNivel}, mas tem ${contagem[nivel]}.`);
     }
   }
+}
+
+
+// ============================================================
+// 10. CALCULADORA DE METAS
+// ============================================================
+// Funções puras para ler os campos digitados, validar valores,
+// arredondar centavos sempre para cima, formatar em reais (R$) e
+// calcular quanto guardar por mês, por semana e no simulador de
+// rendimento. Nenhuma função aqui salva nada nem mexe no HTML.
+
+// Lê um número digitado com vírgula ou ponto decimal (ex.: "12,50"
+// ou "12.50"), tirando espaços nas pontas. Devolve:
+//   - 'vazio'    → campo em branco, null ou undefined
+//   - 'invalido' → número negativo, letras ou formato incorreto
+//   - Number     → número válido maior ou igual a zero
+function lerNumeroCalculadora(entrada) {
+  if (entrada === null || entrada === undefined) return 'vazio';
+
+  if (typeof entrada === 'number') {
+    if (!Number.isFinite(entrada) || entrada < 0) return 'invalido';
+    return entrada;
+  }
+
+  const texto = String(entrada).trim();
+  if (texto === '') return 'vazio';
+
+  let normalizado = null;
+  if (/^\d+([.,]\d+)?$/.test(texto)) {
+    normalizado = texto.replace(',', '.');
+  } else if (/^\d{1,3}(\.\d{3})+,\d+$/.test(texto)) {
+    normalizado = texto.replace(/\./g, '').replace(',', '.');
+  } else {
+    return 'invalido';
+  }
+
+  const numero = Number(normalizado);
+  if (!Number.isFinite(numero) || numero < 0) return 'invalido';
+  return numero;
+}
+
+// Qualquer fração de centavo sobe para o próximo centavo
+// (ex.: 100 / 3 = 33,34). O -1e-9 evita subir por imprecisão
+// binária quando a divisão já é exata em centavos.
+function arredondarParaCima(valor) {
+  if (!Number.isFinite(valor) || valor <= 0) return 0;
+  return Math.ceil((valor - 1e-9) * 100) / 100;
+}
+
+// Formata no padrão brasileiro: R$ 1.234,56
+function formatarMoeda(valor) {
+  const numero = Number.isFinite(valor) ? valor : 0;
+  const centavosTotais = Math.round(Math.abs(numero) * 100);
+  const reais = Math.floor(centavosTotais / 100);
+  const centavos = String(centavosTotais % 100).padStart(2, '0');
+  const reaisComPonto = String(reais).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  const sinal = numero < 0 ? '-' : '';
+  return `${sinal}R$ ${reaisComPonto},${centavos}`;
+}
+
+// Calcula quanto guardar por mês e por semana para atingir uma meta.
+// Aceita (custo, meses, guardado) ou ({ custo, meses, guardado }).
+function calcularMeta(custoEntrada, mesesEntrada, guardadoEntrada = 0) {
+  if (typeof custoEntrada === 'object' && custoEntrada !== null) {
+    mesesEntrada = custoEntrada.meses;
+    guardadoEntrada = custoEntrada.guardado !== undefined ? custoEntrada.guardado : 0;
+    custoEntrada = custoEntrada.custo;
+  }
+
+  const custo = lerNumeroCalculadora(custoEntrada);
+  const meses = lerNumeroCalculadora(mesesEntrada);
+  const guardadoLido = lerNumeroCalculadora(guardadoEntrada);
+  const guardado = guardadoLido === 'vazio' ? 0 : guardadoLido;
+
+  if (custo === 'invalido' || meses === 'invalido' || guardado === 'invalido') {
+    return {
+      valido: false,
+      erro: 'Use só números, como 300 ou 12,50.'
+    };
+  }
+
+  if (custo === 'vazio' || custo === 0) {
+    return {
+      valido: false,
+      erro: 'Digite quanto custa o que você quer.'
+    };
+  }
+
+  if (meses === 'vazio' || !Number.isInteger(meses) || meses < MESES_MINIMOS_META || meses > MESES_MAXIMOS_META) {
+    return {
+      valido: false,
+      erro: 'Escolha entre 1 e 36 meses.'
+    };
+  }
+
+  if (guardado >= custo) {
+    const sobra = Math.round((guardado - custo) * 100) / 100;
+    return {
+      valido: true,
+      erro: null,
+      metaAtingida: true,
+      custo,
+      meses,
+      guardado,
+      falta: 0,
+      sobra,
+      mensal: 0,
+      semanal: 0,
+      mensalFormatado: formatarMoeda(0),
+      semanalFormatado: formatarMoeda(0),
+      porcentagemGuardada: 100,
+      mensagem: 'Você já tem o suficiente! Que tal guardar o que sobrar para a próxima meta?',
+      subtexto: ''
+    };
+  }
+
+  const falta = Math.round((custo - guardado) * 100) / 100;
+  const mensal = arredondarParaCima(falta / meses);
+  const semanal = arredondarParaCima(mensal / SEMANAS_POR_MES);
+  const porcentagemGuardada = guardado > 0
+    ? Math.min(99, Math.max(1, Math.round((guardado / custo) * 100)))
+    : 0;
+  const prazoTexto = meses === 1 ? '1 mês' : `${meses} meses`;
+  const mensalFormatado = formatarMoeda(mensal);
+  const semanalFormatado = formatarMoeda(semanal);
+
+  return {
+    valido: true,
+    erro: null,
+    metaAtingida: false,
+    custo,
+    meses,
+    guardado,
+    falta,
+    sobra: 0,
+    mensal,
+    semanal,
+    mensalFormatado,
+    semanalFormatado,
+    porcentagemGuardada,
+    mensagem: `Guardando ${mensalFormatado} por mês, você chega lá em ${prazoTexto}.`,
+    subtexto: `Isso dá uns ${semanalFormatado} por semana.`
+  };
+}
+
+// Compara guardar o dinheiro parado (na gaveta) com guardar rendendo
+// juros compostos todo mês usando uma taxa mensal de exemplo (%).
+function simularRendimento(metaOuCusto, taxaEntrada = TAXA_EXEMPLO_PADRAO, guardadoEntrada = 0, taxaExtra = TAXA_EXEMPLO_PADRAO) {
+  let meta = metaOuCusto;
+  let taxaBruta = taxaEntrada;
+
+  if (typeof metaOuCusto !== 'object' || metaOuCusto === null) {
+    meta = calcularMeta(metaOuCusto, taxaEntrada, guardadoEntrada);
+    taxaBruta = taxaExtra;
+  }
+
+  if (!meta || !meta.valido || meta.metaAtingida) {
+    return null;
+  }
+
+  const taxaLida = lerNumeroCalculadora(taxaBruta);
+  if (taxaLida === 'invalido') {
+    return {
+      valido: false,
+      erro: 'Use só números, como 300 ou 12,50.'
+    };
+  }
+  if (taxaLida === 'vazio' || taxaLida > TAXA_EXEMPLO_MAXIMA) {
+    return {
+      valido: false,
+      erro: `Escolha uma taxa de exemplo entre 0 e ${TAXA_EXEMPLO_MAXIMA}% ao mês.`
+    };
+  }
+
+  const totalParado = Math.round((meta.guardado + meta.mensal * meta.meses) * 100) / 100;
+  const taxaDecimal = taxaLida / 100;
+  let saldo = meta.guardado;
+
+  for (let mes = 1; mes <= meta.meses; mes++) {
+    saldo = (saldo + meta.mensal) * (1 + taxaDecimal);
+  }
+
+  const totalRendendo = Math.round(saldo * 100) / 100;
+  const rendimento = Math.max(0, Math.round((totalRendendo - totalParado) * 100) / 100);
+
+  return {
+    valido: true,
+    erro: null,
+    taxa: taxaLida,
+    totalParado,
+    totalRendendo,
+    rendimento,
+    totalParadoFormatado: formatarMoeda(totalParado),
+    totalRendendoFormatado: formatarMoeda(totalRendendo),
+    rendimentoFormatado: formatarMoeda(rendimento),
+    aviso: 'Simulação. O rendimento de verdade muda com o tempo. Menor de idade investe com um responsável.'
+  };
+}
+
+// Calcula quanto guardar por mês com juros compostos (Aba 2):
+// considera o rendimento do valor já guardado (montanteInicial) e o
+// rendimento de cada aporte mensal até atingir a meta no prazo.
+function calcularMetaComJuros(custoEntrada, mesesEntrada, guardadoEntrada = 0, taxaEntrada = TAXA_EXEMPLO_PADRAO) {
+  if (typeof custoEntrada === 'object' && custoEntrada !== null) {
+    mesesEntrada = custoEntrada.meses;
+    guardadoEntrada = custoEntrada.guardado !== undefined ? custoEntrada.guardado : 0;
+    taxaEntrada = custoEntrada.taxa !== undefined ? custoEntrada.taxa : TAXA_EXEMPLO_PADRAO;
+    custoEntrada = custoEntrada.custo;
+  }
+
+  const base = calcularMeta(custoEntrada, mesesEntrada, guardadoEntrada);
+  if (!base.valido) {
+    return base;
+  }
+
+  const taxaLida = lerNumeroCalculadora(taxaEntrada);
+  if (taxaLida === 'vazio' || taxaLida === 'invalido' || taxaLida <= 0 || taxaLida > TAXA_EXEMPLO_MAXIMA) {
+    return {
+      valido: false,
+      erro: `Informe uma taxa de juros válida usando só números (de 0,1 a ${TAXA_EXEMPLO_MAXIMA}), como 0,8 ou 1.`
+    };
+  }
+
+  const { custo, meses, guardado } = base;
+  const taxaDecimal = taxaLida / 100;
+  const fatorInicial = Math.pow(1 + taxaDecimal, meses);
+  const montanteInicialBruto = guardado * fatorInicial;
+  const montanteInicial = Math.round(montanteInicialBruto * 100) / 100;
+  const aviso = 'Simulação. O rendimento de verdade muda com o tempo. Menor de idade investe com um responsável.';
+
+  if (base.metaAtingida) {
+    const rendimentoInicial = Math.max(0, Math.round((montanteInicial - guardado) * 100) / 100);
+    return {
+      ...base,
+      modo: 'com-juros',
+      taxa: taxaLida,
+      montanteInicial,
+      montanteInicialFormatado: formatarMoeda(montanteInicial),
+      mensalSemJuros: 0,
+      mensalComJuros: 0,
+      economiaMensal: 0,
+      economiaTotal: 0,
+      totalSemJuros: guardado,
+      totalTiradoDoBolso: guardado,
+      totalComJuros: montanteInicial,
+      rendimento: rendimentoInicial,
+      totalSemJurosFormatado: formatarMoeda(guardado),
+      totalTiradoDoBolsoFormatado: formatarMoeda(guardado),
+      totalComJurosFormatado: formatarMoeda(montanteInicial),
+      rendimentoFormatado: formatarMoeda(rendimentoInicial),
+      aviso
+    };
+  }
+
+  const faltaComJuros = Math.max(0, custo - montanteInicialBruto);
+  const fatorAportes = ((fatorInicial - 1) / taxaDecimal) * (1 + taxaDecimal);
+  const mensalComJuros = faltaComJuros > 0 ? arredondarParaCima(faltaComJuros / fatorAportes) : 0;
+  const semanalComJuros = arredondarParaCima(mensalComJuros / SEMANAS_POR_MES);
+
+  const mensalSemJuros = base.mensal;
+  const totalSemJuros = Math.round((guardado + mensalSemJuros * meses) * 100) / 100;
+  const totalTiradoDoBolso = Math.round((guardado + mensalComJuros * meses) * 100) / 100;
+  const montanteFinalBruto = montanteInicialBruto + mensalComJuros * fatorAportes;
+  const totalComJuros = Math.round(montanteFinalBruto * 100) / 100;
+  const rendimento = Math.max(0, Math.round((totalComJuros - totalTiradoDoBolso) * 100) / 100);
+
+  const economiaMensal = Math.max(0, Math.round((mensalSemJuros - mensalComJuros) * 100) / 100);
+  const economiaTotal = Math.max(0, Math.round((totalSemJuros - totalTiradoDoBolso) * 100) / 100);
+
+  const prazoTexto = meses === 1 ? '1 mês' : `${meses} meses`;
+  const mensalFormatado = formatarMoeda(mensalComJuros);
+  const semanalFormatado = formatarMoeda(semanalComJuros);
+  const mensalSemJurosFormatado = formatarMoeda(mensalSemJuros);
+  const economiaMensalFormatada = formatarMoeda(economiaMensal);
+  const economiaTotalFormatada = formatarMoeda(economiaTotal);
+  const totalSemJurosFormatado = formatarMoeda(totalSemJuros);
+  const totalTiradoDoBolsoFormatado = formatarMoeda(totalTiradoDoBolso);
+  const totalComJurosFormatado = formatarMoeda(totalComJuros);
+  const rendimentoFormatado = formatarMoeda(rendimento);
+
+  return {
+    valido: true,
+    erro: null,
+    modo: 'com-juros',
+    metaAtingida: false,
+    custo,
+    meses,
+    guardado,
+    taxa: taxaLida,
+    falta: base.falta,
+    sobra: 0,
+    montanteInicial,
+    montanteInicialFormatado: formatarMoeda(montanteInicial),
+    mensal: mensalComJuros,
+    semanal: semanalComJuros,
+    mensalComJuros,
+    semanalComJuros,
+    mensalSemJuros,
+    mensalFormatado,
+    semanalFormatado,
+    mensalSemJurosFormatado,
+    economiaMensal,
+    economiaTotal,
+    economiaMensalFormatada,
+    economiaTotalFormatada,
+    totalSemJuros,
+    totalTiradoDoBolso,
+    totalComJuros,
+    totalRendendo: totalComJuros,
+    rendimento,
+    totalSemJurosFormatado,
+    totalTiradoDoBolsoFormatado,
+    totalComJurosFormatado,
+    rendimentoFormatado,
+    porcentagemGuardada: base.porcentagemGuardada,
+    mensagem: `Guardando ${mensalFormatado} por mês, você chega lá em ${prazoTexto}.`,
+    subtexto: `Isso dá uns ${semanalFormatado} por semana.`,
+    aviso
+  };
 }

@@ -1344,7 +1344,7 @@ dialog.folha::backdrop {
 
 
 /* ============================================================
-   11. EM BREVE (Calculadora e Guia, por enquanto)
+   11. CALCULADORA DE METAS E EM BREVE (Guia)
    ============================================================ */
 .em-breve {
   display: flex;
@@ -1382,6 +1382,287 @@ dialog.folha::backdrop {
 
 .em-breve .botao {
   margin-top: var(--espaco-p);
+}
+
+/* ----- Calculadora de Metas ----- */
+.calculadora {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-gg);
+}
+
+.calculadora-topo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-pp);
+}
+
+.calculadora-titulo {
+  font-size: var(--tamanho-titulo-g);
+}
+
+.calculadora-sub {
+  color: var(--cor-texto-secundario);
+}
+
+/* Seletor de abas no topo da calculadora */
+.calculadora-abas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espaco-p);
+  padding: var(--espaco-pp);
+  border: var(--borda) solid var(--cor-borda);
+  border-radius: var(--raio-g);
+  background: var(--cor-cartao);
+}
+
+.calculadora-aba {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--alvo-minimo);
+  padding: var(--espaco-p) var(--espaco-m);
+  border: var(--borda) solid transparent;
+  border-radius: var(--raio-m);
+  color: var(--cor-texto-menu);
+  font-weight: 700;
+  font-size: var(--tamanho-pequeno);
+  line-height: 1.25;
+  text-align: center;
+  transition: color var(--tempo-rapido), background-color var(--tempo-rapido), border-color var(--tempo-rapido);
+}
+
+.calculadora-aba--ativa {
+  color: var(--cor-destaque);
+  background: var(--cor-destaque-suave);
+  border-color: var(--cor-destaque);
+}
+
+.calculadora-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-g);
+  background: var(--cor-cartao);
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-p);
+}
+
+.campo-rotulo {
+  color: var(--cor-titulo);
+  font-weight: 700;
+  font-size: var(--tamanho-base);
+}
+
+.campo-detalhe {
+  color: var(--cor-texto-secundario);
+  font-weight: 400;
+  font-size: var(--tamanho-pequeno);
+}
+
+.campo-entrada {
+  width: 100%;
+  min-height: var(--alvo-minimo);
+  padding: var(--espaco-p) var(--espaco-g);
+  border: var(--borda) solid var(--cor-borda);
+  border-radius: var(--raio-m);
+  background: var(--cor-fundo);
+  color: var(--cor-titulo);
+  font-family: var(--fonte-texto);
+  font-weight: 700;
+  font-size: var(--tamanho-medio);
+  font-variant-numeric: tabular-nums;
+  transition: border-color var(--tempo-rapido), box-shadow var(--tempo-rapido);
+}
+
+.campo-entrada::placeholder {
+  color: var(--cor-texto-secundario);
+  font-weight: 400;
+}
+
+.campo-entrada:focus-visible {
+  outline: none;
+  border-color: var(--cor-destaque);
+  box-shadow: 0 0 0 var(--borda) var(--cor-destaque-anel);
+}
+
+.calculadora-erro {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-m);
+  padding: var(--espaco-m) var(--espaco-g);
+  border: var(--borda) solid var(--cor-erro);
+  border-radius: var(--raio-m);
+  background: var(--cor-erro-fundo);
+  color: var(--cor-titulo);
+  font-weight: 600;
+}
+
+.calculadora-erro .icone {
+  color: var(--cor-erro);
+}
+
+.calculadora-resultado {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-g);
+  border-color: var(--cor-destaque);
+  background: var(--cor-cartao);
+}
+
+.calculadora-resultado--atingida {
+  border-color: var(--cor-acerto);
+  background: var(--cor-acerto-fundo);
+}
+
+.calculadora-destaque {
+  color: var(--cor-texto);
+  font-size: var(--tamanho-titulo-p);
+  line-height: 1.35;
+}
+
+.calculadora-destaque strong {
+  color: var(--cor-titulo);
+  font-family: var(--fonte-titulo);
+  font-weight: 800;
+  font-size: var(--tamanho-titulo-m);
+  font-variant-numeric: tabular-nums;
+}
+
+.calculadora-resultado--atingida .calculadora-destaque {
+  color: var(--cor-titulo);
+  font-weight: 700;
+}
+
+.calculadora-subtexto {
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-medio);
+}
+
+.calculadora-subtexto strong {
+  color: var(--cor-moeda);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.meta-progresso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-p);
+  padding: var(--espaco-m) var(--espaco-g);
+  border: var(--borda) solid var(--cor-borda);
+  border-radius: var(--raio-m);
+  background: var(--cor-fundo);
+}
+
+.meta-progresso-texto {
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-pequeno);
+}
+
+.meta-progresso-texto strong {
+  color: var(--cor-acerto);
+}
+
+.meta-progresso-trilho {
+  width: 100%;
+  height: var(--espaco-m);
+  border-radius: var(--raio-total);
+  background: var(--cor-borda);
+  overflow: hidden;
+}
+
+.meta-progresso-preenchimento {
+  display: block;
+  height: 100%;
+  border-radius: var(--raio-total);
+  background: var(--cor-acerto);
+  transition: width var(--tempo-medio);
+}
+
+.calculadora-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-m);
+}
+
+.calculadora-botoes .botao {
+  flex: 1 1 200px;
+}
+
+.rendimento {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-g);
+  padding-top: var(--espaco-g);
+  border-top: var(--borda) solid var(--cor-borda);
+}
+
+.rendimento-taxa-linha {
+  display: flex;
+  gap: var(--espaco-m);
+}
+
+.rendimento-taxa-linha .campo-entrada {
+  flex: 1;
+}
+
+.rendimento-comparativo {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espaco-m);
+}
+
+.rendimento-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-pp);
+  padding: var(--espaco-m) var(--espaco-g);
+  border: var(--borda) solid var(--cor-borda);
+  border-radius: var(--raio-m);
+  background: var(--cor-fundo);
+}
+
+.rendimento-item--juros {
+  border-color: var(--cor-acerto);
+}
+
+.rendimento-rotulo {
+  color: var(--cor-texto-secundario);
+  font-weight: 700;
+  font-size: var(--tamanho-pequeno);
+}
+
+.rendimento-valor {
+  color: var(--cor-titulo);
+  font-family: var(--fonte-titulo);
+  font-weight: 800;
+  font-size: var(--tamanho-titulo-m);
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.rendimento-item--juros .rendimento-valor {
+  color: var(--cor-acerto);
+}
+
+.rendimento-detalhe {
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-pequeno);
+}
+
+.calculadora-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espaco-p);
+  padding: var(--espaco-m);
+  border: var(--borda) solid var(--cor-borda);
+  border-radius: var(--raio-m);
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-pequeno);
 }
 
 
@@ -1692,6 +1973,7 @@ dialog.folha::backdrop {
 /* Cabe o nome "FinEdu" ao lado da estrela na barra de cima */
 @media (min-width: 480px) {
   .topo-logo .logo-texto { display: inline; }
+  .rendimento-comparativo { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* Tablet em pé: trilha mais aberta, Estrela maior */

@@ -882,6 +882,122 @@
     });
 
 
+    grupo('Calculadora');
+
+    teste('R$ 300 em 6 meses, com R$ 0 guardado: retorna R$ 50,00 por mês', () => {
+      const resultado = calcularMeta(300, 6, 0);
+      confere([resultado.valido, resultado.mensal, resultado.mensalFormatado], [true, 50, 'R$ 50,00'], '300 em 6 meses');
+      confere(resultado.mensagem, 'Guardando R$ 50,00 por mês, você chega lá em 6 meses.', 'mensagem');
+    });
+
+    teste('R$ 300 em 6 meses, com R$ 60 guardados: retorna R$ 40,00 por mês e R$ 9,34 por semana', () => {
+      const resultado = calcularMeta(300, 6, 60);
+      confere([resultado.valido, resultado.mensal, resultado.mensalFormatado], [true, 40, 'R$ 40,00'], 'mensal');
+      confere([resultado.semanal, resultado.semanalFormatado], [9.34, 'R$ 9,34'], 'semanal');
+      confere(resultado.porcentagemGuardada, 20, 'porcentagem já conquistada');
+      confere(resultado.subtexto, 'Isso dá uns R$ 9,34 por semana.', 'subtexto semanal');
+    });
+
+    teste('R$ 100 em 3 meses, com R$ 0 guardado: arredonda para cima (R$ 33,34)', () => {
+      const resultado = calcularMeta(100, 3, 0);
+      confere([resultado.valido, resultado.mensal, resultado.mensalFormatado], [true, 33.34, 'R$ 33,34'], '100 dividido por 3');
+    });
+
+    teste('Meta já atingida (R$ 300 de custo com R$ 300 ou R$ 350 guardados)', () => {
+      const exato = calcularMeta(300, 6, 300);
+      confere([exato.valido, exato.metaAtingida, exato.sobra], [true, true, 0], 'guardado igual ao custo');
+      confere(exato.mensagem, 'Você já tem o suficiente! Que tal guardar o que sobrar para a próxima meta?', 'mensagem com 300');
+
+      const passando = calcularMeta(300, 6, 350);
+      confere([passando.valido, passando.metaAtingida, passando.sobra], [true, true, 50], 'guardado maior que o custo');
+      confere(passando.mensagem, 'Você já tem o suficiente! Que tal guardar o que sobrar para a próxima meta?', 'mensagem com 350');
+    });
+
+    teste('Entradas inválidas: retorna a mensagem de erro exata para cada caso', () => {
+      confere(calcularMeta('', 6, 0), { valido: false, erro: 'Digite quanto custa o que você quer.' }, 'custo vazio');
+      confere(calcularMeta(0, 6, 0), { valido: false, erro: 'Digite quanto custa o que você quer.' }, 'custo zero');
+      confere(calcularMeta('0,00', 6, 0), { valido: false, erro: 'Digite quanto custa o que você quer.' }, 'custo 0,00');
+
+      confere(calcularMeta(300, 0, 0), { valido: false, erro: 'Escolha entre 1 e 36 meses.' }, '0 meses');
+      confere(calcularMeta(300, 37, 0), { valido: false, erro: 'Escolha entre 1 e 36 meses.' }, '37 meses');
+      confere(calcularMeta(300, '', 0), { valido: false, erro: 'Escolha entre 1 e 36 meses.' }, 'meses vazio');
+      confere(calcularMeta(300, '2,5', 0), { valido: false, erro: 'Escolha entre 1 e 36 meses.' }, 'meses não inteiro');
+
+      confere(calcularMeta(-10, 6, 0), { valido: false, erro: 'Use só números, como 300 ou 12,50.' }, 'custo negativo');
+      confere(calcularMeta(300, -2, 0), { valido: false, erro: 'Use só números, como 300 ou 12,50.' }, 'meses negativo');
+      confere(calcularMeta(300, 6, -10), { valido: false, erro: 'Use só números, como 300 ou 12,50.' }, 'guardado negativo');
+      confere(calcularMeta('abc', 6, 0), { valido: false, erro: 'Use só números, como 300 ou 12,50.' }, 'custo com texto');
+      confere(calcularMeta(300, 'abc', 0), { valido: false, erro: 'Use só números, como 300 ou 12,50.' }, 'meses com texto');
+      confere(calcularMeta(300, 6, 'abc'), { valido: false, erro: 'Use só números, como 300 ou 12,50.' }, 'guardado com texto');
+    });
+
+    teste('Formatação monetária brasileira e leitura com vírgula ou ponto', () => {
+      confere(formatarMoeda(1234.5), 'R$ 1.234,50', '1234.5 formatado');
+      confere(formatarMoeda(0), 'R$ 0,00', 'zero formatado');
+      const comVirgula = calcularMeta(' 12,50 ', '1', '');
+      const comPonto = calcularMeta('12.50', '1', '');
+      confere([comVirgula.mensalFormatado, comPonto.mensalFormatado], ['R$ 12,50', 'R$ 12,50'], 'vírgula e ponto');
+      confere(comVirgula.mensagem, 'Guardando R$ 12,50 por mês, você chega lá em 1 mês.', 'singular para 1 mês');
+    });
+
+    teste('Aba Com Rendimento (Juros): calcula montante inicial, aporte mensal menor e rendimento positivo', () => {
+      const resultado = calcularMetaComJuros(300, 6, 60, '0,8');
+      confere(resultado.valido, true, 'cálculo válido');
+      confere(resultado.montanteInicial, 62.94, 'montante inicial de R$ 60 rendendo 6 meses a 0,8%');
+      confere([resultado.mensalSemJuros, resultado.mensalComJuros], [40, 38.43], 'mensal sem juros (40) vs com juros (38,43)');
+      confere([resultado.economiaMensalFormatada, resultado.economiaTotalFormatada], ['R$ 1,57', 'R$ 9,42'], 'economia mensal e total');
+      confere([resultado.totalTiradoDoBolsoFormatado, resultado.totalComJurosFormatado, resultado.rendimentoFormatado],
+        ['R$ 290,58', 'R$ 300,06', 'R$ 9,48'], 'total tirado do bolso, total acumulado e rendimento');
+      if (resultado.rendimento <= 0) throw new Error('o rendimento deveria ser positivo');
+
+      // Validações da taxa na Aba 2
+      confere(calcularMetaComJuros(300, 6, 0, '').valido, false, 'taxa vazia');
+      confere(calcularMetaComJuros(300, 6, 0, -1).valido, false, 'taxa negativa');
+      confere(calcularMetaComJuros(300, 6, 0, 25).valido, false, 'taxa acima do limite');
+      confere(calcularMetaComJuros(300, 6, 0, 'abc').valido, false, 'taxa com letras');
+    });
+
+    teste('Interface das 2 abas da calculadora: alternância, acessibilidade e cards comparativos', () => {
+      // Aba 1: Sem Juros (Na Gaveta)
+      const resultadoSemJuros = calcularMeta(300, 6, 60);
+      const telaAba1 = montar(desenharCalculadora(null, { aba: 'sem-juros', custo: '300', meses: '6', guardado: '60', resultado: resultadoSemJuros }));
+      const abas = [...telaAba1.querySelectorAll('[role="tab"]')];
+      confere(abas.map(aba => [aba.dataset.acao, aba.getAttribute('aria-selected')]), [
+        ['aba-sem-juros', 'true'],
+        ['aba-com-juros', 'false']
+      ], 'abas na Aba 1');
+      confere(telaAba1.querySelector('[role="progressbar"]').getAttribute('aria-valuenow'), '20', 'barra de progresso na Aba 1');
+      if (telaAba1.querySelector('[data-acao="alternar-rendimento"]')) {
+        throw new Error('o botão antigo de alternar rendimento não deve existir');
+      }
+
+      // Aba 2: Com Rendimento (Juros)
+      const resultadoComJuros = calcularMetaComJuros(300, 6, 60, '0,8');
+      const telaAba2 = montar(desenharCalculadora(null, {
+        aba: 'com-juros', custo: '300', meses: '6', guardado: '60', taxa: '0,8', resultado: resultadoComJuros
+      }));
+      const inputsAba2 = [...telaAba2.querySelectorAll('input')];
+      confere(inputsAba2.map(input => [input.id, input.getAttribute('inputmode'), Boolean(telaAba2.querySelector(`label[for="${input.id}"]`))]), [
+        ['campo-custo', 'decimal', true],
+        ['campo-meses', 'numeric', true],
+        ['campo-guardado', 'decimal', true],
+        ['campo-taxa', 'decimal', true]
+      ], 'labels e inputmode na Aba 2');
+
+      const textoAba2 = textoDe(telaAba2);
+      const trechos = [
+        'Guardando R$ 38,43 por mês, você chega lá em 6 meses.',
+        'Total tirado do bolso (sem juros)',
+        'Com Juros Compostos',
+        '+ R$ 9,48 só de rendimento',
+        'Simulação. O rendimento de verdade muda com o tempo. Menor de idade investe com um responsável.'
+      ];
+      for (const trecho of trechos) {
+        if (!textoAba2.includes(trecho)) throw new Error(`faltou "${trecho}"`);
+      }
+    });
+
+
     rodarTestes();
   </script>
 </body>

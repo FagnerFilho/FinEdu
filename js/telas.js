@@ -685,7 +685,7 @@ function desenharSemVidas(lugar, sessao, progresso) {
 
 
 // ============================================================
-// 7. EM BREVE (Calculadora e Guia)
+// 7. CALCULADORA DE METAS E EM BREVE (Guia)
 // ============================================================
 
 const TELAS_EM_BREVE = {
@@ -711,6 +711,207 @@ function desenharEmBreve(lugar, qual) {
       <p class="em-breve-texto">${tela.texto}</p>
       <a class="botao botao--contorno" href="#aprender">Ir para a trilha</a>
     </div>`;
+}
+
+// Monta a barra de progresso visual quando o aluno já tem parte da meta guardada
+function desenharBarraProgressoDaMeta(resultado) {
+  if (!resultado || resultado.guardado <= 0 || resultado.metaAtingida) return '';
+  return `
+    <div class="meta-progresso">
+      <p class="meta-progresso-texto">
+        Você já tem <strong>${escaparHtml(formatarMoeda(resultado.guardado))}</strong> (${resultado.porcentagemGuardada}% da meta). Faltam ${escaparHtml(formatarMoeda(resultado.falta))}.
+      </p>
+      <div class="meta-progresso-trilho" role="progressbar" aria-label="Progresso já guardado da meta"
+        aria-valuemin="0" aria-valuemax="100" aria-valuenow="${resultado.porcentagemGuardada}">
+        <span class="meta-progresso-preenchimento" style="width: ${resultado.porcentagemGuardada}%"></span>
+      </div>
+    </div>`;
+}
+
+// Monta o cartão de resultado (Aba 1: Sem Juros ou Aba 2: Com Rendimento)
+function desenharResultadoCalculadora(resultado) {
+  if (!resultado || !resultado.valido) return '';
+
+  const comJuros = resultado.modo === 'com-juros';
+  const avisoFixo = comJuros ? `
+    <p class="calculadora-aviso">
+      ${icone('info')}
+      <span>Simulação. O rendimento de verdade muda com o tempo. Menor de idade investe com um responsável.</span>
+    </p>` : '';
+
+  if (resultado.metaAtingida) {
+    const sobra = resultado.sobra > 0
+      ? `<p class="calculadora-subtexto">Passou <strong>${escaparHtml(formatarMoeda(resultado.sobra))}</strong> da meta de ${escaparHtml(formatarMoeda(resultado.custo))}.</p>`
+      : '';
+    return `
+      <section class="painel calculadora-resultado calculadora-resultado--atingida" aria-label="Resultado da meta">
+        <p class="calculadora-destaque">${escaparHtml(resultado.mensagem)}</p>
+        ${sobra}
+        ${avisoFixo}
+        <div class="calculadora-botoes">
+          <button type="button" class="botao botao--contorno" data-acao="limpar-calculadora">Limpar / Nova meta</button>
+        </div>
+      </section>`;
+  }
+
+  const barraProgresso = desenharBarraProgressoDaMeta(resultado);
+
+  if (comJuros) {
+    return `
+      <section class="painel calculadora-resultado" aria-label="Resultado da meta com juros">
+        <p class="calculadora-destaque">
+          Guardando <strong>${escaparHtml(resultado.mensalFormatado)} por mês</strong>, você chega lá em <strong>${contarCom(resultado.meses, 'mês', 'meses')}</strong>.
+        </p>
+        <p class="calculadora-subtexto">
+          Isso dá uns <strong>${escaparHtml(resultado.semanalFormatado)} por semana</strong> — você economiza <strong>${escaparHtml(resultado.economiaMensalFormatada)} por mês</strong> (<strong>${escaparHtml(resultado.economiaTotalFormatada)} no total</strong>) em relação a guardar sem juros.
+        </p>
+        ${barraProgresso}
+        <div class="rendimento-comparativo">
+          <div class="rendimento-item">
+            <p class="rendimento-rotulo">Total tirado do bolso (sem juros)</p>
+            <p class="rendimento-valor">${escaparHtml(resultado.totalTiradoDoBolsoFormatado)}</p>
+            <p class="rendimento-detalhe">Na gaveta seria ${escaparHtml(resultado.totalSemJurosFormatado)} (${escaparHtml(resultado.mensalSemJurosFormatado)}/mês)</p>
+          </div>
+          <div class="rendimento-item rendimento-item--juros">
+            <p class="rendimento-rotulo">Com Juros Compostos</p>
+            <p class="rendimento-valor">${escaparHtml(resultado.totalComJurosFormatado)}</p>
+            <p class="rendimento-detalhe">+ ${escaparHtml(resultado.rendimentoFormatado)} só de rendimento</p>
+          </div>
+        </div>
+        ${avisoFixo}
+        <div class="calculadora-botoes">
+          <button type="button" class="botao botao--contorno" data-acao="limpar-calculadora">Limpar / Nova meta</button>
+        </div>
+      </section>`;
+  }
+
+  return `
+    <section class="painel calculadora-resultado" aria-label="Resultado da meta">
+      <p class="calculadora-destaque">
+        Guardando <strong>${escaparHtml(resultado.mensalFormatado)} por mês</strong>, você chega lá em <strong>${contarCom(resultado.meses, 'mês', 'meses')}</strong>.
+      </p>
+      <p class="calculadora-subtexto">
+        Isso dá uns <strong>${escaparHtml(resultado.semanalFormatado)} por semana</strong>.
+      </p>
+      ${barraProgresso}
+      <div class="calculadora-botoes">
+        <button type="button" class="botao botao--contorno" data-acao="limpar-calculadora">Limpar / Nova meta</button>
+      </div>
+    </section>`;
+}
+
+// Monta a tela completa da Calculadora de Metas com as 2 abas independentes
+function desenharCalculadora(lugar, dados = {}) {
+  const aba = dados.aba === 'com-juros' ? 'com-juros' : 'sem-juros';
+  const comJuros = aba === 'com-juros';
+  const custo = dados.custo !== undefined ? String(dados.custo) : '';
+  const meses = dados.meses !== undefined ? String(dados.meses) : '';
+  const guardado = dados.guardado !== undefined ? String(dados.guardado) : '';
+  const taxa = dados.taxa !== undefined ? String(dados.taxa) : '0,8';
+  const resultado = dados.resultado || null;
+  const temErro = Boolean(resultado && !resultado.valido);
+
+  const rotuloCusto = 'Qual valor você quer atingir?';
+  const rotuloMeses = comJuros
+    ? 'Em quantos meses você quer atingir essa meta?'
+    : 'Em quantos meses você quer chegar lá?';
+
+  const campoTaxa = comJuros ? `
+        <div class="campo">
+          <label class="campo-rotulo" for="campo-taxa">
+            Taxa de juros ao mês (%) <span class="campo-detalhe">(só um exemplo, não é taxa real)</span>
+          </label>
+          <input class="campo-entrada" id="campo-taxa" name="taxa" type="text" inputmode="decimal"
+            autocomplete="off" placeholder="Ex.: 0,8" value="${escaparHtml(taxa)}">
+        </div>` : '';
+
+  const botaoCalcular = comJuros
+    ? '<button type="button" class="botao" data-acao="calcular-meta-juros">Calcular com Juros</button>'
+    : '<button type="button" class="botao" data-acao="calcular-meta">Calcular</button>';
+
+  const html = `
+    <div class="calculadora" data-aba-ativa="${aba}">
+      <header class="calculadora-topo">
+        <h1 class="calculadora-titulo">Calculadora de Metas</h1>
+        <p class="calculadora-sub">Descubra quanto guardar por mês para chegar na sua meta.</p>
+      </header>
+
+      <div class="calculadora-abas" role="tablist" aria-label="Modo da calculadora">
+        <button type="button" class="calculadora-aba${!comJuros ? ' calculadora-aba--ativa' : ''}"
+          role="tab" id="aba-sem-juros" aria-selected="${!comJuros}" aria-controls="painel-calculadora"
+          data-acao="aba-sem-juros">Sem Juros (Na Gaveta)</button>
+        <button type="button" class="calculadora-aba${comJuros ? ' calculadora-aba--ativa' : ''}"
+          role="tab" id="aba-com-juros" aria-selected="${comJuros}" aria-controls="painel-calculadora"
+          data-acao="aba-com-juros">Com Rendimento (Juros)</button>
+      </div>
+
+      <div class="painel calculadora-formulario" id="painel-calculadora" role="tabpanel"
+        aria-labelledby="${comJuros ? 'aba-com-juros' : 'aba-sem-juros'}">
+        <div class="campo">
+          <label class="campo-rotulo" for="campo-custo">
+            ${rotuloCusto} <span class="campo-detalhe">(em R$)</span>
+          </label>
+          <input class="campo-entrada" id="campo-custo" name="custo" type="text" inputmode="decimal"
+            autocomplete="off" placeholder="Ex.: 300 ou 12,50" value="${escaparHtml(custo)}">
+        </div>
+
+        <div class="campo">
+          <label class="campo-rotulo" for="campo-meses">
+            ${rotuloMeses} <span class="campo-detalhe">(de 1 a 36)</span>
+          </label>
+          <input class="campo-entrada" id="campo-meses" name="meses" type="text" inputmode="numeric"
+            autocomplete="off" placeholder="Ex.: 6" value="${escaparHtml(meses)}">
+        </div>
+
+        <div class="campo">
+          <label class="campo-rotulo" for="campo-guardado">
+            Quanto você já tem guardado? <span class="campo-detalhe">(em R$, opcional)</span>
+          </label>
+          <input class="campo-entrada" id="campo-guardado" name="guardado" type="text" inputmode="decimal"
+            autocomplete="off" placeholder="Ex.: 0" value="${escaparHtml(guardado)}">
+        </div>
+        ${campoTaxa}
+        ${botaoCalcular}
+      </div>
+
+      <div class="calculadora-erro" id="calculadora-erro" role="alert" aria-live="polite"${temErro ? '' : ' hidden'}>
+        ${temErro ? `${icone('alerta')}<p>${escaparHtml(resultado.erro)}</p>` : ''}
+      </div>
+
+      <div class="calculadora-saida" id="calculadora-resultado" aria-live="polite">
+        ${resultado && resultado.valido ? desenharResultadoCalculadora(resultado) : ''}
+      </div>
+    </div>`;
+
+  if (lugar && typeof lugar === 'object' && 'innerHTML' in lugar) {
+    lugar.innerHTML = html;
+  }
+  return html;
+}
+
+// Atualiza o erro ou o resultado na tela sem recriar os campos digitados
+function mostrarResultadoCalculadora(resultado) {
+  const caixaErro = document.getElementById('calculadora-erro');
+  const caixaResultado = document.getElementById('calculadora-resultado');
+  if (!caixaErro || !caixaResultado) return;
+
+  if (!resultado) {
+    caixaErro.hidden = true;
+    caixaErro.innerHTML = '';
+    caixaResultado.innerHTML = '';
+    return;
+  }
+
+  if (!resultado.valido) {
+    caixaResultado.innerHTML = '';
+    caixaErro.innerHTML = `${icone('alerta')}<p>${escaparHtml(resultado.erro)}</p>`;
+    caixaErro.hidden = false;
+    return;
+  }
+
+  caixaErro.hidden = true;
+  caixaErro.innerHTML = '';
+  caixaResultado.innerHTML = desenharResultadoCalculadora(resultado);
 }
 
 
