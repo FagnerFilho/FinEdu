@@ -1202,6 +1202,7 @@ h2:focus {
 .placar-item--xp       { --cor-do-item: var(--cor-xp); }
 .placar-item--moedas   { --cor-do-item: var(--cor-moeda); }
 .placar-item--precisao { --cor-do-item: var(--cor-acerto); }
+.placar-item--vidas    { --cor-do-item: var(--cor-vida); }
 
 .comemoracao-sequencia {
   display: flex;
@@ -1213,6 +1214,30 @@ h2:focus {
 
 .comemoracao .botao {
   margin-top: var(--espaco-g);
+}
+
+/* ----- Sem vidas: cada saída com o que acontece embaixo ----- */
+.opcoes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-gg);
+  width: 100%;
+  margin-top: var(--espaco-p);
+}
+
+.opcao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-p);
+}
+
+.opcoes .botao {
+  margin-top: 0;
+}
+
+.opcao-texto {
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-pequeno);
 }
 
 

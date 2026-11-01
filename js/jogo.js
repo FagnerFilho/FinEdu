@@ -2,12 +2,12 @@
 // jogo.js — As regras do FinEdu
 // ============================================================
 // XP, moedas, vidas, sequência de dias, o que está liberado na
-// trilha e o baú. Este arquivo só faz contas e decide regras:
-// não desenha nada (isso é o telas.js) e não salva nada (quem
-// salva é o app.js, usando o armazenamento.js).
+// trilha, a revisão, a recarga, o treino e o baú. Este arquivo só
+// faz contas e decide regras: não desenha nada (isso é o telas.js)
+// e não salva nada (quem salva é o app.js, usando o armazenamento.js).
 //
-// Os valores são PROVISÓRIOS: a conversa 05 vai ajustar. Para
-// mudar uma regra de valor, troque só a constante lá embaixo.
+// Os valores foram decididos na tarefa 2 (projeto/plano-gamificacao.md).
+// Para mudar uma regra de valor, troque só a constante lá embaixo.
 //
 // Várias funções recebem "hoje" como último parâmetro. No uso
 // normal ele é a data do aparelho; nos testes dá para passar
@@ -21,11 +21,12 @@
 
 const XP_POR_ACERTO = 10;          // cada questão nova certa de primeira
 const XP_DE_REVISAO = 5;           // cada errada que o aluno acerta na revisão
-const MOEDAS_POR_LICAO = 10;       // ao concluir uma lição
-const MOEDAS_LICAO_PERFEITA = 5;   // extra se acertar todas
+const MOEDAS_POR_LICAO = 10;       // ao concluir uma lição (só da primeira vez)
+const MOEDAS_LICAO_PERFEITA = 5;   // extra se acertar todas de primeira
 const XP_DO_BAU = 20;              // ao abrir o baú da unidade
 const MOEDAS_DO_BAU = 20;
-const VIDAS_MAXIMAS = 5;           // voltam todas no dia seguinte
+const VIDAS_MAXIMAS = 5;           // voltam todas no dia seguinte, no fim do treino ou na recarga
+const PRECO_DA_RECARGA = 20;       // moedas para as vidas voltarem todas, na tela "sem vidas"
 
 // Formato de toda lição: quantas questões de cada nível
 const QUESTOES_POR_DIFICULDADE = { facil: 2, media: 2, dificil: 1 };
@@ -268,8 +269,11 @@ function contarLicoes(progresso) {
 //   'revisao' → uma questão que o aluno errou, de novo no fim da
 //               fila, até ele acertar. Errar na revisão não tira vida.
 // A lição só termina quando a fila esvazia.
+//
+// Refazer uma lição já concluída é um treino: errar não tira vida,
+// não vale XP nem moedas e, no fim, as vidas voltam todas.
 
-function iniciarLicao(licao) {
+function iniciarLicao(progresso, licao) {
   const questoes = ordenarPorDificuldade(licao.questoes).map(questao => ({
     dificuldade: questao.dificuldade,
     pergunta: questao.pergunta,
@@ -278,6 +282,7 @@ function iniciarLicao(licao) {
 
   return {
     licao,
+    treino: licaoConcluida(progresso, licao.id),
     questoes,
     fila: questoes.map((_, indice) => ({ tipo: 'nova', indice })),
     escolhida: null,    // alternativa marcada, antes de verificar
@@ -324,8 +329,9 @@ function marcarAlternativa(sessao, indice) {
   return true;
 }
 
-// Confere a alternativa marcada. Só a questão nova tira vida (na
-// hora) e conta na precisão. Errou? A questão volta no fim da fila.
+// Confere a alternativa marcada. Só a questão nova de uma lição que
+// não é treino tira vida (na hora) e conta na precisão do Perfil.
+// Errou? A questão volta no fim da fila.
 function verificarResposta(progresso, sessao) {
   if (sessao.verificada || sessao.escolhida === null) return null;
 
@@ -334,20 +340,22 @@ function verificarResposta(progresso, sessao) {
   const escolhida = questao.alternativas[sessao.escolhida];
   const correta = questao.alternativas.find(alternativa => alternativa.correta);
   const acertou = escolhida === correta;
-  const perdeuVida = vez.tipo === 'nova' && !acertou;
+  const valeVida = vez.tipo === 'nova' && !sessao.treino;
+  const perdeuVida = valeVida && !acertou;
 
   sessao.verificada = true;
   sessao.respondidas += 1;
 
   if (vez.tipo === 'nova') {
     sessao.resultados.push(acertou);
-    progresso.respostasDadas += 1;
-    if (acertou) {
-      sessao.acertos += 1;
-      progresso.respostasCertas += 1;
-    }
+    if (acertou) sessao.acertos += 1;
   } else if (acertou) {
     sessao.consertadas.push(vez.indice);
+  }
+
+  if (valeVida) {
+    progresso.respostasDadas += 1;
+    if (acertou) progresso.respostasCertas += 1;
   }
 
   if (perdeuVida) progresso.vidas = Math.max(0, progresso.vidas - 1);
@@ -369,7 +377,7 @@ function verificarResposta(progresso, sessao) {
 //   'fim'       → a fila esvaziou: a lição foi concluída
 //   'sem-vidas' → as vidas acabaram e a lição para aqui
 function avancarQuestao(progresso, sessao) {
-  if (progresso.vidas === 0) return 'sem-vidas';
+  if (!sessao.treino && progresso.vidas === 0) return 'sem-vidas';
   sessao.fila.shift();
   sessao.escolhida = null;
   sessao.verificada = false;
@@ -388,16 +396,24 @@ function avancarQuestao(progresso, sessao) {
 // Fecha a lição: o XP e as moedas entram agora (quem sai no meio
 // não ganha), a lição fica concluída e o dia conta na sequência.
 // A precisão conta só as respostas de primeira.
+// No treino não entra XP nem moeda: as vidas voltam todas.
 function concluirLicao(progresso, sessao, hoje = hojeComoTexto()) {
   const total = sessao.questoes.length;
   const perfeita = sessao.acertos === total;
-  const xp = sessao.acertos * XP_POR_ACERTO + sessao.consertadas.length * XP_DE_REVISAO;
-  const moedas = MOEDAS_POR_LICAO + (perfeita ? MOEDAS_LICAO_PERFEITA : 0);
+  const vidasAntes = progresso.vidas;
+  let xp = 0;
+  let moedas = 0;
 
-  progresso.xp += xp;
-  progresso.moedas += moedas;
-  if (!licaoConcluida(progresso, sessao.licao.id)) {
-    progresso.licoesConcluidas.push(sessao.licao.id);
+  if (sessao.treino) {
+    progresso.vidas = VIDAS_MAXIMAS;
+  } else {
+    xp = sessao.acertos * XP_POR_ACERTO + sessao.consertadas.length * XP_DE_REVISAO;
+    moedas = MOEDAS_POR_LICAO + (perfeita ? MOEDAS_LICAO_PERFEITA : 0);
+    progresso.xp += xp;
+    progresso.moedas += moedas;
+    if (!licaoConcluida(progresso, sessao.licao.id)) {
+      progresso.licoesConcluidas.push(sessao.licao.id);
+    }
   }
 
   const sequenciaAntes = progresso.sequencia;
@@ -405,10 +421,13 @@ function concluirLicao(progresso, sessao, hoje = hojeComoTexto()) {
 
   return {
     titulo: sessao.licao.titulo,
+    treino: sessao.treino,
     xp,
     moedas,
     perfeita,
     precisao: Math.round((sessao.acertos / total) * 100),
+    vidas: progresso.vidas,
+    vidasVoltaram: progresso.vidas > vidasAntes,
     sequencia: progresso.sequencia,
     sequenciaSubiu: progresso.sequencia > sequenciaAntes
   };
@@ -416,7 +435,41 @@ function concluirLicao(progresso, sessao, hoje = hojeComoTexto()) {
 
 
 // ============================================================
-// 6. BAÚ
+// 6. SEM VIDAS: RECARGA E TREINO
+// ============================================================
+// Quando as vidas acabam numa lição nova, o aluno tem duas saídas:
+//   - recarregar: paga PRECO_DA_RECARGA moedas, as vidas voltam
+//     todas e a lição continua de onde parou;
+//   - treinar: refaz de graça uma lição concluída (ver a seção 5).
+//     A lição parada recomeça depois.
+
+function podeRecarregar(progresso) {
+  return progresso.vidas === 0 && progresso.moedas >= PRECO_DA_RECARGA;
+}
+
+// Paga a recarga. Devolve false se não puder.
+function recarregarVidas(progresso) {
+  if (!podeRecarregar(progresso)) return false;
+  progresso.moedas -= PRECO_DA_RECARGA;
+  progresso.vidas = VIDAS_MAXIMAS;
+  return true;
+}
+
+// A lição concluída mais recente (a última na ordem da trilha), para
+// o treino. Devolve null se o aluno ainda não concluiu nenhuma.
+function licaoParaTreinar(progresso) {
+  let escolhida = null;
+  for (const trilha of CONTEUDO.trilhas) {
+    for (const item of licoesDaTrilha(trilha)) {
+      if (licaoConcluida(progresso, item.licao.id)) escolhida = item.licao;
+    }
+  }
+  return escolhida;
+}
+
+
+// ============================================================
+// 7. BAÚ
 // ============================================================
 
 // Abre o baú, se estiver liberado. Devolve a recompensa (ou null).
@@ -430,7 +483,7 @@ function abrirBau(progresso, unidade) {
 
 
 // ============================================================
-// 7. DICA DO DIA
+// 8. DICA DO DIA
 // ============================================================
 
 // Uma dica da Estrela por dia, em rodízio
@@ -444,7 +497,7 @@ function dicaDoDia(hoje = hojeComoTexto()) {
 
 
 // ============================================================
-// 8. CONFERÊNCIA DO CONTEÚDO
+// 9. CONFERÊNCIA DO CONTEÚDO
 // ============================================================
 // Olha o dados-licoes.js inteiro e lista o que estiver fora do
 // combinado. O app mostra a lista no topo da tela para a equipe

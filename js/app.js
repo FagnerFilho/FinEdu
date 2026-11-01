@@ -123,7 +123,7 @@ function mostrarTelaDoEndereco() {
     (tela === 'licao' && !estado.sessao) ||
     (tela === 'resultado' && !estado.resumo) ||
     (tela === 'bau' && !estado.recompensaDoBau) ||
-    (tela === 'sem-vidas' && estado.progresso.vidas > 0);
+    (tela === 'sem-vidas' && (!estado.sessao || estado.progresso.vidas > 0));
   if (faltaAlgo) {
     irPara('aprender', true);
     return;
@@ -151,7 +151,7 @@ function mostrarTela(tela) {
     case 'licao':       desenharLicao(lugar, estado.sessao, estado.progresso); break;
     case 'resultado':   desenharResultado(lugar, estado.resumo); break;
     case 'bau':         desenharBauAberto(lugar, estado.recompensaDoBau); break;
-    case 'sem-vidas':   desenharSemVidas(lugar); break;
+    case 'sem-vidas':   desenharSemVidas(lugar, estado.sessao, estado.progresso); break;
   }
 
   window.scrollTo(0, 0);
@@ -170,7 +170,9 @@ function mostrarTela(tela) {
 // 4. LIÇÃO
 // ============================================================
 
-function abrirLicao(idLicao) {
+// Com substituir = true, a lição entra no lugar da tela atual no
+// histórico (usado pelo "Treinar de graça" da tela "sem vidas")
+function abrirLicao(idLicao, substituir = false) {
   const achada = encontrarLicao(idLicao);
   if (!achada) return;
 
@@ -185,13 +187,13 @@ function abrirLicao(idLicao) {
   }
 
   if (atualizarDia(estado.progresso)) salvar();
-  if (estado.progresso.vidas === 0) {
-    abrirTelaDeFoco('sem-vidas');
-    return;
-  }
+  estado.sessao = iniciarLicao(estado.progresso, achada.licao);
 
-  estado.sessao = iniciarLicao(achada.licao);
-  abrirTelaDeFoco('licao');
+  // Lição nova sem vidas: primeiro a tela "sem vidas". O treino
+  // (lição já concluída) não precisa de vida.
+  const tela = !estado.sessao.treino && estado.progresso.vidas === 0 ? 'sem-vidas' : 'licao';
+  if (substituir) irPara(tela, true);
+  else abrirTelaDeFoco(tela);
 }
 
 function escolher(indice) {
@@ -220,17 +222,41 @@ function continuar() {
     return;
   }
 
+  // A lição fica guardada: se o aluno recarregar, ela continua daqui
   if (proximo === 'sem-vidas') {
-    estado.sessao = null;
     irPara('sem-vidas', true);
     return;
   }
 
-  // proximo === 'fim': lição concluída!
+  terminarLicao();   // proximo === 'fim'
+}
+
+// Lição (ou treino) concluída!
+function terminarLicao() {
   estado.resumo = concluirLicao(estado.progresso, estado.sessao);
   estado.sessao = null;
   salvar();
   irPara('resultado', true);
+}
+
+// Sem vidas: paga a recarga e volta para a lição de onde parou
+function recarregar() {
+  if (!estado.sessao || !recarregarVidas(estado.progresso)) return;
+  salvar();
+  mostrarAviso('Vidas recarregadas.');
+
+  // Parou depois de responder uma questão? Segue para a próxima vez.
+  if (estado.sessao.verificada && avancarQuestao(estado.progresso, estado.sessao) === 'fim') {
+    terminarLicao();
+    return;
+  }
+  irPara('licao', true);
+}
+
+// Sem vidas: deixa a lição parada para trás e treina uma concluída
+function treinar(idLicao) {
+  estado.sessao = null;
+  abrirLicao(idLicao, true);
 }
 
 function pedirParaSair() {
@@ -243,6 +269,7 @@ function pedirParaSair() {
   mostrarConfirmacaoDeSaida(true);
 }
 
+// Deixa para trás a lição aberta (se tiver) e volta para a trilha
 function sairDaLicao() {
   estado.sessao = null;
   voltarParaTrilha();
@@ -315,7 +342,9 @@ function tratarClique(evento) {
     case 'sair-licao':         pedirParaSair(); break;
     case 'cancelar-saida':     mostrarConfirmacaoDeSaida(false); break;
     case 'confirmar-saida':    sairDaLicao(); break;
-    case 'voltar-trilha':      voltarParaTrilha(); break;
+    case 'recarregar-vidas':   recarregar(); break;
+    case 'treinar':            treinar(botao.dataset.id); break;
+    case 'voltar-trilha':      sairDaLicao(); break;   // a tela "sem vidas" pode ter lição parada
     case 'reiniciar':          mostrarConfirmacaoDeReinicio(true); break;
     case 'cancelar-reinicio':  mostrarConfirmacaoDeReinicio(false); break;
     case 'confirmar-reinicio': apagarProgresso(); break;

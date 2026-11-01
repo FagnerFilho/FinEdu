@@ -163,7 +163,14 @@
     }
 
     function abrir(progresso, licao) {
-      return iniciarLicao(licao);
+      return iniciarLicao(progresso, licao);
+    }
+
+    // Faz a lição inteira acertando tudo e conclui
+    function concluirAcertandoTudo(progresso, licao, hoje = HOJE) {
+      const sessao = abrir(progresso, licao);
+      jogar(progresso, sessao, () => true);
+      return concluirLicao(progresso, sessao, hoje);
     }
 
     // Marca a certa (certo = true) ou uma errada e aperta "Verificar"
@@ -295,6 +302,13 @@
       confere([resumo.xp, resumo.moedas, resumo.perfeita], [40, 10, false], 'XP, moedas e perfeita');
     });
 
+    teste('Moedas só da primeira vez que conclui a lição', () => {
+      const progresso = novoProgresso();
+      concluirAcertandoTudo(progresso, LICAO_1);
+      concluirAcertandoTudo(progresso, LICAO_1);
+      confere(progresso.moedas, 15, 'moedas depois de fazer a lição 1 duas vezes');
+    });
+
     teste('XP e moedas só entram no fim da lição', () => {
       const progresso = novoProgresso();
       const sessao = abrir(progresso, LICAO_1);
@@ -303,14 +317,89 @@
     });
 
 
+    grupo('Sem vidas: recarga e treino');
+
+    teste('Recarga: só com 0 vidas e pelo menos 20 moedas', () => {
+      const progresso = novoProgresso();
+      progresso.moedas = 20;
+      progresso.vidas = 1;
+      confere(podeRecarregar(progresso), false, 'com 1 vida');
+      progresso.vidas = 0;
+      progresso.moedas = 19;
+      confere(recarregarVidas(progresso), false, 'com 19 moedas');
+      confere([progresso.vidas, progresso.moedas], [0, 19], 'nada muda sem pagar');
+      progresso.moedas = 25;
+      confere(recarregarVidas(progresso), true, 'com 25 moedas');
+      confere([progresso.vidas, progresso.moedas], [5, 5], 'vidas e moedas depois de pagar');
+    });
+
+    teste('Recarga no meio da lição: as vidas voltam a 5 e a lição continua de onde parou', () => {
+      const progresso = novoProgresso();
+      concluirAcertandoTudo(progresso, LICAO_1);
+      progresso.vidas = 1;
+      progresso.moedas = 20;
+      const sessao = abrir(progresso, LICAO_2);
+      confere(responderEContinuar(progresso, sessao, false), 'sem-vidas', 'depois de errar a 1ª');
+      confere(recarregarVidas(progresso), true, 'pagou');
+      confere(avancarQuestao(progresso, sessao), 'proxima', 'depois de pagar');
+      confere(vezAtual(sessao), { tipo: 'nova', indice: 1 }, 'vez depois de pagar');
+      confere(jogar(progresso, sessao, () => true), 'fim', 'fim da lição');
+      const resumo = concluirLicao(progresso, sessao, HOJE);
+      confere([resumo.xp, resumo.moedas, progresso.vidas, progresso.moedas], [45, 10, 5, 10], 'XP, moedas ganhas, vidas e moedas');
+    });
+
+    teste('Refazer lição concluída é treino: errar não tira vida', () => {
+      const progresso = novoProgresso();
+      concluirAcertandoTudo(progresso, LICAO_1);
+      const sessao = abrir(progresso, LICAO_1);
+      confere(sessao.treino, true, 'é treino');
+      const resultado = responder(progresso, sessao, false);
+      confere([resultado.perdeuVida, progresso.vidas], [false, 5], 'erro no treino');
+    });
+
+    teste('Treino com 0 vidas: dá para fazer, e no fim as vidas voltam a 5', () => {
+      const progresso = novoProgresso();
+      concluirAcertandoTudo(progresso, LICAO_1);
+      progresso.vidas = 0;
+      const sessao = abrir(progresso, LICAO_1);
+      confere(jogar(progresso, sessao, errandoDePrimeira([0, 1, 2, 3, 4])), 'fim', 'erra as 5 e termina mesmo assim');
+      const resumo = concluirLicao(progresso, sessao, HOJE);
+      confere([progresso.vidas, resumo.vidasVoltaram], [5, true], 'vidas no fim do treino');
+    });
+
+    teste('Treino não vale XP nem moedas e não conta na precisão do Perfil', () => {
+      const progresso = novoProgresso();
+      concluirAcertandoTudo(progresso, LICAO_1);
+      const antes = [progresso.xp, progresso.moedas, progresso.respostasCertas, progresso.respostasDadas];
+      const sessao = abrir(progresso, LICAO_1);
+      jogar(progresso, sessao, errandoDePrimeira([2]));
+      const resumo = concluirLicao(progresso, sessao, HOJE);
+      confere([resumo.xp, resumo.moedas], [0, 0], 'XP e moedas do treino');
+      confere([progresso.xp, progresso.moedas, progresso.respostasCertas, progresso.respostasDadas], antes, 'progresso');
+    });
+
+    teste('Treino conta na sequência de dias', () => {
+      const progresso = novoProgresso();
+      concluirAcertandoTudo(progresso, LICAO_1, '2026-11-04');
+      const resumo = concluirAcertandoTudo(progresso, LICAO_1, '2026-11-05');
+      confere([resumo.treino, progresso.sequencia], [true, 2], 'treino e sequência');
+    });
+
+    teste('Lição para treinar: a concluída mais recente', () => {
+      const progresso = novoProgresso();
+      confere(licaoParaTreinar(progresso), null, 'sem lição concluída');
+      concluirAcertandoTudo(progresso, LICAO_1);
+      concluirAcertandoTudo(progresso, LICAO_2);
+      confere(licaoParaTreinar(progresso).id, LICAO_2.id, 'com as lições 1 e 2');
+    });
+
+
     grupo('Trilha, baú, sequência e vidas');
 
     teste('A lição 2 só libera depois da lição 1', () => {
       const progresso = novoProgresso();
       confere(situacaoDaLicao(progresso, TRILHA, LICAO_2.id), 'bloqueada', 'antes');
-      const sessao = abrir(progresso, LICAO_1);
-      jogar(progresso, sessao, () => true);
-      concluirLicao(progresso, sessao, HOJE);
+      concluirAcertandoTudo(progresso, LICAO_1);
       confere(situacaoDaLicao(progresso, TRILHA, LICAO_1.id), 'concluida', 'lição 1');
       confere(situacaoDaLicao(progresso, TRILHA, LICAO_2.id), 'atual', 'lição 2');
     });

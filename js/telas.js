@@ -293,7 +293,7 @@ function desenharNoDaLicao(progresso, trilha, licao, nome, posicao, estrela) {
   }[situacao];
 
   const descricao = {
-    concluida: `${nome}, ${licao.titulo}: concluída. Toque para refazer.`,
+    concluida: `${nome}, ${licao.titulo}: concluída. Toque para treinar.`,
     atual: `${nome}, ${licao.titulo}: começar.`,
     bloqueada: `${nome}, ${licao.titulo}: trancada.`,
     'em-breve': `${nome}: em breve.`
@@ -364,7 +364,9 @@ function desenharRotulos(sessao, questao) {
       <p class="etiqueta etiqueta--revisao">Revisão</p>
       <p class="licao-nota">Acerte para concluir a lição. Errar não tira vida.</p>`;
   }
-  return `<p class="etiqueta etiqueta--${questao.dificuldade}">${NOME_DA_DIFICULDADE[questao.dificuldade]}</p>`;
+  return `
+    <p class="etiqueta etiqueta--${questao.dificuldade}">${NOME_DA_DIFICULDADE[questao.dificuldade]}</p>
+    ${sessao.treino ? '<p class="licao-nota">Treino: errar não tira vida.</p>' : ''}`;
 }
 
 function desenharLicao(lugar, sessao, progresso) {
@@ -406,7 +408,7 @@ function desenharLicao(lugar, sessao, progresso) {
         </div>
       </div>
 
-      ${desenharConfirmacaoDeSaida()}
+      ${desenharConfirmacaoDeSaida(sessao.treino)}
     </div>`;
 }
 
@@ -483,16 +485,21 @@ function mostrarCorrecao(resultado, sessao, progresso) {
   acoes.querySelector('[data-acao="continuar"]').focus({ preventScroll: true });
 }
 
-function desenharConfirmacaoDeSaida() {
+function desenharConfirmacaoDeSaida(treino) {
+  const textos = treino
+    ? { titulo: 'Sair do treino?', texto: 'Se sair agora, as vidas não voltam.', ficar: 'Continuar o treino', sair: 'Sair do treino' }
+    : { titulo: 'Sair da lição?', texto: 'O que você fez nesta lição não vai contar, e as vidas que perdeu não voltam.',
+        ficar: 'Continuar a lição', sair: 'Sair da lição' };
+
   return `
     <div class="folha" id="confirmar-saida" hidden>
       <div class="folha-caixa" role="dialog" aria-modal="true" aria-labelledby="titulo-sair">
         ${desenharEstrela('triste')}
-        <h2 class="folha-titulo" id="titulo-sair">Sair da lição?</h2>
-        <p class="folha-texto">O que você fez nesta lição não vai contar, e as vidas que perdeu não voltam.</p>
+        <h2 class="folha-titulo" id="titulo-sair">${textos.titulo}</h2>
+        <p class="folha-texto">${textos.texto}</p>
         <div class="folha-botoes">
-          <button type="button" class="botao" data-acao="cancelar-saida">Continuar a lição</button>
-          <button type="button" class="botao botao--texto" data-acao="confirmar-saida">Sair da lição</button>
+          <button type="button" class="botao" data-acao="cancelar-saida">${textos.ficar}</button>
+          <button type="button" class="botao botao--texto" data-acao="confirmar-saida">${textos.sair}</button>
         </div>
       </div>
     </div>`;
@@ -517,7 +524,18 @@ function desenharFaiscas() {
   ).join('');
 }
 
+// A linha da sequência, quando ela sobe
+function desenharSequenciaQueSubiu(resumo) {
+  return resumo.sequenciaSubiu ? `
+    <p class="comemoracao-sequencia">${icone('sequencia')} Sequência de ${contarCom(resumo.sequencia, 'dia', 'dias')}</p>` : '';
+}
+
 function desenharResultado(lugar, resumo) {
+  if (resumo.treino) {
+    desenharFimDoTreino(lugar, resumo);
+    return;
+  }
+
   lugar.innerHTML = `
     <div class="comemoracao">
       <div class="comemoracao-figura">${desenharEstrela('comemorando')}${desenharFaiscas()}</div>
@@ -539,8 +557,28 @@ function desenharResultado(lugar, resumo) {
         </div>
       </div>
 
-      ${resumo.sequenciaSubiu ? `
-        <p class="comemoracao-sequencia">${icone('sequencia')} Sequência de ${contarCom(resumo.sequencia, 'dia', 'dias')}</p>` : ''}
+      ${desenharSequenciaQueSubiu(resumo)}
+
+      <button type="button" class="botao" data-acao="voltar-trilha">Continuar</button>
+    </div>`;
+}
+
+// Fim do treino: não vale XP nem moedas, só as vidas
+function desenharFimDoTreino(lugar, resumo) {
+  lugar.innerHTML = `
+    <div class="comemoracao">
+      <div class="comemoracao-figura">${desenharEstrela('comemorando')}${desenharFaiscas()}</div>
+      <h1 class="comemoracao-titulo">Treino concluído!</h1>
+      <p class="comemoracao-texto">${resumo.vidasVoltaram ? 'Suas vidas voltaram.' : 'Suas vidas já estavam completas.'}</p>
+
+      <div class="placar">
+        <div class="placar-item placar-item--vidas">
+          <p class="placar-rotulo">Vidas</p>
+          <p class="placar-valor">${icone('vida')}${resumo.vidas}</p>
+        </div>
+      </div>
+
+      ${desenharSequenciaQueSubiu(resumo)}
 
       <button type="button" class="botao" data-acao="voltar-trilha">Continuar</button>
     </div>`;
@@ -568,13 +606,46 @@ function desenharBauAberto(lugar, recompensa) {
     </div>`;
 }
 
-function desenharSemVidas(lugar) {
+// Sem vidas: recarregar com moedas (continua de onde parou) ou
+// treinar de graça (a lição parada recomeça depois). Cada saída
+// diz o que acontece; sem nenhuma das duas, as vidas voltam amanhã.
+function desenharSemVidas(lugar, sessao, progresso) {
+  const podePagar = podeRecarregar(progresso);
+  const paraTreinar = licaoParaTreinar(progresso);
+
+  let texto = `As ${VIDAS_MAXIMAS} vidas voltam amanhã. Aí é só tentar de novo.`;
+  if (podePagar && paraTreinar) {
+    texto = 'Use sua reserva de moedas ou treine de graça.';
+  } else if (podePagar) {
+    texto = 'Use sua reserva de moedas para continuar.';
+  } else if (paraTreinar) {
+    const quantas = progresso.moedas === 0 ? 'não tem nenhuma' : `tem ${progresso.moedas}`;
+    texto = `Recarregar as vidas custa ${PRECO_DA_RECARGA} moedas, e você ${quantas}. Mas dá para treinar de graça.`;
+  }
+
+  const recarga = podePagar ? `
+    <div class="opcao">
+      <button type="button" class="botao" data-acao="recarregar-vidas">Recarregar vidas por ${PRECO_DA_RECARGA} moedas</button>
+      <p class="opcao-texto">As ${VIDAS_MAXIMAS} vidas voltam, e você continua de onde parou.</p>
+    </div>` : '';
+
+  // Se o aluno já tinha respondido algo, avisa que a lição parada recomeça
+  const recomeca = sessao.respondidas > 0 ? ` Depois, "${escaparHtml(sessao.licao.titulo)}" recomeça do zero.` : '';
+  const treino = paraTreinar ? `
+    <div class="opcao">
+      <button type="button" class="botao${podePagar ? ' botao--contorno' : ''}" data-acao="treinar"
+        data-id="${escaparHtml(paraTreinar.id)}">Treinar de graça</button>
+      <p class="opcao-texto">Refaça "${escaparHtml(paraTreinar.titulo)}" sem perder vida. No fim, as ${VIDAS_MAXIMAS} vidas voltam.${recomeca}</p>
+    </div>` : '';
+
+  const temSaida = podePagar || paraTreinar;
   lugar.innerHTML = `
     <div class="comemoracao">
       <div class="comemoracao-figura">${desenharEstrela('triste')}</div>
       <h1 class="comemoracao-titulo">Suas vidas acabaram</h1>
-      <p class="comemoracao-texto">As ${VIDAS_MAXIMAS} vidas voltam amanhã. Aí é só tentar de novo.</p>
-      <button type="button" class="botao" data-acao="voltar-trilha">Voltar para a trilha</button>
+      <p class="comemoracao-texto">${texto}</p>
+      ${temSaida ? `<div class="opcoes">${recarga}${treino}</div>` : ''}
+      <button type="button" class="botao${temSaida ? ' botao--texto' : ''}" data-acao="voltar-trilha">Voltar para a trilha</button>
     </div>`;
 }
 
