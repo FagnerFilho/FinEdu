@@ -1,6 +1,6 @@
 # Plano · Gamificação (tarefa 2 da fila)
 
-> Escrito em 01/11/2026. O Fagner aprovou os ajustes e os números no mesmo dia, e o plano foi codado (revisão, tela "sem vidas" e aquecimento). As regras finais estão na seção 6 do arquitetura.md, e o testes.html confere as simulações da seção 4.
+> Escrito em 01/11/2026. O Fagner aprovou os ajustes e os números no mesmo dia, e o plano foi codado (revisão, tela "sem vidas" e aquecimento). As regras finais estão na seção 6 do arquitetura.md, e o testes.html confere as simulações da seção 4. Depois, ainda em 01/11, entrou a mesada de boas-vindas (todo aluno começa com 20 moedas), e a seção 4 foi refeita com ela.
 
 ## Resumo
 
@@ -57,18 +57,22 @@ Regra de bolso para explicar ao aluno: **só perde vida quem erra questão nova;
 | `XP_DO_BAU` / `MOEDAS_DO_BAU` | 20 / 20 | 20 / 20 |
 | `VIDAS_MAXIMAS` | 5 | 5 |
 | `PRECO_DA_RECARGA` (nova) | — | 20 moedas |
+| `MESADA_DE_BOAS_VINDAS` (nova, depois do plano) | — | 20 moedas no começo |
 
 Por que esses números:
 
 - **Recarga a 20 moedas.** Uma lição nova dá de 10 a 15 moedas, e a Unidade 1 inteira dá de 60 a 80. Com 20, a recarga custa umas duas lições: quem guardou consegue usar no aperto, mas não dá para comprar sempre. É também o valor do baú (abrir o baú = uma recarga). Com 10, toda lição pagaria uma recarga e a vida perderia o sentido. Com 30, quem erra quase nunca conseguiria comprar na Unidade 1.
 - **Revisão a 5 XP.** Metade da questão nova. Mantém a ordem: quem acerta mais termina com mais XP (seção 4).
 - **Tempo para a vida voltar: sem relógio.** As vidas voltam na hora, ao terminar o treino, ou todas no dia seguinte. Se mesmo assim a equipe quiser o relógio, meu número seria 1 vida a cada 30 minutos (e o progresso teria que guardar a hora, não só a data).
+- **Mesada de 20 moedas** (entrou depois do plano, em 01/11). É o preço de 1 recarga. Antes de concluir a primeira lição, o aluno não tem o que treinar: quem errava as 5 questões da lição 1 ficava sem saída até o dia seguinte. Com a mesada, ele recarrega, e a revisão leva ao fim da lição.
 
 ## 4. Simulação dos 3 alunos
 
+> Refeita em 01/11 com a mesada de boas-vindas. Sem ela (a versão aprovada no plano), os números eram: A com 80 moedas; B com 40; B guardando com 60; C com 175 XP, 40 moedas, 1 compra e 2 treinos, em 54 questões.
+
 ### Combinado
 
-- Uma aula, a Unidade 1 do zero (5 vidas, 0 moedas, 0 XP), tudo no mesmo dia.
+- Uma aula, a Unidade 1 do zero (5 vidas, as 20 moedas da mesada, 0 XP), tudo no mesmo dia.
 - Ordem das questões: 1 e 2 fáceis, 3 e 4 médias, 5 difícil.
 - Aluno A acerta tudo. Aluno B erra as questões 4 e 5 na primeira vez que vê uma lição. Aluno C acerta só a 1 e erra da 2 à 5.
 - Questão que o aluno já viu explicada, ele acerta (na repetição, no aquecimento, no treino e quando recomeça uma lição). Na vida real ele erra algumas de novo; na proposta isso só custa tempo, não vida.
@@ -80,53 +84,56 @@ Por que esses números:
 
 | Passo | O que acontece | Vidas | Moedas | XP |
 |---|---|---|---|---|
-| 1 | Lição 1: 5 de 5 (+50). Perfeita: +15 moedas | 5 | 15 | 50 |
-| 2 | Lição 2: aquecimento certo (+5), 5 de 5 (+50), +15 moedas | 5 | 30 | 105 |
-| 3 | Lição 3: igual à 2 | 5 | 45 | 160 |
-| 4 | Lição 4: igual à 2 | 5 | 60 | 215 |
-| 5 | Baú: +20 XP, +20 moedas | 5 | 80 | 235 |
+| 0 | Começa com a mesada | 5 | 20 | 0 |
+| 1 | Lição 1: 5 de 5 (+50). Perfeita: +15 moedas | 5 | 35 | 50 |
+| 2 | Lição 2: aquecimento certo (+5), 5 de 5 (+50), +15 moedas | 5 | 50 | 105 |
+| 3 | Lição 3: igual à 2 | 5 | 65 | 160 |
+| 4 | Lição 4: igual à 2 | 5 | 80 | 215 |
+| 5 | Baú: +20 XP, +20 moedas | 5 | 100 | 235 |
 
-23 questões (uns 8 min), precisão 100%. Das novidades, só vê o aquecimento. Termina com 80 moedas e nada em que gastar.
+23 questões (uns 8 min), precisão 100%. Das novidades, só vê o aquecimento. Termina com 100 moedas e nada em que gastar.
 
 ### Aluno B · erra 2
 
 | Passo | O que acontece | Vidas | Moedas | XP |
 |---|---|---|---|---|
-| 1 | Lição 1: acerta 1 a 3 (+30), erra 4 e 5 (−2 vidas). Repetição: acerta as duas (+10). +10 moedas | 3 | 10 | 40 |
-| 2 | Lição 2: aquecimento com uma questão que ele errou na lição 1, acerta (+5). De novo +30, −2 vidas, repetição +10. +10 moedas | 1 | 20 | 85 |
-| 3 | Lição 3: aquecimento certo, acerta 1 a 3, erra a 4: **sem vidas**. Paga 20 moedas, as vidas voltam a 5 e ele continua. Erra a 5 (−1). Repetição +10. +10 moedas | 4 | 10 | 130 |
-| 4 | Lição 4: aquecimento (+5), +30, −2 vidas, repetição +10. +10 moedas | 2 | 20 | 175 |
-| 5 | Baú | 2 | 40 | 195 |
+| 0 | Começa com a mesada | 5 | 20 | 0 |
+| 1 | Lição 1: acerta 1 a 3 (+30), erra 4 e 5 (−2 vidas). Repetição: acerta as duas (+10). +10 moedas | 3 | 30 | 40 |
+| 2 | Lição 2: aquecimento com uma questão que ele errou na lição 1, acerta (+5). De novo +30, −2 vidas, repetição +10. +10 moedas | 1 | 40 | 85 |
+| 3 | Lição 3: aquecimento certo, acerta 1 a 3, erra a 4: **sem vidas**. Paga 20 moedas, as vidas voltam a 5 e ele continua. Erra a 5 (−1). Repetição +10. +10 moedas | 4 | 30 | 130 |
+| 4 | Lição 4: aquecimento (+5), +30, −2 vidas, repetição +10. +10 moedas | 2 | 40 | 175 |
+| 5 | Baú | 2 | 60 | 195 |
 
 31 questões (uns 10 min), precisão 60%. Conclui a unidade na mesma aula, com 1 compra. Refez os 8 erros no fim das lições e reviu 3 deles no aquecimento.
 
-O outro caminho, guardando as moedas: no passo 3, em vez de pagar, ele treina a lição 2 (vidas voltam a 5, sem XP), recomeça a lição 3 e só erra a 5. Termina com **60 moedas e 200 XP**, mas responde 10 questões a mais (uns 3 min). É exatamente a escolha "gastar ou guardar": pagar compra tempo.
+O outro caminho, guardando as moedas: no passo 3, em vez de pagar, ele treina a lição 2 (vidas voltam a 5, sem XP), recomeça a lição 3 e só erra a 5. Termina com **80 moedas e 200 XP**, mas responde 10 questões a mais (uns 3 min). É exatamente a escolha "gastar ou guardar": pagar compra tempo.
 
 ### Aluno C · erra 4
 
 | Passo | O que acontece | Vidas | Moedas | XP |
 |---|---|---|---|---|
-| 1 | Lição 1: acerta a 1 (+10), erra 2 a 5 (−4 vidas). Repetição: 4 × 5 = +20. +10 moedas | 1 | 10 | 30 |
-| 2 | Lição 2: aquecimento certo, acerta a 1, erra a 2: **sem vidas**. 10 moedas não pagam a recarga. Larga a lição 2 | 0 | 10 | 30 |
-| 3 | Treino da lição 1: acerta tudo (já viu). As vidas voltam a 5, sem XP | 5 | 10 | 30 |
-| 4 | Lição 2 de novo: aquecimento (+5), acerta 1 e 2 (+20), erra 3 a 5 (−3). Repetição +15. +10 moedas | 2 | 20 | 70 |
-| 5 | Lição 3: aquecimento (+5), acerta a 1 (+10), erra 2 e 3: **sem vidas**. Paga 20, as vidas voltam a 5. Erra 4 e 5 (−2). Repetição +20. +10 moedas | 3 | 10 | 105 |
-| 6 | Lição 4: aquecimento, acerta a 1, erra 2, 3 e 4: **sem vidas**. Com 10 moedas não paga. Larga a lição 4 | 0 | 10 | 105 |
-| 7 | Treino da lição 3. As vidas voltam a 5 | 5 | 10 | 105 |
-| 8 | Lição 4 de novo: aquecimento (+5), acerta 1 a 4 (+40), erra a 5 (−1). Repetição +5. +10 moedas | 4 | 20 | 155 |
-| 9 | Baú | 4 | 40 | 175 |
+| 0 | Começa com a mesada | 5 | 20 | 0 |
+| 1 | Lição 1: acerta a 1 (+10), erra 2 a 5 (−4 vidas). Repetição: 4 × 5 = +20. +10 moedas | 1 | 30 | 30 |
+| 2 | Lição 2: aquecimento certo (+5), acerta a 1 (+10), erra a 2: **sem vidas**. Com a mesada, tem 30 moedas: paga 20, as vidas voltam a 5. Erra 3 a 5 (−3). Repetição: 4 × 5 = +20. +10 moedas | 2 | 20 | 65 |
+| 3 | Lição 3: aquecimento (+5), acerta a 1 (+10), erra 2 e 3: **sem vidas**. Paga 20, as vidas voltam a 5. Erra 4 e 5 (−2). Repetição +20. +10 moedas | 3 | 10 | 100 |
+| 4 | Lição 4: aquecimento, acerta a 1, erra 2, 3 e 4: **sem vidas**. Com 10 moedas não paga. Larga a lição 4 | 0 | 10 | 100 |
+| 5 | Treino da lição 3. As vidas voltam a 5 | 5 | 10 | 100 |
+| 6 | Lição 4 de novo: aquecimento (+5), acerta 1 a 4 (+40), erra a 5 (−1). Repetição +5. +10 moedas | 4 | 20 | 150 |
+| 7 | Baú | 4 | 40 | 170 |
 
-54 questões (uns 18 min). Precisão nas lições: 20%, 40%, 20% e 80%. Conclui a unidade na mesma aula, com 2 treinos e 1 compra, e acertou cada questão pelo menos uma vez.
+47 questões (uns 16 min). Precisão nas lições: 20%, 20%, 20% e 80%. Conclui a unidade na mesma aula, com 2 compras e 1 treino, e acertou cada questão pelo menos uma vez.
+
+Sem a mesada, o C não teria como pagar na lição 2: treinaria a lição 1 e recomeçaria a lição 2 (54 questões, 175 XP, 1 compra e 2 treinos). A mesada troca esse treino por uma recarga: ele responde 7 questões a menos e faz 5 XP a menos. É a mesma escolha "gastar ou guardar" do aluno B.
 
 ### Comparação com hoje (mesmos alunos, mesma aula)
 
 | Aluno | Hoje | Proposta |
 |---|---|---|
-| A · acerta tudo | Unidade inteira. 220 XP, 80 moedas, ~7 min | Unidade inteira. 235 XP, 80 moedas, ~8 min |
-| B · erra 2 | Fica sem vidas na lição 3 ("voltam amanhã"): 2 lições, 60 XP, 20 moedas. Termina a unidade no 2º dia, e 7 das 20 questões ele nunca acertou | Unidade inteira na aula. 195 XP, 40 moedas. Acertou todas |
-| C · erra 4 | Conclui a lição 1 acertando 1 de 5 e fica sem vidas na lição 2: 10 XP, 10 moedas. Termina a unidade no 4º dia, e metade das questões ele nunca acertou | Unidade inteira na aula (~18 min). 175 XP, 40 moedas. Acertou todas |
+| A · acerta tudo | Unidade inteira. 220 XP, 80 moedas, ~7 min | Unidade inteira. 235 XP, 100 moedas, ~8 min |
+| B · erra 2 | Fica sem vidas na lição 3 ("voltam amanhã"): 2 lições, 60 XP, 20 moedas. Termina a unidade no 2º dia, e 7 das 20 questões ele nunca acertou | Unidade inteira na aula. 195 XP, 60 moedas. Acertou todas |
+| C · erra 4 | Conclui a lição 1 acertando 1 de 5 e fica sem vidas na lição 2: 10 XP, 10 moedas. Termina a unidade no 4º dia, e metade das questões ele nunca acertou | Unidade inteira na aula (~16 min). 170 XP, 40 moedas. Acertou todas |
 
-O XP fica na ordem certa (A 235 > B 195 > C 175), e quem erra mais gasta mais tempo, não fica travado.
+O XP fica na ordem certa (A 235 > B 195 > C 170), e quem erra mais gasta mais tempo, não fica travado.
 
 ## 5. Opinião sincera
 
@@ -147,12 +154,12 @@ O XP fica na ordem certa (A 235 > B 195 > C 175), e quem erra mais gasta mais te
 
 ### O que continua fraco
 
-- **Moeda sobrando para quem acerta tudo.** O aluno A termina com 80 moedas e nada em que gastar: a compra só dá uso à moeda de quem erra. Ideia para depois da apresentação (fora desta tarefa): as moedas guardadas "rendem" um pouco por dia, o que liga direto com a Trilha 2, de investimentos.
+- **Moeda sobrando para quem acerta tudo.** O aluno A termina com 100 moedas (80, mais a mesada) e nada em que gastar: a compra só dá uso à moeda de quem erra. Ideia para depois da apresentação (fora desta tarefa): as moedas guardadas "rendem" um pouco por dia, o que liga direto com a Trilha 2, de investimentos.
 - **A vida vira "pare e revise", não castigo.** Com o treino devolvendo 5 vidas em 2 minutos, ninguém fica travado. Para uma escola, acho o certo. Se a equipe quiser mais peso, o ajuste é subir o preço da recarga, não diminuir o que o treino devolve (por causa do ciclo do item 2).
 - **Poucas questões viram decoreba.** São 5 questões fixas por lição: na 2ª ou 3ª vez, o aluno já decorou a resposta. O valor está em ler a explicação. Um banco maior de questões resolveria, mas isso é conteúdo e fica para depois.
 - **Lição mais longa para quem erra.** O aluno C responde 54 questões na aula, contra 23 do A. Faz sentido, mas vale observar no teste se ninguém desanima.
 - **Numa aula só, o aquecimento é pouco espaçado.** Se o aluno faz as 4 lições em seguida, o aquecimento revê algo de 3 minutos atrás. Ele vale mais quando as lições são feitas em dias diferentes.
-- **Caso raro sem saída.** Quem erra as 5 questões da lição 1 no primeiro dia fica sem vidas, sem moedas e sem lição para treinar: as vidas só voltam amanhã, como hoje. Na prática, "Reiniciar progresso" resolve sem perder nada (ele ainda não tem nada). Não vale criar regra para isso agora.
+- **Caso raro sem saída.** Quem erra as 5 questões da lição 1 no primeiro dia fica sem vidas, sem moedas e sem lição para treinar: as vidas só voltam amanhã, como hoje. Na prática, "Reiniciar progresso" resolve sem perder nada (ele ainda não tem nada). Não vale criar regra para isso agora. **Resolvido em 01/11 com a mesada de boas-vindas:** ele paga a recarga com as 20 moedas, e a revisão leva ao fim da lição. Só trava de novo se pagar, largar a lição 1 no meio e errar mais 5 questões novas no mesmo dia.
 
 ### Prazo e ordem
 
@@ -166,7 +173,7 @@ As duas primeiras não dependem do aquecimento. Se o tempo apertar, ele fica par
 
 ### Na apresentação
 
-- Para mostrar a compra, o aluno precisa ter 20 moedas quando as vidas acabarem. Na ordem natural, isso só acontece a partir da lição 3. O roteiro da demonstração sai no ensaio de 09/11.
+- Para mostrar a compra, o aluno precisa ter 20 moedas quando as vidas acabarem. Com a mesada (01/11), ele tem desde o começo: a compra aparece na primeira vez que as vidas acabam, até na lição 1. O roteiro da demonstração sai no ensaio de 09/11.
 - Repetição e aquecimento aparecem sozinhos: basta errar uma questão na lição 1 e abrir a lição 2.
 
 ## 6. O que muda no código (mapa, sem código)
@@ -208,3 +215,4 @@ Escrever com a skill de UX copy na hora de codar:
 1. Os 4 ajustes do resumo: repetição sem perder vida; treino devolve 5 vidas; compra devolve 5 vidas; XP e moedas só para lição nova.
 2. Os números: revisão 5 XP, recarga 20 moedas, sem relógio.
 3. Um detalhe que a proposta 4 não dizia: quando o aluno não errou nenhuma questão da lição anterior, o aquecimento usa uma fácil ou média.
+4. Depois do plano, no mesmo dia: a mesada de boas-vindas (todo aluno começa com 20 moedas), avaliada antes de codar. A seção 4 já está com ela.

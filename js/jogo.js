@@ -28,6 +28,7 @@ const XP_DO_BAU = 20;              // ao abrir o baú da unidade
 const MOEDAS_DO_BAU = 20;
 const VIDAS_MAXIMAS = 5;           // voltam todas no dia seguinte, no fim do treino ou na recarga
 const PRECO_DA_RECARGA = 20;       // moedas para as vidas voltarem todas, na tela "sem vidas"
+const MESADA_DE_BOAS_VINDAS = 20;  // moedas com que todo aluno começa: pagam 1 recarga
 
 // Formato de toda lição: quantas questões de cada nível
 const QUESTOES_POR_DIFICULDADE = { facil: 2, media: 2, dificil: 1 };
@@ -70,7 +71,7 @@ function criarProgressoInicial(hoje = hojeComoTexto()) {
   return {
     versao: 1,                 // muda se o formato mudar no futuro
     xp: 0,
-    moedas: 0,
+    moedas: MESADA_DE_BOAS_VINDAS,
     vidas: VIDAS_MAXIMAS,
     diaDasVidas: hoje,         // último dia em que as vidas foram recarregadas
     sequencia: 0,              // dias seguidos com lição concluída
@@ -518,6 +519,8 @@ function lembrarErros(progresso, sessao) {
 //     todas e a lição continua de onde parou;
 //   - treinar: refaz de graça uma lição concluída (ver a seção 5).
 //     A lição parada recomeça depois.
+// Antes de concluir a primeira lição ainda não há o que treinar:
+// quem fica sem vidas ali paga a recarga com a MESADA_DE_BOAS_VINDAS.
 
 function podeRecarregar(progresso) {
   return progresso.vidas === 0 && progresso.moedas >= PRECO_DA_RECARGA;

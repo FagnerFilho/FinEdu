@@ -289,7 +289,7 @@
       jogar(progresso, sessao, () => true);
       const resumo = concluirLicao(progresso, sessao, HOJE);
       confere([resumo.xp, resumo.moedas, resumo.perfeita], [50, 15, true], 'XP, moedas e perfeita');
-      confere([progresso.xp, progresso.moedas], [50, 15], 'XP e moedas no progresso');
+      confere([progresso.xp, progresso.moedas], [50, 35], 'XP e moedas no progresso (20 da mesada + 15)');
     });
 
     teste('Revisão vale 5 XP por questão, uma vez só (erra 2: 30 + 10 = 40 XP, 10 moedas)', () => {
@@ -306,14 +306,14 @@
       const progresso = novoProgresso();
       concluirAcertandoTudo(progresso, LICAO_1);
       concluirAcertandoTudo(progresso, LICAO_1);
-      confere(progresso.moedas, 15, 'moedas depois de fazer a lição 1 duas vezes');
+      confere(progresso.moedas, 35, 'moedas depois de fazer a lição 1 duas vezes (20 da mesada + 15)');
     });
 
     teste('XP e moedas só entram no fim da lição', () => {
       const progresso = novoProgresso();
       const sessao = abrir(progresso, LICAO_1);
       responderEContinuar(progresso, sessao, true);
-      confere([progresso.xp, progresso.moedas], [0, 0], 'XP e moedas no meio da lição');
+      confere([progresso.xp, progresso.moedas], [0, 20], 'XP e moedas no meio da lição (só a mesada)');
     });
 
 
@@ -331,6 +331,25 @@
       progresso.moedas = 25;
       confere(recarregarVidas(progresso), true, 'com 25 moedas');
       confere([progresso.vidas, progresso.moedas], [5, 5], 'vidas e moedas depois de pagar');
+    });
+
+    teste('Mesada de boas-vindas: todo aluno começa com 20 moedas, também depois de "Reiniciar progresso"', () => {
+      confere(novoProgresso().moedas, 20, 'moedas no começo');
+      confere(prepararProgresso(null, HOJE).moedas, 20, 'moedas depois de reiniciar');
+    });
+
+    teste('Errou as 5 da lição 1: sem lição para treinar, a mesada paga a recarga e a revisão leva ao fim', () => {
+      const progresso = novoProgresso();
+      const sessao = abrir(progresso, LICAO_1);
+      confere(jogar(progresso, sessao, errandoDePrimeira([0, 1, 2, 3, 4])), 'sem-vidas', 'depois de errar as 5');
+      confere(licaoParaTreinar(progresso), null, 'lição para treinar');
+      confere(recarregarVidas(progresso), true, 'pagou com a mesada');
+      confere(avancarQuestao(progresso, sessao), 'proxima', 'depois de pagar');
+      confere(vezAtual(sessao).tipo, 'revisao', 'tipo da vez depois de pagar');
+      confere(jogar(progresso, sessao, () => true), 'fim', 'fim da lição');
+      const resumo = concluirLicao(progresso, sessao, HOJE);
+      // 5 consertadas na revisão (25 XP) e 10 moedas por concluir
+      confere([resumo.xp, resumo.moedas, progresso.vidas, progresso.moedas], [25, 10, 5, 10], 'XP, moedas ganhas, vidas e moedas');
     });
 
     teste('Recarga no meio da lição: as vidas voltam a 5 e a lição continua de onde parou', () => {
@@ -487,7 +506,8 @@
     // a posição dela (0 a 4) está em "erraDePrimeira"; questão que ele já
     // viu explicada, ele acerta. Sem vidas: paga a recarga se puder (e se
     // "pagaSePuder"); se não, treina a lição concluída mais recente e
-    // recomeça a lição. Faz a Unidade 1 inteira e abre o baú.
+    // recomeça a lição. Começa com a mesada de boas-vindas (20 moedas),
+    // faz a Unidade 1 inteira e abre o baú.
     function simularAluno(erraDePrimeira, pagaSePuder = true) {
       const progresso = novoProgresso();
       const vistas = new Set();
@@ -528,20 +548,20 @@
       return { vidas: progresso.vidas, moedas: progresso.moedas, xp: progresso.xp, ...contagem };
     }
 
-    teste('Aluno A, acerta tudo: 5 vidas, 80 moedas, 235 XP', () => {
-      confere(simularAluno([]), { vidas: 5, moedas: 80, xp: 235, compras: 0, treinos: 0 }, 'fim da unidade');
+    teste('Aluno A, acerta tudo: 5 vidas, 100 moedas, 235 XP', () => {
+      confere(simularAluno([]), { vidas: 5, moedas: 100, xp: 235, compras: 0, treinos: 0 }, 'fim da unidade');
     });
 
-    teste('Aluno B, erra 2: 2 vidas, 40 moedas, 195 XP, 1 recarga', () => {
-      confere(simularAluno([3, 4]), { vidas: 2, moedas: 40, xp: 195, compras: 1, treinos: 0 }, 'fim da unidade');
+    teste('Aluno B, erra 2: 2 vidas, 60 moedas, 195 XP, 1 recarga', () => {
+      confere(simularAluno([3, 4]), { vidas: 2, moedas: 60, xp: 195, compras: 1, treinos: 0 }, 'fim da unidade');
     });
 
-    teste('Aluno B guardando as moedas: 2 vidas, 60 moedas, 200 XP, 1 treino', () => {
-      confere(simularAluno([3, 4], false), { vidas: 2, moedas: 60, xp: 200, compras: 0, treinos: 1 }, 'fim da unidade');
+    teste('Aluno B guardando as moedas: 2 vidas, 80 moedas, 200 XP, 1 treino', () => {
+      confere(simularAluno([3, 4], false), { vidas: 2, moedas: 80, xp: 200, compras: 0, treinos: 1 }, 'fim da unidade');
     });
 
-    teste('Aluno C, erra 4: 4 vidas, 40 moedas, 175 XP, 1 recarga e 2 treinos', () => {
-      confere(simularAluno([1, 2, 3, 4]), { vidas: 4, moedas: 40, xp: 175, compras: 1, treinos: 2 }, 'fim da unidade');
+    teste('Aluno C, erra 4: 4 vidas, 40 moedas, 170 XP, 2 recargas e 1 treino', () => {
+      confere(simularAluno([1, 2, 3, 4]), { vidas: 4, moedas: 40, xp: 170, compras: 2, treinos: 1 }, 'fim da unidade');
     });
 
 
@@ -562,7 +582,7 @@
       confere(situacaoDoBau(progresso, UNIDADE), 'liberado', 'com as 4 lições');
       confere(abrirBau(progresso, UNIDADE), { xp: 20, moedas: 20 }, 'recompensa');
       confere(abrirBau(progresso, UNIDADE), null, 'abrir de novo');
-      confere([progresso.xp, progresso.moedas], [20, 20], 'XP e moedas');
+      confere([progresso.xp, progresso.moedas], [20, 40], 'XP e moedas (com as 20 da mesada)');
     });
 
     teste('Sequência: +1 por dia seguido e volta a 0 se pular um dia', () => {
@@ -586,7 +606,7 @@
 
     teste('Progresso estragado volta ao valor inicial', () => {
       const progresso = prepararProgresso({ xp: -3, moedas: 'muitas', vidas: 9, licoesConcluidas: 'x' }, HOJE);
-      confere([progresso.xp, progresso.moedas, progresso.vidas, progresso.licoesConcluidas], [0, 0, VIDAS_MAXIMAS, []], 'valores');
+      confere([progresso.xp, progresso.moedas, progresso.vidas, progresso.licoesConcluidas], [0, MESADA_DE_BOAS_VINDAS, VIDAS_MAXIMAS, []], 'valores');
     });
 
     teste('Reiniciar progresso zera também a lista de erradas', () => {

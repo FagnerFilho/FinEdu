@@ -113,6 +113,7 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md. Regras do código 
 - Precisão: só a primeira resposta de cada questão nova.
 - XP: +10 por questão nova certa de primeira; +5 por errada consertada na revisão e pelo aquecimento certo.
 - Moedas: +10 por lição concluída, +5 se acertar as 5 de primeira, só na primeira vez que conclui.
+- Mesada de boas-vindas: todo aluno começa com 20 moedas, o preço de 1 recarga. Assim, quem erra as 5 questões da lição 1 (e ainda não tem lição para treinar) não fica sem saída. "Reiniciar progresso" devolve a mesada.
 - Baú: +20 XP e +20 moedas.
 - XP e moedas só entram no fim da lição; quem sai no meio não ganha nada.
 - 5 vidas. Erro em questão nova tira 1 na hora. Sem vidas, duas saídas:
@@ -186,6 +187,12 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md. Regras do código 
 
 ### Ajustes depois da tarefa 2 (01/11)
 - Questão do celular parcelado (lição "Consumo e dívidas"): o total entrou na pergunta ("R$ 1.000 à vista ou R$ 1.200 em 10 parcelas de R$ 120"), e o aluno não precisa mais fazer 10 × 120 de cabeça. As explicações das alternativas agora falam dos juros escondidos nas parcelas e de comparar sempre o total. Aprovado pelo líder; o professor confere junto com o resto da Unidade 1.
+- Mesada de boas-vindas: todo aluno começa com 20 moedas (constante MESADA_DE_BOAS_VINDAS, no topo do js/jogo.js), para nunca ficar sem saída na lição 1.
+  - Avaliada antes de codar: não quebra nenhuma regra nem as conclusões da simulação. Os 3 alunos terminam a unidade na aula, o XP continua na ordem A > B > C, e a escolha "gastar ou guardar" continua.
+  - Os números mudaram: A termina com 100 moedas, B com 60 (80 guardando), e o C troca um treino por uma recarga na lição 2 (170 XP em vez de 175, 47 questões em vez de 54). Simulação refeita na seção 4 do plano-gamificacao.md.
+  - A tela "sem vidas" já tinha o texto do caso "só a recarga" ("Use sua reserva de moedas para continuar."). O aviso de "Reiniciar progresso" trocou "voltam a zero" por "voltam ao começo", porque as moedas voltam a 20.
+  - Quem já tem progresso salvo (como o celular do líder) só ganha a mesada depois de "Reiniciar progresso".
+  - testes.html: 40 testes, todos passando (2 novos: a mesada no começo e a lição 1 com as 5 erradas). Conferido no navegador (servidor local, celular em pé): errar as 5 da lição 1 leva à recarga, e a revisão leva ao fim da lição, sem erro no console.
 
 ## Pendências
 - Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEduu/). O celular Android do líder já passou (01/11).
@@ -194,7 +201,7 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md. Regras do código 
 - João: nomes e arquivos das fontes, logo em SVG (versão clara para fundo escuro), aprovar o roxo mais claro para texto e definir o fundo.
 - Título final da Unidade 1.
 - Tarefa 2 (gamificação): abrir com dois cliques no notebook (index.html e testes.html) e testar no celular e no tablet pelo link do Pages. O push já foi feito (01/11). "Meta do dia" e conquistas ficam para depois da apresentação.
-- Roteiro da demonstração (ensaio de 09/11): para mostrar a recarga, o aluno precisa ter 20 moedas quando as vidas acabarem, o que na ordem natural só acontece a partir da lição 3.
+- Roteiro da demonstração (ensaio de 09/11). Com a mesada, o aluno tem 20 moedas desde o começo: a recarga aparece na primeira vez que as vidas acabam, até na lição 1.
 - Conversa de design: paleta nova, fontes novas, tirar o mascote, profundidade.
 - Depois da apresentação: Trilha 2 (conversa 07), Calculadora e Guia (conversa 08), Unidade 2.
 - Instruções do Projeto: trocar "Menu embaixo em telas estreitas e na lateral em telas largas" pela regra da orientação (ver Layout), tirar a linha do mascote e trocar as cores da seção DESIGN pela paleta do João.

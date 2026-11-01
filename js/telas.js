@@ -735,7 +735,7 @@ function desenharPerfil(lugar, progresso, podeSalvar) {
 
           <div class="confirmacao" id="confirmar-reinicio" hidden>
             <h3 class="confirmacao-titulo">Reiniciar todo o progresso?</h3>
-            <p class="confirmacao-texto">XP, moedas, vidas, sequência e lições voltam a zero. Não dá para desfazer.</p>
+            <p class="confirmacao-texto">XP, moedas, vidas, sequência e lições voltam ao começo. Não dá para desfazer.</p>
             <div class="confirmacao-botoes">
               <button type="button" class="botao botao--erro" data-acao="confirmar-reinicio">Reiniciar progresso</button>
               <button type="button" class="botao botao--contorno" data-acao="cancelar-reinicio">Cancelar</button>

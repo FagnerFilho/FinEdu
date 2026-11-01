@@ -126,6 +126,7 @@ Decididas no `projeto/plano-gamificacao.md`. Constantes no topo do `jogo.js`:
 | `XP_DO_BAU` / `MOEDAS_DO_BAU` | 20 / 20 |
 | `VIDAS_MAXIMAS` | 5 |
 | `PRECO_DA_RECARGA` | 20 moedas |
+| `MESADA_DE_BOAS_VINDAS` | 20 (moedas com que o progresso começa: pagam 1 recarga) |
 
 **A lição é uma fila.** A primeira da fila é a vez atual, e cada vez tem um tipo:
 
@@ -142,6 +143,7 @@ Regra de bolso: **só perde vida quem erra questão nova; ficou sem vidas, recar
   - treinar de graça a lição concluída mais recente; a lição parada recomeça depois.
 
   Sem moedas suficientes e sem lição concluída, as vidas só voltam no dia seguinte.
+- Mesada de boas-vindas: o progresso começa com `MESADA_DE_BOAS_VINDAS` moedas. Antes de concluir a primeira lição não há o que treinar, e é ela que paga a recarga de quem erra as 5 questões da lição 1. "Reiniciar progresso" devolve a mesada; um progresso que já estava salvo não ganha.
 - Treino (refazer lição concluída): errar não tira vida; não vale XP nem moedas e não conta na precisão; no fim, as vidas voltam a 5. Dá para treinar com 0 vidas. Conta na sequência.
 - As vidas também voltam todas no dia seguinte.
 - Sequência: +1 por dia com pelo menos uma lição (ou treino) concluída; se passar um dia sem concluir, volta a 0.
