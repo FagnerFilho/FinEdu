@@ -154,8 +154,8 @@ O XP fica na ordem certa (A 235 > B 195 > C 170), e quem erra mais gasta mais te
 
 ### O que continua fraco
 
-- **Moeda sobrando para quem acerta tudo.** O aluno A termina com 100 moedas (80, mais a mesada) e nada em que gastar: a compra só dá uso à moeda de quem erra. Ideia para depois da apresentação (fora desta tarefa): as moedas guardadas "rendem" um pouco por dia, o que liga direto com a Trilha 2, de investimentos.
-- **A vida vira "pare e revise", não castigo.** Com o treino devolvendo 5 vidas em 2 minutos, ninguém fica travado. Para uma escola, acho o certo. Se a equipe quiser mais peso, o ajuste é subir o preço da recarga, não diminuir o que o treino devolve (por causa do ciclo do item 2).
+- **Moeda sobrando para quem acerta tudo.** O aluno A termina com 100 moedas (80, mais a mesada) e nada em que gastar: a compra só dá uso à moeda de quem erra. Ideia para depois da apresentação (fora desta tarefa): as moedas guardadas "rendem" um pouco por dia, o que liga direto com a Trilha 2, de investimentos. **Decidido em 01/11:** aceitar até a apresentação; as "moedas que rendem" ficam para depois, junto com a Trilha 2.
+- **A vida vira "pare e revise", não castigo.** Com o treino devolvendo 5 vidas em 2 minutos, ninguém fica travado. Para uma escola, acho o certo. Se a equipe quiser mais peso, o ajuste é subir o preço da recarga, não diminuir o que o treino devolve (por causa do ciclo do item 2). **Decidido em 01/11:** manter assim.
 - **Poucas questões viram decoreba.** São 5 questões fixas por lição: na 2ª ou 3ª vez, o aluno já decorou a resposta. O valor está em ler a explicação. Um banco maior de questões resolveria, mas isso é conteúdo e fica para depois.
 - **Lição mais longa para quem erra.** O aluno C responde 54 questões na aula, contra 23 do A. Faz sentido, mas vale observar no teste se ninguém desanima.
 - **Numa aula só, o aquecimento é pouco espaçado.** Se o aluno faz as 4 lições em seguida, o aquecimento revê algo de 3 minutos atrás. Ele vale mais quando as lições são feitas em dias diferentes.

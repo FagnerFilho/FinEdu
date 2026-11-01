@@ -60,4 +60,4 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 
 ## Depois da apresentação
 
-Trilha 2 (investimentos, com revisão do professor), Calculadora de Metas e Guia, Unidade 2, "Meta do dia" e conquistas, e transformar o arquitetura.md numa skill de arquiteto.
+Trilha 2 (investimentos, com revisão do professor, e as "moedas que rendem" junto), Calculadora de Metas e Guia, Unidade 2, "Meta do dia" e conquistas, e transformar o arquitetura.md numa skill de arquiteto.

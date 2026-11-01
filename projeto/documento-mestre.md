@@ -193,6 +193,9 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md. Regras do código 
   - A tela "sem vidas" já tinha o texto do caso "só a recarga" ("Use sua reserva de moedas para continuar."). O aviso de "Reiniciar progresso" trocou "voltam a zero" por "voltam ao começo", porque as moedas voltam a 20.
   - Quem já tem progresso salvo (como o celular do líder) só ganha a mesada depois de "Reiniciar progresso".
   - testes.html: 40 testes, todos passando (2 novos: a mesada no começo e a lição 1 com as 5 erradas). Conferido no navegador (servidor local, celular em pé): errar as 5 da lição 1 leva à recarga, e a revisão leva ao fim da lição, sem erro no console.
+- Peso das vidas: mantido. A vida continua sendo "pare e revise", não castigo: o treino devolve as 5 vidas em uns 2 minutos. Se um dia quiserem mais peso, o ajuste é subir o PRECO_DA_RECARGA, e não diminuir o que o treino devolve. Nesse caso, a mesada sobe junto, para continuar pagando 1 recarga (o testes.html avisa se ela deixar de pagar).
+- Moedas sobrando para quem acerta tudo: aceitas até a apresentação. Com a mesada, o aluno A termina a Unidade 1 com 100 moedas e nada em que gastar.
+- "Moedas que rendem" (as moedas guardadas rendem um pouco por dia): fica para depois da apresentação. A ideia liga com a Trilha 2 (investimentos) e entra junto com ela.
 
 ## Pendências
 - Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEduu/). O celular Android do líder já passou (01/11).
@@ -203,5 +206,5 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md. Regras do código 
 - Tarefa 2 (gamificação): abrir com dois cliques no notebook (index.html e testes.html) e testar no celular e no tablet pelo link do Pages. O push já foi feito (01/11). "Meta do dia" e conquistas ficam para depois da apresentação.
 - Roteiro da demonstração (ensaio de 09/11). Com a mesada, o aluno tem 20 moedas desde o começo: a recarga aparece na primeira vez que as vidas acabam, até na lição 1.
 - Conversa de design: paleta nova, fontes novas, tirar o mascote, profundidade.
-- Depois da apresentação: Trilha 2 (conversa 07), Calculadora e Guia (conversa 08), Unidade 2.
+- Depois da apresentação: Trilha 2 (conversa 07), com as "moedas que rendem"; Calculadora e Guia (conversa 08); Unidade 2.
 - Instruções do Projeto: trocar "Menu embaixo em telas estreitas e na lateral em telas largas" pela regra da orientação (ver Layout), tirar a linha do mascote e trocar as cores da seção DESIGN pela paleta do João.
