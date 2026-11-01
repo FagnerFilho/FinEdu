@@ -15,7 +15,7 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - O líder distribui as tarefas entre a equipe de propósito, em vez de fazer tudo com IA.
 
 ## Ferramentas e onde mora cada coisa (decidido em 01/11)
-- Código: Claude Code, trabalhando direto na pasta finedu no computador do líder, com Git, e enviando para o repositório do líder no GitHub, que é o oficial: github.com/Fagneraposo/FinEduu (público). O Eufy entra como colaborador.
+- Código: Claude Code, trabalhando direto na pasta finedu no computador do líder, com Git, e enviando para o repositório do líder no GitHub, que é o oficial: github.com/Fagneraposo/FinEdu (público; até 01/11 se chamava FinEduu). O Eufy entra como colaborador.
 - Commits com o e-mail privado do GitHub (noreply), para o e-mail do líder não aparecer no repositório público. Já configurado no Git da pasta finedu.
 - Planejamento, conteúdo e decisões: Projeto "FineEdu" no Claude.
 - Este documento-mestre e o arquitetura.md ficam também dentro do código, na pasta projeto/. A versão oficial é a da pasta do código: o Claude Code atualiza ao fim de cada tarefa, e o líder copia para o Contexto do Projeto.
@@ -102,7 +102,7 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - Roda num tablet Samsung (Android) e num notebook. Vai ter internet no local.
 - No notebook: dois cliques no index.html.
 - No tablet: abrir pelo link do GitHub Pages. Abrir o arquivo direto no Android costuma falhar.
-- Publicado de graça no GitHub Pages (repositório público, branch main, pasta raiz): https://fagneraposo.github.io/FinEduu/
+- Publicado de graça no GitHub Pages (repositório público, branch main, pasta raiz): https://fagneraposo.github.io/FinEdu/ (o link antigo, com FinEduu, dá 404 desde a troca de nome do repositório, em 01/11)
 - Perfil → Configurações → "Reiniciar progresso", para zerar entre uma apresentação e outra.
 
 ## Gamificação (tarefa 2, 01/11)
@@ -170,7 +170,7 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md. Regras do código 
 
 ### Tarefa 1 · GitHub e Pages (01/11)
 - Repositório oficial no GitHub do líder (Fagneraposo/FinEduu, público), no lugar do repositório do Eufy. O Eufy entra como colaborador.
-- GitHub Pages na branch main, pasta raiz: https://fagneraposo.github.io/FinEduu/
+- GitHub Pages na branch main, pasta raiz: https://fagneraposo.github.io/FinEduu/ (link antigo: com a troca de nome do repositório, virou https://fagneraposo.github.io/FinEdu/)
 - Conferido no navegador: o site abre, sem caixa vermelha nem erro no console, e a lição 1 começa.
 - Testado no celular Android do líder pelo link do Pages (01/11): passou. O tablet continua pendente.
 
@@ -196,9 +196,13 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md. Regras do código 
 - Peso das vidas: mantido. A vida continua sendo "pare e revise", não castigo: o treino devolve as 5 vidas em uns 2 minutos. Se um dia quiserem mais peso, o ajuste é subir o PRECO_DA_RECARGA, e não diminuir o que o treino devolve. Nesse caso, a mesada sobe junto, para continuar pagando 1 recarga (o testes.html avisa se ela deixar de pagar).
 - Moedas sobrando para quem acerta tudo: aceitas até a apresentação. Com a mesada, o aluno A termina a Unidade 1 com 100 moedas e nada em que gastar.
 - "Moedas que rendem" (as moedas guardadas rendem um pouco por dia): fica para depois da apresentação. A ideia liga com a Trilha 2 (investimentos) e entra junto com ela.
+- Push em 01/11, com o OK do líder: os commits de 807aa52 a cf3bcf9. No GitHub Pages, o app abre com o código novo, sem caixa vermelha nem erro no console, e os 40 testes do testes.html passam.
+- O repositório foi renomeado de FinEduu para FinEdu (o GitHub avisou no push). O endereço do repositório antigo redireciona para o novo, mas o do site não: https://fagneraposo.github.io/FinEduu/ dá 404, e o site agora é https://fagneraposo.github.io/FinEdu/.
 
 ## Pendências
-- Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEduu/). O celular Android do líder já passou (01/11).
+- Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEdu/). O celular Android do líder já passou (01/11), ainda no link antigo.
+- Trocar o link antigo do site (com FinEduu, agora dá 404) onde ele foi divulgado: Contexto e Instruções do Projeto do Claude, mensagens da equipe, favorito no tablet e QR code, se tiver.
+- Trocar o endereço do repositório no Git do computador: git remote set-url origin https://github.com/Fagneraposo/FinEdu.git (o GitHub ainda redireciona o antigo, mas pediu para usar o novo).
 - Convidar o Eufy como colaborador no repositório (Settings → Collaborators). Precisa do nome de usuário dele no GitHub.
 - Líder revisar as adaptações das lições; professor revisar o conteúdo da Unidade 1.
 - João: nomes e arquivos das fontes, logo em SVG (versão clara para fundo escuro), aprovar o roxo mais claro para texto e definir o fundo.

@@ -24,7 +24,7 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 
 ## Onde mora cada coisa
 
-- **Código:** esta pasta. Versionada com Git e enviada para o repositório do Fagner no GitHub, que é o oficial: github.com/Fagneraposo/FinEduu (o Eufy é colaborador). Site: https://fagneraposo.github.io/FinEduu/
+- **Código:** esta pasta. Versionada com Git e enviada para o repositório do Fagner no GitHub, que é o oficial: github.com/Fagneraposo/FinEdu (o Eufy é colaborador; até 01/11 se chamava FinEduu). Site: https://fagneraposo.github.io/FinEdu/ (o link antigo, com FinEduu, dá 404)
 - **Decisões do projeto:** `projeto/documento-mestre.md`. É a versão oficial.
 - **Regras do código:** `projeto/arquitetura.md`. Todo código segue esse arquivo. Se uma mudança precisar quebrar uma regra, discuta antes e atualize o arquivo junto.
 - O planejamento e o conteúdo também são feitos num Projeto do Claude (no app). O Fagner copia o documento-mestre de lá para cá e daqui para lá. Se você notar decisões conflitantes, avise.
@@ -48,7 +48,7 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 
 ## Fila de tarefas até 11/11
 
-1. ~~**GitHub e GitHub Pages.**~~ Feito em 01/11: repositório Fagneraposo/FinEduu, Pages na `main`, pasta raiz. O teste no tablet ficou nas pendências do documento-mestre.
+1. ~~**GitHub e GitHub Pages.**~~ Feito em 01/11: repositório Fagneraposo/FinEduu (renomeado para FinEdu no mesmo dia), Pages na `main`, pasta raiz. O teste no tablet ficou nas pendências do documento-mestre.
 2. ~~**Gamificação (conversa 05).**~~ Feito em 01/11: revisão das erradas, aquecimento, recarga de vidas com moedas e treino. Plano em `projeto/plano-gamificacao.md`, regras na seção 6 do arquitetura.md, testes no `testes.html`. Push feito em 01/11; o teste no celular e no tablet ficou nas pendências do documento-mestre.
 3. **Design.** Na branch `experimento-design`:
    - Aplicar a paleta do João (está no documento-mestre) e conferir o contraste de cada combinação. O roxo sobre o preto fosco dá só 2,5: não serve para texto nem ícone no fundo escuro.
