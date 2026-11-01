@@ -119,12 +119,17 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
   2. "Dinheiro e poupança" (Samuel de Assunção).
   3. "Planejamento e orçamento" (Samuel de Assunção).
   4. "Consumo e dívidas" (Samuel de Assunção).
-- Regra das contas (decidida em 01/11): no máximo 1 questão de conta por lição, com número redondo, que dê para fazer de cabeça, e só em questão fácil ou média. A questão difícil é de decisão ("o que faz mais sentido?"), não de cálculo. Questão difícil com conta só em unidades mais avançadas. Motivo: na escola o aluno não tem papel para fazer conta, e educação financeira é sobre decisão, não aritmética.
+- Regra das contas (decidida em 01/11 e endurecida no mesmo dia):
+  - A Unidade 1 não tem nenhuma questão de conta. O conceito fica na pergunta, e a conta vai para a explicação.
+  - Contas simples só em unidades mais avançadas, e só em questão fácil ou média (número redondo, que dê para fazer de cabeça).
+  - A questão difícil é sempre de decisão ("o que faz mais sentido?"), não de cálculo.
+  - Motivo: na escola o aluno não tem papel para fazer conta, e educação financeira é sobre decisão, não aritmética.
 - As 3 lições do Samuel foram adaptadas ao formato do app em 01/11:
   - O PDF dele tinha 3 fáceis, 1 média e 1 difícil por lição. Viraram 2-2-1.
   - Toda alternativa ganhou explicação. Exemplos infantis (brinquedo, "nasce nas árvores") viraram situações de adolescente.
-  - Pela regra das contas: a questão da bicicleta do Pedro e a da reserva da família viraram decisões; o celular parcelado ficou média, com números fáceis (10 × R$ 120); a do valor mínimo da fatura virou a difícil, como situação; entrou uma questão de "pague-se primeiro"; saiu a questão sobre necessidade (repetida da lição 1).
+  - Pela regra das contas: a questão da bicicleta do Pedro e a da reserva da família viraram decisões; o celular parcelado foi para média; a do valor mínimo da fatura virou a difícil, como situação; entrou uma questão de "pague-se primeiro"; saiu a questão sobre necessidade (repetida da lição 1).
   - A difícil de "Querer ou precisar?" também perdeu a conta.
+  - Com a regra nova (Unidade 1 sem conta), a da capinha da Ana, a da regra 50-30-20 e a do celular parcelado viraram perguntas de conceito; as contas ficaram só nas explicações. O dados-licoes.js novo foi conferido em 01/11: o app abre sem caixa vermelha e sem erro no console.
   - O líder revisa as adaptações (01/11), no lugar do Samuel. Falta o professor revisar (marcas // REVISAR no arquivo).
 - Unidade 2 e Trilha 2 (investimentos): "Em breve" na apresentação.
 
@@ -148,15 +153,16 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - Mascote removido.
 - Paleta do João registrada; entra no código na conversa de design.
 - Lições do Samuel adaptadas e colocadas no dados-licoes.js: a Unidade 1 tem 4 lições completas e o baú já pode ser aberto.
-- Regra das contas: no máximo 1 por lição, só em fácil ou média.
+- Regra das contas: no máximo 1 por lição, só em fácil ou média. Endurecida no mesmo dia: a Unidade 1 fica sem nenhuma conta (ver Conteúdo).
 
 ### Tarefa 1 · GitHub e Pages (01/11)
 - Repositório oficial no GitHub do líder (Fagneraposo/FinEduu, público), no lugar do repositório do Eufy. O Eufy entra como colaborador.
 - GitHub Pages na branch main, pasta raiz: https://fagneraposo.github.io/FinEduu/
 - Conferido no navegador: o site abre, sem caixa vermelha nem erro no console, e a lição 1 começa.
+- Testado no celular Android do líder pelo link do Pages (01/11): passou. O tablet continua pendente.
 
 ## Pendências
-- Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEduu/).
+- Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEduu/). O celular Android do líder já passou (01/11).
 - Convidar o Eufy como colaborador no repositório (Settings → Collaborators). Precisa do nome de usuário dele no GitHub.
 - Líder revisar as adaptações das lições; professor revisar o conteúdo da Unidade 1.
 - João: nomes e arquivos das fontes, logo em SVG (versão clara para fundo escuro), aprovar o roxo mais claro para texto e definir o fundo.

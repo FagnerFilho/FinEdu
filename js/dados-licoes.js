@@ -157,12 +157,12 @@ const CONTEUDO = {
                 // Difícil
                 {
                   dificuldade: 'dificil',
-                  pergunta: 'Você tem R$ 50 até o fim do mês, e R$ 20 são para o ônibus da escola. Aí aparece um fone de R$ 45 numa promoção que "acaba hoje". O que faz mais sentido?',
+                  pergunta: 'Você tem um dinheiro contado até o fim do mês, e uma parte dele é a passagem do ônibus da escola. Aí aparece um fone numa promoção que "acaba hoje", mas ele só cabe se você usar o dinheiro do ônibus. O que faz mais sentido?',
                   alternativas: [
                     {
-                      texto: 'Separar os R$ 20 do ônibus e deixar o fone para depois',
+                      texto: 'Guardar o dinheiro do ônibus e deixar o fone para depois',
                       correta: true,
-                      explicacao: 'Pagando o ônibus, sobram R$ 30, e o fone não cabe. A pressa da promoção é só pressão para comprar por impulso.'
+                      explicacao: 'O ônibus é necessidade: é como você chega à escola. A pressa da promoção é só pressão para comprar por impulso.'
                     },
                     {
                       texto: 'Comprar o fone agora, porque promoção assim não volta',
@@ -246,24 +246,24 @@ const CONTEUDO = {
                 // Média 1 (nova: entra no lugar da questão sobre necessidade, que já está na lição "Querer ou precisar?")
                 {
                   dificuldade: 'media',
-                  pergunta: 'Bia guarda R$ 2 por dia de aula, de segunda a sexta. Quanto ela junta em 4 semanas?',
+                  pergunta: 'Você recebeu a mesada e quer guardar uma parte. Qual é o melhor momento para separar esse dinheiro?',
                   alternativas: [
                     {
-                      texto: 'R$ 40',
+                      texto: 'Assim que receber, antes de gastar com qualquer coisa',
                       correta: true,
-                      explicacao: 'São 5 dias de aula por semana: 2 × 5 = R$ 10 por semana. Em 4 semanas: 10 × 4 = R$ 40.'
+                      explicacao: 'Separar primeiro garante que o dinheiro guardado não some nos gastos do mês. É o famoso "pague-se primeiro".'
                     },
                     {
-                      texto: 'R$ 56',
-                      explicacao: 'Esse seria o valor guardando nos 7 dias da semana. Mas a Bia só guarda nos dias de aula.'
+                      texto: 'No fim do mês, com o que sobrar',
+                      explicacao: 'Quase nunca sobra: os gastos aparecem e ocupam todo o dinheiro. Por isso vale separar antes.'
                     },
                     {
-                      texto: 'R$ 8',
-                      explicacao: 'R$ 8 é o que ela junta em 4 dias, não em 4 semanas.'
+                      texto: 'Quando aparecer algo que você queira muito comprar',
+                      explicacao: 'Aí o dinheiro já tem destino: vira gasto, não poupança.'
                     },
                     {
-                      texto: 'R$ 20',
-                      explicacao: 'R$ 20 são só 2 semanas. Em 4 semanas, ela junta o dobro.'
+                      texto: 'Só quando a mesada aumentar',
+                      explicacao: 'Dá para começar com pouco. O hábito de guardar vale mais do que o valor.'
                     }
                   ]
                 },
@@ -271,24 +271,24 @@ const CONTEUDO = {
                 // Média 2
                 {
                   dificuldade: 'media',
-                  pergunta: 'Ana tem R$ 10 guardados e quer uma capinha de celular de R$ 30. Ela recebe R$ 5 de mesada por semana e guarda tudo. Em quantas semanas ela consegue comprar?',
+                  pergunta: 'Ana quer comprar uma capinha de celular e recebe mesada toda semana. Qual é o melhor jeito de ela chegar lá?',
                   alternativas: [
                     {
-                      texto: '4 semanas',
+                      texto: 'Separar uma parte da mesada toda semana até juntar o valor',
                       correta: true,
-                      explicacao: 'Faltam R$ 20 (30 − 10). Guardando R$ 5 por semana: 20 ÷ 5 = 4 semanas.'
+                      explicacao: 'Guardar um pouco de cada vez, com a meta na cabeça, é o caminho mais seguro para comprar sem dívida.'
                     },
                     {
-                      texto: '6 semanas',
-                      explicacao: 'Seriam 6 semanas se ela começasse do zero (30 ÷ 5). Mas ela já tem R$ 10 guardados.'
+                      texto: 'Gastar a mesada toda e torcer para ganhar a capinha de presente',
+                      explicacao: 'Pode até acontecer, mas não é um plano. Sem guardar, a meta fica dependendo da sorte.'
                     },
                     {
-                      texto: '2 semanas',
-                      explicacao: 'Em 2 semanas ela junta só mais R$ 10 e fica com R$ 20. Ainda faltam R$ 10.'
+                      texto: 'Pegar dinheiro emprestado e devolver quando der',
+                      explicacao: 'Assim ela compra com o dinheiro dos outros e fica devendo. Juntando antes, a capinha sai sem dívida.'
                     },
                     {
-                      texto: '3 semanas',
-                      explicacao: 'Em 3 semanas ela chega a R$ 25. Faltam R$ 5: precisa de mais uma semana.'
+                      texto: 'Desistir, porque a mesada é pequena demais',
+                      explicacao: 'Mesada pequena também chega lá, só leva mais tempo. Desistir é o único jeito certo de não conseguir.'
                     }
                   ]
                 },
@@ -296,24 +296,24 @@ const CONTEUDO = {
                 // Difícil
                 {
                   dificuldade: 'dificil',
-                  pergunta: 'Pedro recebe R$ 40 de mesada por mês e quer comprar uma bicicleta de R$ 360 em 6 meses. Ele já tem R$ 90 guardados. O que acontece?',
+                  pergunta: 'Pedro está juntando dinheiro para uma bicicleta, mas percebeu que, mesmo guardando toda a mesada, não vai conseguir no prazo que queria. Qual é a melhor saída?',
                   alternativas: [
                     {
-                      texto: 'Ele precisa guardar R$ 45 por mês, mais que a mesada. Vai precisar de um dinheiro extra ou de mais tempo',
+                      texto: 'Aumentar o prazo ou buscar um dinheiro extra, como vender algo que não usa mais',
                       correta: true,
-                      explicacao: 'Faltam R$ 270 (360 − 90). Em 6 meses: 270 ÷ 6 = R$ 45 por mês. Como a mesada é R$ 40, faltam R$ 5 por mês.'
+                      explicacao: 'Ajustar o plano é normal. Mais tempo ou um dinheiro extra fazem a meta caber na realidade, sem dívida.'
                     },
                     {
-                      texto: 'Guardando a mesada inteira, ele consegue com folga',
-                      explicacao: 'Guardando R$ 40 por 6 meses, ele junta R$ 240. Com os R$ 90, chega a R$ 330: ainda faltam R$ 30.'
+                      texto: 'Pedir para comprar no cartão de crédito dos pais e ir pagando',
+                      explicacao: 'Parece solução, mas vira dívida da família, às vezes com juros. E a bicicleta continua acima do que ele pode pagar agora.'
                     },
                     {
-                      texto: 'Ele precisa guardar R$ 60 por mês',
-                      explicacao: 'R$ 60 por mês seria o valor sem contar os R$ 90 que ele já tem (360 ÷ 6).'
+                      texto: 'Desistir da bicicleta e gastar o que já guardou',
+                      explicacao: 'Desistir joga fora o esforço feito. Plano que não fecha se ajusta, não se abandona.'
                     },
                     {
-                      texto: 'Ele precisa guardar R$ 30 por mês',
-                      explicacao: 'Com R$ 30 por mês, ele junta R$ 180. Somando os R$ 90, dá R$ 270: faltam R$ 90.'
+                      texto: 'Deixar de comprar o lanche da escola para guardar mais rápido',
+                      explicacao: 'Cortar uma necessidade não é a saída: atrapalha a saúde e os estudos. Melhor ajustar o prazo ou buscar um extra.'
                     }
                   ]
                 }
@@ -404,50 +404,49 @@ const CONTEUDO = {
                 // Média 2
                 {
                   dificuldade: 'media',
-                  pergunta: 'Pela regra 50-30-20 (50% para necessidades, 30% para desejos e 20% para guardar), como fica a divisão de R$ 200 por mês?',
+                  pergunta: 'Na regra 50-30-20 (50% para necessidades, 30% para desejos e 20% para guardar), para onde vai a maior parte do dinheiro?',
                   alternativas: [
                     {
-                      texto: 'R$ 100 necessidades, R$ 60 desejos, R$ 40 guardados',
+                      texto: 'Para as necessidades, como comida, transporte e contas',
                       correta: true,
-                      explicacao: '50% de 200 = 100; 30% de 200 = 60; 20% de 200 = 40.'
+                      explicacao: 'Metade do dinheiro (50%) vai para o essencial. O resto se divide entre desejos (30%) e guardar (20%).'
                     },
                     {
-                      texto: 'R$ 100 necessidades, R$ 40 desejos, R$ 60 guardados',
-                      explicacao: 'Aqui desejos e poupança trocaram de lugar: guardar ficaria com 30%, e a regra diz 20%.'
+                      texto: 'Para os desejos, como passeios e roupas novas',
+                      explicacao: 'Os desejos ficam com 30%. A maior parte, 50%, vai para as necessidades.'
                     },
                     {
-                      texto: 'R$ 60 necessidades, R$ 100 desejos, R$ 40 guardados',
-                      explicacao: 'Assim, metade iria para desejos. Na regra, a maior parte vai para as necessidades.'
+                      texto: 'Para guardar e investir',
+                      explicacao: 'Guardar fica com 20%. É importante, mas a maior fatia é das necessidades.'
                     },
                     {
-                      texto: 'R$ 40 necessidades, R$ 60 desejos, R$ 100 guardados',
-                      explicacao: 'Guardar metade parece ótimo, mas sobrariam só R$ 40 para o essencial. Os valores ficaram invertidos.'
+                      texto: 'É tudo dividido igualmente em três partes',
+                      explicacao: 'As partes não são iguais: 50% para necessidades, 30% para desejos e 20% para guardar.'
                     }
                   ]
                 },
 
                 // Difícil
-                // REVISAR: "6 meses de gastos" é uma recomendação comum para a reserva, não uma regra fixa.
                 {
                   dificuldade: 'dificil',
-                  pergunta: 'Uma família gasta R$ 2.000 por mês com o essencial e quer uma reserva de emergência igual a 6 meses desses gastos. Guardando R$ 500 por mês, em quanto tempo ela chega lá?',
+                  pergunta: 'Sua família quer começar uma reserva de emergência, mas no fim do mês sobra pouco dinheiro. O que faz mais sentido?',
                   alternativas: [
                     {
-                      texto: '24 meses',
+                      texto: 'Começar guardando pouco, todo mês, num lugar separado',
                       correta: true,
-                      explicacao: 'A meta é 6 × 2.000 = R$ 12.000. Guardando R$ 500 por mês: 12.000 ÷ 500 = 24 meses, ou 2 anos.'
+                      explicacao: 'A reserva cresce com o tempo. Guardar pouco, mas sempre, é melhor do que esperar sobrar muito.'
                     },
                     {
-                      texto: '12 meses',
-                      explicacao: 'Em 12 meses ela junta R$ 6.000, só metade da meta.'
+                      texto: 'Esperar sobrar bastante para começar de uma vez',
+                      explicacao: 'Esse dia pode nunca chegar. Sem reserva, o próximo imprevisto vira dívida.'
                     },
                     {
-                      texto: '18 meses',
-                      explicacao: 'Em 18 meses ela junta R$ 9.000. Ainda faltam R$ 3.000.'
+                      texto: 'Apostar o pouco que sobra para tentar fazer crescer rápido',
+                      explicacao: 'Aposta não faz a reserva crescer: o mais comum é perder o dinheiro. Reserva precisa ser segura.'
                     },
                     {
-                      texto: '30 meses',
-                      explicacao: 'Em 30 meses ela juntaria R$ 15.000, mais do que precisa. Ela chega à meta antes.'
+                      texto: 'Contar com o cheque especial como reserva',
+                      explicacao: 'Cheque especial é um empréstimo do banco, com juros altos. Usar como reserva é entrar em dívida justo na hora mais difícil.'
                     }
                   ]
                 }
@@ -535,52 +534,53 @@ const CONTEUDO = {
                   ]
                 },
 
-                // Média 2
+                // Média 2 (sem conta: a pergunta é qual opção sai mais caro)
                 {
                   dificuldade: 'media',
-                  pergunta: 'O que costuma acontecer se você paga só o valor mínimo da fatura do cartão de crédito?',
+                  pergunta: 'Um celular custa R$ 1.000 à vista ou 10 parcelas de R$ 120 no cartão. O que é verdade?',
                   alternativas: [
                     {
-                      texto: 'O que faltou vira dívida com juros altos, e ela pode crescer rápido',
+                      texto: 'Parcelado sai mais caro: no total, você paga mais de R$ 1.000',
                       correta: true,
-                      explicacao: 'O valor não pago entra no crédito rotativo, que tem juros muito altos. O ideal é pagar a fatura inteira.'
+                      explicacao: 'As 10 parcelas de R$ 120 somam R$ 1.200. São R$ 200 a mais, que são os juros escondidos nas parcelas.'
                     },
                     {
-                      texto: 'A dívida some no mês seguinte',
-                      explicacao: 'A dívida não some: o que faltou vai para a próxima fatura, com juros.'
+                      texto: 'Dá no mesmo, porque o celular é o mesmo',
+                      explicacao: 'O celular é o mesmo, mas o total pago não: parcelado, você paga R$ 1.200.'
                     },
                     {
-                      texto: 'O banco perdoa o restante',
-                      explicacao: 'O banco não perdoa a dívida. Ele cobra o restante depois, com juros.'
+                      texto: 'Parcelado sai mais barato, porque cada parcela é pequena',
+                      explicacao: 'Parcela pequena engana. O que importa é o total: parcelado, você paga R$ 1.200, mais do que à vista.'
                     },
                     {
-                      texto: 'Os juros ficam congelados',
-                      explicacao: 'Os juros continuam correndo sobre o que ficou em aberto. Por isso a dívida cresce.'
+                      texto: 'À vista sempre sai mais caro',
+                      explicacao: 'Aqui é o contrário: à vista custa R$ 1.000, e parcelado, R$ 1.200.'
                     }
                   ]
                 },
 
-                // Difícil
+                // Difícil (a questão do valor mínimo da fatura virou uma situação)
+                // REVISAR: funcionamento do crédito rotativo.
                 {
                   dificuldade: 'dificil',
-                  pergunta: 'Um celular custa R$ 1.000 à vista ou 5 parcelas de R$ 230 no cartão. Quanto você paga a mais se parcelar?',
+                  pergunta: 'Sua prima tem uma fatura de cartão de R$ 400, mas agora só tem R$ 100. O aplicativo do banco oferece "pagar o mínimo". Qual é o maior risco dessa escolha?',
                   alternativas: [
                     {
-                      texto: 'R$ 150',
+                      texto: 'O que ficou sem pagar vira dívida com juros altos, que pode crescer rápido',
                       correta: true,
-                      explicacao: '5 × 230 = R$ 1.150. Comparando com R$ 1.000 à vista, você paga R$ 150 a mais, que são os juros embutidos nas parcelas.'
+                      explicacao: 'O valor não pago entra no crédito rotativo, que tem juros muito altos. O melhor é pagar a fatura inteira ou negociar com o banco uma saída mais barata.'
                     },
                     {
-                      texto: 'R$ 230',
-                      explicacao: 'R$ 230 é o valor de uma parcela, não a diferença. Faça 5 × 230 e compare com o preço à vista.'
+                      texto: 'Nenhum, porque se o banco oferece é seguro',
+                      explicacao: 'O banco oferece porque ganha com os juros. Estar no aplicativo não quer dizer que é bom para você.'
                     },
                     {
-                      texto: 'R$ 50',
-                      explicacao: 'A diferença é maior: 5 × 230 dá R$ 1.150, ou seja, R$ 150 a mais.'
+                      texto: 'O cartão é cancelado na hora',
+                      explicacao: 'Pagar o mínimo não cancela o cartão. O problema são os juros sobre o que ficou faltando.'
                     },
                     {
-                      texto: 'R$ 100',
-                      explicacao: 'Confira a conta: 5 × 230 = R$ 1.150. A diferença para os R$ 1.000 é R$ 150.'
+                      texto: 'Ela perde só os R$ 100 que pagou',
+                      explicacao: 'Os R$ 100 diminuem a dívida. O risco está nos R$ 300 que faltam, que passam a ter juros altos.'
                     }
                   ]
                 }

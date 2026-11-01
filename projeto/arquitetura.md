@@ -82,15 +82,15 @@ const CONTEUDO = {
 
 - Toda lição: 5 questões, 2 `facil`, 2 `media`, 1 `dificil`. O app mostra do fácil para o difícil e embaralha as alternativas; a ordem escrita não importa. Por convenção, a certa vem primeiro (facilita a revisão).
 - Toda alternativa tem `explicacao`. No erro, o app mostra o porquê da escolhida e depois a certa com o porquê dela.
-- No máximo 1 questão de conta por lição, com número redondo e só em fácil ou média (regra de 01/11).
-- `conferirConteudo()` (jogo.js) verifica tudo isso e mais ids repetidos. Problemas aparecem numa caixa vermelha no topo da tela.
+- Regra das contas (01/11): a Unidade 1 não tem nenhuma questão de conta; o conceito fica na pergunta e a conta vai para a explicação. Contas simples só em unidades mais avançadas, e só em fácil ou média (número redondo, de cabeça). A difícil é sempre de decisão.
+- `conferirConteudo()` (jogo.js) verifica o formato (quantidade de questões por nível, alternativas, explicações) e ids repetidos. Problemas aparecem numa caixa vermelha no topo da tela. A regra das contas ele não tem como conferir: é revisão de gente.
 
 ## 4. Passo a passo: adicionar uma lição
 
 1. Abra `js/dados-licoes.js` e ache a unidade.
 2. Copie o bloco inteiro de uma lição pronta (do `{` antes de `id:` até o `},` que fecha) e cole na posição em que ela deve aparecer na trilha.
 3. Troque `id` (minúsculo, com hífen, único), `titulo` e `falaDaEstrela`.
-4. Escreva as 5 questões: 2 `facil`, 2 `media`, 1 `dificil`. Em cada uma, de 2 a 4 alternativas, só uma com `correta: true`, todas com `explicacao`.
+4. Escreva as 5 questões: 2 `facil`, 2 `media`, 1 `dificil`. Em cada uma, de 2 a 4 alternativas, só uma com `correta: true`, todas com `explicacao`. Siga a regra das contas (seção 3).
 5. Se ela entra no lugar de uma lição "Em breve", apague a linha da "Em breve".
 6. Salve e abra o `index.html`. Se aparecer a caixa vermelha no topo, ela diz o que corrigir.
 7. Jogue a lição inteira uma vez, errando pelo menos uma questão, para ler as explicações.
