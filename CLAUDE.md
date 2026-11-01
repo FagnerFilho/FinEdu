@@ -49,7 +49,7 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 ## Fila de tarefas até 11/11
 
 1. ~~**GitHub e GitHub Pages.**~~ Feito em 01/11: repositório Fagneraposo/FinEduu, Pages na `main`, pasta raiz. O teste no tablet ficou nas pendências do documento-mestre.
-2. ~~**Gamificação (conversa 05).**~~ Feito em 01/11: revisão das erradas, aquecimento, recarga de vidas com moedas e treino. Plano em `projeto/plano-gamificacao.md`, regras na seção 6 do arquitetura.md, testes no `testes.html`. O push (com OK) e o teste no celular e no tablet ficaram nas pendências do documento-mestre.
+2. ~~**Gamificação (conversa 05).**~~ Feito em 01/11: revisão das erradas, aquecimento, recarga de vidas com moedas e treino. Plano em `projeto/plano-gamificacao.md`, regras na seção 6 do arquitetura.md, testes no `testes.html`. Push feito em 01/11; o teste no celular e no tablet ficou nas pendências do documento-mestre.
 3. **Design.** Na branch `experimento-design`:
    - Aplicar a paleta do João (está no documento-mestre) e conferir o contraste de cada combinação. O roxo sobre o preto fosco dá só 2,5: não serve para texto nem ícone no fundo escuro.
    - Trocar as fontes e a logo quando o João mandar os arquivos (as fontes precisam ficar salvas em `css/fontes/`, para funcionar sem internet).

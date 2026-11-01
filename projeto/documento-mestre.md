@@ -180,7 +180,8 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md. Regras do código 
 - Sem relógio de vidas (o treino resolve o mesmo problema e faz o aluno estudar).
 - Textos novos escritos com a skill de UX copy: botão "Recarregar vidas por 20 moedas" → aviso "Vidas recarregadas."; "Treinar de graça" → "Treino concluído!"; etiquetas "Aquecimento" e "Revisão".
 - testes.html criado: 38 testes das regras, todos passando, incluindo as 3 simulações do plano (dão os mesmos números).
-- Conferido no navegador (servidor local): revisão, recarga, treino e aquecimento, celular em pé (375 px) e tablet deitado (1280 × 800), "Reiniciar progresso", sem erro no console. Falta testar abrindo com dois cliques no notebook e no celular e no tablet de verdade (depois do push).
+- Conferido no navegador (servidor local): revisão, recarga, treino e aquecimento, celular em pé (375 px) e tablet deitado (1280 × 800), "Reiniciar progresso", sem erro no console.
+- Push em 01/11, com o OK do líder. No GitHub Pages, o app abre com o código novo, sem caixa vermelha nem erro no console, e os 38 testes do testes.html passam.
 
 ## Pendências
 - Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEduu/). O celular Android do líder já passou (01/11).
@@ -188,7 +189,7 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md. Regras do código 
 - Líder revisar as adaptações das lições; professor revisar o conteúdo da Unidade 1.
 - João: nomes e arquivos das fontes, logo em SVG (versão clara para fundo escuro), aprovar o roxo mais claro para texto e definir o fundo.
 - Título final da Unidade 1.
-- Tarefa 2 (gamificação): push com o OK do líder; depois, abrir com dois cliques no notebook e testar no celular e no tablet. "Meta do dia" e conquistas ficam para depois da apresentação.
+- Tarefa 2 (gamificação): abrir com dois cliques no notebook (index.html e testes.html) e testar no celular e no tablet pelo link do Pages. O push já foi feito (01/11). "Meta do dia" e conquistas ficam para depois da apresentação.
 - Roteiro da demonstração (ensaio de 09/11): para mostrar a recarga, o aluno precisa ter 20 moedas quando as vidas acabarem, o que na ordem natural só acontece a partir da lição 3.
 - Conversa de design: paleta nova, fontes novas, tirar o mascote, profundidade.
 - Depois da apresentação: Trilha 2 (conversa 07), Calculadora e Guia (conversa 08), Unidade 2.
