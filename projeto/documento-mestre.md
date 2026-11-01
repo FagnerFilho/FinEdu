@@ -27,9 +27,9 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - Lição = 5 questões (2 fáceis, 2 médias, 1 difícil), sempre mostradas do fácil para o difícil.
 - As alternativas aparecem embaralhadas. Cada alternativa tem a sua explicação (o porquê).
 - No erro, o feedback mostra por que a escolhida está errada e por que a certa está certa.
-- Concluir uma lição desbloqueia a próxima da mesma trilha. Lição concluída pode ser refeita.
+- Concluir uma lição desbloqueia a próxima da mesma trilha. Lição concluída pode ser refeita, como treino.
 - Cada unidade termina com um baú, que libera quando todas as lições da unidade estão concluídas.
-- Gamificação: XP, moedas, vidas e sequência de dias (regras provisórias na seção Gamificação; finais na conversa 05).
+- Gamificação: XP, moedas, vidas, sequência de dias, aquecimento, revisão das erradas, recarga e treino (regras na seção Gamificação, decididas na tarefa 2).
 
 ## Mascote
 - Removido (decisão da equipe em reunião, 31/10): a Estrela não foi aprovada e não há tempo de desenhar outro até a apresentação.
@@ -72,17 +72,18 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 
 ## Telas da versão 1
 - Aprender (trilha): nome da trilha, cartão da unidade, caminho curvo de bolinhas, "Começar" na lição atual, Estrela com balão, baú no fim.
-- Lição: barra com 5 partes (verde quando acerta, vermelha quando erra), etiqueta Fácil/Média/Difícil, botão Verificar embaixo, feedback com o porquê. No notebook: teclas 1 a 4 (ou A a D), Enter e Esc.
-- Vitória: XP, moedas, precisão e sequência.
-- Baú aberto, Sem vidas, e confirmação ao sair no meio da lição.
+- Lição: barra com 5 partes (verde quando acerta, vermelha quando erra; a vermelha fica verde quando o aluno acerta na revisão), etiqueta Fácil/Média/Difícil (ou Aquecimento e Revisão, com uma nota dizendo que errar ali não tira vida), botão Verificar embaixo, feedback com o porquê. No notebook: teclas 1 a 4 (ou A a D), Enter e Esc.
+- Vitória: XP, moedas, precisão e sequência. Fim do treino: as vidas que voltaram.
+- Baú aberto, Sem vidas (recarregar com moedas ou treinar de graça), e confirmação ao sair no meio da lição ou do treino.
 - Perfil (sem dado pessoal): estatísticas, Configurações ("Reiniciar progresso" com confirmação na tela) e Sobre.
 - Calculadora e Guia: só a tela "Em breve" (vêm na conversa 08).
 
 ## Estrutura do código
 - Versão 1 sem back-end. Progresso em localStorage, sempre via js/armazenamento.js.
 - HTML, CSS e JS puro, código próprio escrito do zero na conversa 02 (Antigravity só como referência).
-- Estrutura: index.html, css/estilo.css, css/fontes/, js/dados-licoes.js, js/armazenamento.js, js/jogo.js, js/telas.js, js/app.js, img/favicon.svg, README.md, CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, projeto/plano-gamificacao.md.
+- Estrutura: index.html, css/estilo.css, css/fontes/, js/dados-licoes.js, js/armazenamento.js, js/jogo.js, js/telas.js, js/app.js, img/favicon.svg, testes.html, README.md, CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, projeto/plano-gamificacao.md.
 - Funciona abrindo o index.html com dois cliques (sem servidor).
+- testes.html (tarefa 2): testes das regras do jogo no navegador, com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação.
 - O arquitetura.md (gerado na conversa 02) guarda as regras do código e o passo a passo para criar lições. A versão oficial fica em projeto/arquitetura.md, no código; o Contexto do Projeto tem uma cópia.
 - O app confere o dados-licoes.js e mostra um aviso vermelho no topo se algo estiver fora do padrão.
 - Depois de 2 ou 3 conversas usando o arquitetura.md, as regras viram uma skill de arquiteto.
@@ -93,7 +94,7 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - Cronograma proposto (31/10):
   - 01/11: GitHub + link do Pages + teste no tablet; conteúdo da Unidade 1 pronto.
   - Até 04/11: Samuel e professor revisam o conteúdo.
-  - 04 e 05/11: conversa 05 (gamificação).
+  - 04 e 05/11: conversa 05 (gamificação). Feita antes, em 01/11.
   - 06 a 08/11: conversa de design (paleta, fontes, sem mascote, profundidade).
   - 09/11: teste completo no tablet e ensaio.
   - 10/11: código congelado, só correção de erro.
@@ -104,15 +105,24 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - Publicado de graça no GitHub Pages (repositório público, branch main, pasta raiz): https://fagneraposo.github.io/FinEduu/
 - Perfil → Configurações → "Reiniciar progresso", para zerar entre uma apresentação e outra.
 
-## Gamificação (provisória; regras finais na conversa 05)
-- +10 XP por acerto.
-- +10 moedas por lição concluída, +5 se acertar todas.
+## Gamificação (tarefa 2, 01/11)
+Plano, simulação e motivos em projeto/plano-gamificacao.md. Regras do código na seção 6 do arquitetura.md.
+- Regra de bolso: só perde vida quem erra questão nova; ficou sem vidas, recarrega ou treina.
+- Aquecimento: no começo de cada lição (menos a primeira da trilha), 1 questão da lição anterior, de preferência uma que o aluno errou. Não tira vida e não conta na precisão.
+- Revisão: a errada volta no fim da lição, até o aluno acertar. Errar na revisão não tira vida. Só conclui com todas certas.
+- Precisão: só a primeira resposta de cada questão nova.
+- XP: +10 por questão nova certa de primeira; +5 por errada consertada na revisão e pelo aquecimento certo.
+- Moedas: +10 por lição concluída, +5 se acertar as 5 de primeira, só na primeira vez que conclui.
 - Baú: +20 XP e +20 moedas.
 - XP e moedas só entram no fim da lição; quem sai no meio não ganha nada.
-- 5 vidas. Cada erro tira 1 na hora. Se zerar, a lição para e as vidas voltam no dia seguinte.
-- Sequência: +1 por dia com pelo menos uma lição concluída; zera se passar um dia sem.
+- 5 vidas. Erro em questão nova tira 1 na hora. Sem vidas, duas saídas:
+  - recarregar por 20 moedas: as 5 vidas voltam e a lição continua de onde parou;
+  - treinar de graça a lição concluída mais recente: no fim, as 5 vidas voltam, e a lição parada recomeça.
+- Treino (refazer lição concluída): errar não tira vida, não vale XP nem moedas, e no fim as vidas voltam a 5.
+- As vidas também voltam todas no dia seguinte. Sem relógio de vidas.
+- Sequência: +1 por dia com pelo menos uma lição (ou treino) concluída; zera se passar um dia sem.
 - Os valores são constantes no topo do js/jogo.js.
-- Proposta de mudança (tarefa 2) em projeto/plano-gamificacao.md, esperando o OK.
+- Na tela "sem vidas", as moedas são apresentadas como a "reserva" (liga com a lição de planejamento e orçamento).
 
 ## Conteúdo
 - Trilha 1 · Unidade 1 "Primeiros passos" (título provisório), 4 lições completas + baú:
@@ -162,9 +172,15 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - Conferido no navegador: o site abre, sem caixa vermelha nem erro no console, e a lição 1 começa.
 - Testado no celular Android do líder pelo link do Pages (01/11): passou. O tablet continua pendente.
 
-### Tarefa 2 · Gamificação, planejamento (01/11)
+### Tarefa 2 · Gamificação (01/11, adiantada: estava para 04 e 05/11)
 - 4 propostas aprovadas pelo líder: repetir as erradas no fim da lição até acertar todas (a precisão conta só a primeira tentativa); comprar vidas com moedas; suavizar a perda de vidas; aquecimento (1 questão da lição anterior no começo de cada lição, de preferência uma que o aluno errou; não tira vida e não conta na precisão; a primeira lição não tem).
-- Plano em projeto/plano-gamificacao.md: tabela de regras, simulação de 3 alunos, opinião e números. Propõe 4 ajustes para as propostas não se atrapalharem (repetição sem perder vida; refazer lição concluída devolve as 5 vidas; a compra devolve as 5 vidas por 20 moedas; XP e moedas só para lição nova). Esperando o OK antes de codar.
+- Plano em projeto/plano-gamificacao.md: tabela de regras, simulação de 3 alunos, opinião e números. Propõe 4 ajustes para as propostas não se atrapalharem (repetição sem perder vida; refazer lição concluída devolve as 5 vidas; a compra devolve as 5 vidas por 20 moedas; XP e moedas só para lição nova).
+- O líder aprovou os ajustes e os números. Codado em três partes, um commit cada: revisão das erradas, tela "sem vidas" (recarga e treino) e aquecimento. Regras na seção Gamificação.
+- Detalhes decididos na hora de codar: na revisão, as alternativas voltam em outra ordem; acertar o aquecimento tira a questão da lista de erradas; o treino sugerido na tela "sem vidas" é o da lição concluída mais recente.
+- Sem relógio de vidas (o treino resolve o mesmo problema e faz o aluno estudar).
+- Textos novos escritos com a skill de UX copy: botão "Recarregar vidas por 20 moedas" → aviso "Vidas recarregadas."; "Treinar de graça" → "Treino concluído!"; etiquetas "Aquecimento" e "Revisão".
+- testes.html criado: 38 testes das regras, todos passando, incluindo as 3 simulações do plano (dão os mesmos números).
+- Conferido no navegador (servidor local): revisão, recarga, treino e aquecimento, celular em pé (375 px) e tablet deitado (1280 × 800), "Reiniciar progresso", sem erro no console. Falta testar abrindo com dois cliques no notebook e no celular e no tablet de verdade (depois do push).
 
 ## Pendências
 - Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEduu/). O celular Android do líder já passou (01/11).
@@ -172,7 +188,8 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - Líder revisar as adaptações das lições; professor revisar o conteúdo da Unidade 1.
 - João: nomes e arquivos das fontes, logo em SVG (versão clara para fundo escuro), aprovar o roxo mais claro para texto e definir o fundo.
 - Título final da Unidade 1.
-- Tarefa 2 (gamificação): dar o OK nos ajustes e nos números do projeto/plano-gamificacao.md e codar em 04 e 05/11. "Meta do dia" e conquistas ficam para depois da apresentação.
+- Tarefa 2 (gamificação): push com o OK do líder; depois, abrir com dois cliques no notebook e testar no celular e no tablet. "Meta do dia" e conquistas ficam para depois da apresentação.
+- Roteiro da demonstração (ensaio de 09/11): para mostrar a recarga, o aluno precisa ter 20 moedas quando as vidas acabarem, o que na ordem natural só acontece a partir da lição 3.
 - Conversa de design: paleta nova, fontes novas, tirar o mascote, profundidade.
 - Depois da apresentação: Trilha 2 (conversa 07), Calculadora e Guia (conversa 08), Unidade 2.
 - Instruções do Projeto: trocar "Menu embaixo em telas estreitas e na lateral em telas largas" pela regra da orientação (ver Layout), tirar a linha do mascote e trocar as cores da seção DESIGN pela paleta do João.

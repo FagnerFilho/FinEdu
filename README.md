@@ -12,6 +12,10 @@ Versão 1: HTML, CSS e JavaScript puro, sem servidor e sem cadastro. O progresso
 
 **Para zerar entre uma apresentação e outra:** Perfil → Configurações → Reiniciar progresso.
 
+## Como testar as regras
+
+Dê dois cliques no `testes.html`. Ele roda os testes das regras do jogo (XP, moedas, vidas, revisão, aquecimento, recarga, treino e a simulação de 3 alunos) e mostra cada um como "Passou" ou "Falhou". Depois de mexer no `js/jogo.js`, todos têm que passar.
+
 ## Publicar no GitHub Pages
 
 1. Suba o **conteúdo** desta pasta para a raiz do repositório (o `index.html` precisa ficar na raiz).
@@ -29,10 +33,11 @@ No plano gratuito do GitHub, o repositório precisa ser público. Depois de cada
 | `css/fontes/` | Fontes Baloo 2 e Figtree (licença SIL OFL) |
 | `js/dados-licoes.js` | Conteúdo: trilhas, unidades, lições e questões |
 | `js/armazenamento.js` | Único arquivo que lê e grava o progresso |
-| `js/jogo.js` | Regras: XP, moedas, vidas, sequência, liberação e baú |
+| `js/jogo.js` | Regras: XP, moedas, vidas, sequência, liberação, aquecimento, revisão, recarga, treino e baú |
 | `js/telas.js` | Desenha as telas |
 | `js/app.js` | Inicia o app, troca de tela e responde aos toques |
 | `img/` | Favicon (depois, a logo e o mascote finais) |
+| `testes.html` | Testes das regras, no navegador |
 
 Para criar ou mudar uma lição, edite só o `js/dados-licoes.js`. Se algo ficar fora do padrão, o app mostra um aviso vermelho no topo da tela dizendo o que corrigir.
 

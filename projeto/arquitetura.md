@@ -11,10 +11,11 @@ Regras do código do FinEdu. Todo código novo segue este arquivo. Se uma mudan�
 | `css/fontes/` | Baloo 2 (títulos e números) e Figtree (texto). Arquivos variáveis, subconjunto latino, licença SIL OFL | — |
 | `js/dados-licoes.js` | Constante `CONTEUDO`: trilhas, unidades, lições, questões e `dicasDaEstrela` | Lógica |
 | `js/armazenamento.js` | `carregarProgresso()`, `salvarProgresso(progresso)`, `reiniciarProgresso()`, `armazenamentoDisponivel()` | Saber o que tem dentro do progresso |
-| `js/jogo.js` | Regras: constantes de valores, progresso inicial, datas, liberação, sessão da lição, baú, dica do dia, `conferirConteudo()` | Mexer na tela ou no localStorage |
+| `js/jogo.js` | Regras: constantes de valores, progresso inicial, datas, liberação, sessão da lição (aquecimento, questões novas e revisão), recarga e treino, baú, dica do dia, `conferirConteudo()` | Mexer na tela ou no localStorage |
 | `js/telas.js` | Monta o HTML de cada tela, ícones (`icone()`), mascote (`desenharEstrela()`), avisos | Decidir regra, salvar |
 | `js/app.js` | Estado (`estado`), navegação por `#`, cliques (`data-acao`), teclado; é quem chama `salvarProgresso()` | Montar HTML, guardar regra |
 | `img/` | `favicon.svg`. Depois: logo e mascote finais do designer | — |
+| `testes.html` | Testes das regras do `jogo.js`, no navegador (passou/falhou). Abre com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação | Mexer no progresso salvo ou na tela do app |
 | `README.md` | Como abrir, testar e publicar | — |
 | `CLAUDE.md` | Instruções para o Claude Code: como trabalhar, Git, fila de tarefas | Regra de código (fica neste arquivo) |
 | `projeto/` | `documento-mestre.md` (decisões e pendências) e este `arquitetura.md`, versão oficial dos dois. Também os planos de tarefa (ex.: `plano-gamificacao.md`) | Código |
@@ -104,35 +105,57 @@ Chave `finedu-progresso` no localStorage, em JSON:
 ```js
 { versao: 1, xp, moedas, vidas, diaDasVidas: 'AAAA-MM-DD', sequencia,
   ultimoDiaDeEstudo: 'AAAA-MM-DD' | null, licoesConcluidas: [ids],
-  bausAbertos: [ids de unidade], respostasCertas, respostasDadas }
+  bausAbertos: [ids de unidade], respostasCertas, respostasDadas,
+  errosPorLicao: { 'id-da-licao': [posições] } }
 ```
+
+`errosPorLicao` guarda, para cada lição, a posição (no `dados-licoes.js`) das questões que o aluno errou de primeira da última vez que concluiu a lição. O aquecimento usa essa lista. Se o conteúdo mudar, o pior que acontece é o aquecimento trazer outra questão da mesma lição.
 
 Campo novo: acrescente em `criarProgressoInicial()`. Progressos antigos ganham o valor inicial sozinhos (`prepararProgresso()`), e dados estragados voltam ao inicial.
 
-## 6. Regras do jogo (provisórias, conversa 05)
+## 6. Regras do jogo (tarefa 2, 01/11)
 
-Constantes no topo do `jogo.js`:
+Decididas no `projeto/plano-gamificacao.md`. Constantes no topo do `jogo.js`:
 
 | Constante | Valor |
 |---|---|
-| `XP_POR_ACERTO` | 10 |
-| `MOEDAS_POR_LICAO` | 10 |
-| `MOEDAS_LICAO_PERFEITA` | 5 (extra se acertar todas) |
+| `XP_POR_ACERTO` | 10 (questão nova certa de primeira) |
+| `XP_DE_REVISAO` | 5 (errada que o aluno acerta na revisão, e o aquecimento certo) |
+| `MOEDAS_POR_LICAO` | 10 (só na primeira vez que conclui a lição) |
+| `MOEDAS_LICAO_PERFEITA` | 5 (extra se acertar as 5 de primeira; só na primeira vez) |
 | `XP_DO_BAU` / `MOEDAS_DO_BAU` | 20 / 20 |
 | `VIDAS_MAXIMAS` | 5 |
+| `PRECO_DA_RECARGA` | 20 moedas |
 
-- XP e moedas só entram quando a lição termina; sair no meio não ganha nada.
-- Erro tira 1 vida na hora (e fica salvo). Com 0 vidas a lição para; as vidas voltam todas no dia seguinte.
-- Sequência: +1 por dia com pelo menos uma lição concluída; se passar um dia sem concluir, volta a 0.
-- Liberação: uma lição libera quando a anterior da mesma trilha está concluída. A primeira de cada trilha começa liberada. Lição concluída pode ser refeita.
+**A lição é uma fila.** A primeira da fila é a vez atual, e cada vez tem um tipo:
+
+- `aquecimento`: 1 questão da lição anterior na mesma trilha, antes das outras. Prefere uma que o aluno errou de primeira da última vez (`errosPorLicao`); se ele não errou nenhuma, uma fácil ou média. Não tira vida, não conta na precisão e não volta na revisão. Certo vale 5 XP e tira a questão da lista de erradas. A primeira lição da trilha não tem.
+- `nova`: as 5 questões da lição, do fácil para o difícil. Erro tira 1 vida na hora (e fica salvo).
+- `revisao`: a errada volta no fim da fila, com as alternativas em outra ordem, até o aluno acertar. Errar na revisão não tira vida. A lição só termina com a fila vazia.
+
+Regra de bolso: **só perde vida quem erra questão nova; ficou sem vidas, recarrega ou treina.**
+
+- Precisão (da lição e do Perfil): só a primeira resposta de cada questão nova. Revisão, aquecimento e treino ficam de fora.
+- XP e moedas só entram quando a lição termina; sair no meio não ganha nada, e as vidas perdidas continuam perdidas.
+- Vidas acabaram numa lição nova: a lição fica parada na tela "sem vidas", com duas saídas:
+  - recarregar: `PRECO_DA_RECARGA` moedas, as vidas voltam a 5 e a lição continua de onde parou;
+  - treinar de graça a lição concluída mais recente; a lição parada recomeça depois.
+
+  Sem moedas suficientes e sem lição concluída, as vidas só voltam no dia seguinte.
+- Treino (refazer lição concluída): errar não tira vida; não vale XP nem moedas e não conta na precisão; no fim, as vidas voltam a 5. Dá para treinar com 0 vidas. Conta na sequência.
+- As vidas também voltam todas no dia seguinte.
+- Sequência: +1 por dia com pelo menos uma lição (ou treino) concluída; se passar um dia sem concluir, volta a 0.
+- Liberação: uma lição libera quando a anterior da mesma trilha está concluída. A primeira de cada trilha começa liberada. Lição concluída pode ser refeita, como treino.
 - Baú: libera quando todas as lições da unidade estão concluídas; abre uma vez só.
 - Funções que dependem da data recebem `hoje` como último parâmetro (para testar datas).
+- Regra nova ou mudada ganha teste no `testes.html`.
 
 ## 7. Navegação
 
 - A tela atual fica no endereço: `#aprender`, `#calculadora`, `#guia`, `#perfil` (telas do menu) e `#licao`, `#resultado`, `#bau`, `#sem-vidas` (telas de foco, sem menu).
 - `irPara(tela)`, `abrirTelaDeFoco(tela)` e `voltarParaTrilha()` no `app.js`. O botão voltar do Android navega entre as telas; voltar durante a lição abandona a lição.
 - Tela de foco aberta sem os dados dela (ex.: página recarregada em `#licao`) volta para `#aprender`.
+- A tela `#sem-vidas` guarda a lição parada, para ela continuar depois da recarga. "Treinar de graça" e a lição depois da recarga entram no lugar dela no histórico (`irPara(tela, true)`). Sair por "Voltar para a trilha" ou pelo voltar do Android abandona a lição.
 
 ## 8. Layout
 
@@ -147,6 +170,7 @@ A troca é pela orientação porque tablet Samsung em pé tem uns 800px de largu
 ## 9. Antes de entregar uma mudança
 
 1. Abrir o `index.html` no notebook: nenhuma caixa vermelha, nenhum erro no console (F12).
-2. Fazer uma lição inteira, errando uma questão.
-3. Testar em pé e deitado (no notebook, F12 → modo dispositivo).
-4. Perfil → Reiniciar progresso funciona.
+2. Abrir o `testes.html`: todos os testes passam.
+3. Fazer uma lição inteira, errando uma questão (ela volta na revisão).
+4. Testar em pé e deitado (no notebook, F12 → modo dispositivo).
+5. Perfil → Reiniciar progresso funciona.

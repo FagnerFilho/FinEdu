@@ -49,15 +49,7 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 ## Fila de tarefas até 11/11
 
 1. ~~**GitHub e GitHub Pages.**~~ Feito em 01/11: repositório Fagneraposo/FinEduu, Pages na `main`, pasta raiz. O teste no tablet ficou nas pendências do documento-mestre.
-2. **Gamificação (conversa 05).** Resolver:
-   - Hoje dá para concluir uma lição acertando só 1 de 5. Proposta: repetir as erradas no fim, até acertar todas; a precisão conta só a primeira tentativa.
-   - As moedas não servem para nada. Proposta: comprar vidas com moedas (liga o jogo ao tema: gastar ou guardar).
-   - As vidas acabam e travam o aluno até o dia seguinte, o que é duro para uma escola. Avaliar: 1 vida a cada X minutos, ou ganhar vida refazendo lição concluída.
-   - Antes de codar: tabela de regras (atual × proposta × motivo) e simulação de 3 alunos (acerta tudo, erra 2, erra 4). Esperar o OK.
-   - Planejamento feito em 01/11, com uma 4ª proposta (aquecimento): `projeto/plano-gamificacao.md`. Falta o OK do Fagner nos ajustes e nos números.
-   - Fora desta tarefa: "Meta do dia", conquistas, ranking, visual e conteúdo.
-   - Criar `testes.html` com os testes das regras, rodando no navegador (passou/falhou), se ainda não existir.
-   - Para os textos novos da interface, use a skill de UX copy, se estiver disponível.
+2. ~~**Gamificação (conversa 05).**~~ Feito em 01/11: revisão das erradas, aquecimento, recarga de vidas com moedas e treino. Plano em `projeto/plano-gamificacao.md`, regras na seção 6 do arquitetura.md, testes no `testes.html`. O push (com OK) e o teste no celular e no tablet ficaram nas pendências do documento-mestre.
 3. **Design.** Na branch `experimento-design`:
    - Aplicar a paleta do João (está no documento-mestre) e conferir o contraste de cada combinação. O roxo sobre o preto fosco dá só 2,5: não serve para texto nem ícone no fundo escuro.
    - Trocar as fontes e a logo quando o João mandar os arquivos (as fontes precisam ficar salvas em `css/fontes/`, para funcionar sem internet).

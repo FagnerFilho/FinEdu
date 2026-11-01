@@ -1,6 +1,6 @@
 # Plano · Gamificação (tarefa 2 da fila)
 
-> Só planejamento, nada de código. Escrito em 01/11/2026. Antes de codar, falta o OK do Fagner nos ajustes e nos números (seção 8).
+> Escrito em 01/11/2026. O Fagner aprovou os ajustes e os números no mesmo dia, e o plano foi codado (revisão, tela "sem vidas" e aquecimento). As regras finais estão na seção 6 do arquitetura.md, e o testes.html confere as simulações da seção 4.
 
 ## Resumo
 
@@ -203,7 +203,7 @@ Escrever com a skill de UX copy na hora de codar:
 - Aviso de que, no treino, errar não tira vida.
 - Fim do treino (vidas recarregadas, sem XP).
 
-## 8. Falta o OK do Fagner em
+## 8. Aprovado pelo Fagner em 01/11
 
 1. Os 4 ajustes do resumo: repetição sem perder vida; treino devolve 5 vidas; compra devolve 5 vidas; XP e moedas só para lição nova.
 2. Os números: revisão 5 XP, recarga 20 moedas, sem relógio.

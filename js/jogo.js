@@ -2,9 +2,10 @@
 // jogo.js — As regras do FinEdu
 // ============================================================
 // XP, moedas, vidas, sequência de dias, o que está liberado na
-// trilha, a revisão, a recarga, o treino e o baú. Este arquivo só
-// faz contas e decide regras: não desenha nada (isso é o telas.js)
-// e não salva nada (quem salva é o app.js, usando o armazenamento.js).
+// trilha, o aquecimento, a revisão, a recarga, o treino e o baú.
+// Este arquivo só faz contas e decide regras: não desenha nada
+// (isso é o telas.js) e não salva nada (quem salva é o app.js,
+// usando o armazenamento.js).
 //
 // Os valores foram decididos na tarefa 2 (projeto/plano-gamificacao.md).
 // Para mudar uma regra de valor, troque só a constante lá embaixo.
