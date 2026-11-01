@@ -29,6 +29,7 @@ const MOEDAS_DO_BAU = 20;
 const VIDAS_MAXIMAS = 5;           // voltam todas no dia seguinte, no fim do treino ou na recarga
 const PRECO_DA_RECARGA = 20;       // moedas para as vidas voltarem todas, na tela "sem vidas"
 const MESADA_DE_BOAS_VINDAS = 20;  // moedas com que todo aluno começa: pagam 1 recarga
+const ERROS_PARA_AQUECIMENTO_DUPLO = 3;  // errou 3 ou mais de primeira na lição anterior: o aquecimento traz 2 delas
 
 // Formato de toda lição: quantas questões de cada nível
 const QUESTOES_POR_DIFICULDADE = { facil: 2, media: 2, dificil: 1 };
@@ -273,7 +274,7 @@ function contarLicoes(progresso) {
 //
 // A sessão tem uma fila com a vez de cada questão. A primeira da
 // fila é a vez atual. Cada vez tem um tipo:
-//   'aquecimento' → 1 questão da lição anterior, antes de tudo (ver
+//   'aquecimento' → 1 ou 2 questões da lição anterior, antes de tudo (ver
 //                   escolherAquecimento). Não tira vida, não conta na
 //                   precisão e não volta na revisão.
 //   'nova'        → as 5 questões da lição, do fácil para o difícil
@@ -293,14 +294,16 @@ function iniciarLicao(progresso, licao) {
   })));
 
   const aquecimento = escolherAquecimento(progresso, licao);
-  const fila = questoes.map((_, indice) => ({ tipo: 'nova', indice }));
-  if (aquecimento) fila.unshift({ tipo: 'aquecimento' });
+  const fila = [
+    ...aquecimento.map((_, indice) => ({ tipo: 'aquecimento', indice })),
+    ...questoes.map((_, indice) => ({ tipo: 'nova', indice }))
+  ];
 
   return {
     licao,
     treino: licaoConcluida(progresso, licao.id),
     questoes,
-    aquecimento,              // questão da lição anterior (ou null)
+    aquecimento,              // questões da lição anterior (nenhuma, 1 ou 2)
     fila,
     escolhida: null,          // alternativa marcada, antes de verificar
     verificada: false,        // o aluno já apertou "Verificar"?
@@ -308,40 +311,49 @@ function iniciarLicao(progresso, licao) {
     acertos: 0,               // questões certas de primeira (é a precisão)
     resultados: [],           // true/false da primeira resposta de cada questão
     consertadas: [],          // índices das erradas que ele acertou na revisão
-    aquecimentoCerto: null    // acertou o aquecimento?
+    certasNoAquecimento: []   // índices (em aquecimento) das que ele acertou
   };
 }
 
-// O aquecimento: 1 questão da lição anterior na mesma trilha. De
-// preferência, uma que o aluno errou de primeira da última vez; se
-// ele não errou nenhuma, uma fácil ou média qualquer. A primeira
-// lição da trilha não tem aquecimento (devolve null).
+// O aquecimento: questões da lição anterior na mesma trilha. De
+// preferência, as que o aluno errou de primeira da última vez:
+//   - errou ERROS_PARA_AQUECIMENTO_DUPLO (3) ou mais: 2 delas (aquecimento duplo);
+//   - errou 1 ou 2: 1 delas;
+//   - não errou nenhuma: 1 fácil ou média qualquer.
+// Devolve a lista de questões, da mais fácil para a mais difícil. A
+// primeira lição da trilha não tem aquecimento (lista vazia).
 function escolherAquecimento(progresso, licao) {
   const achada = encontrarLicao(licao.id);
-  if (!achada) return null;
+  if (!achada) return [];
   const lista = licoesDaTrilha(achada.trilha);
   const lugar = lista.findIndex(item => item.licao.id === licao.id);
   const anterior = lugar > 0 ? lista[lugar - 1].licao : null;
-  if (!anterior || !Array.isArray(anterior.questoes) || anterior.questoes.length === 0) return null;
+  if (!anterior || !Array.isArray(anterior.questoes) || anterior.questoes.length === 0) return [];
 
   const todas = anterior.questoes.map((_, posicao) => posicao);
   const salvas = progresso.errosPorLicao[anterior.id];
-  const erradas = Array.isArray(salvas) ? salvas.filter(posicao => todas.includes(posicao)) : [];
+  const erradas = Array.isArray(salvas) ? todas.filter(posicao => salvas.includes(posicao)) : [];
   const leves = todas.filter(posicao => anterior.questoes[posicao].dificuldade !== 'dificil');
 
-  let candidatas = todas;
-  if (erradas.length > 0) candidatas = erradas;
-  else if (leves.length > 0) candidatas = leves;
+  let posicoes;
+  if (erradas.length >= ERROS_PARA_AQUECIMENTO_DUPLO) {
+    posicoes = embaralhar(erradas).slice(0, 2);   // 2 diferentes, sorteadas
+  } else if (erradas.length > 0) {
+    posicoes = [sortear(erradas)];
+  } else {
+    posicoes = [sortear(leves.length > 0 ? leves : todas)];
+  }
 
-  const posicao = sortear(candidatas);
-  const questao = anterior.questoes[posicao];
-  return {
-    idLicao: anterior.id,
-    posicao,
-    dificuldade: questao.dificuldade,
-    pergunta: questao.pergunta,
-    alternativas: embaralhar(questao.alternativas)
-  };
+  return ordenarPorDificuldade(posicoes.map(posicao => {
+    const questao = anterior.questoes[posicao];
+    return {
+      idLicao: anterior.id,
+      posicao,
+      dificuldade: questao.dificuldade,
+      pergunta: questao.pergunta,
+      alternativas: embaralhar(questao.alternativas)
+    };
+  }));
 }
 
 // Questões sempre do fácil para o difícil
@@ -367,14 +379,14 @@ function sortear(lista) {
 }
 
 // A vez atual: { tipo, indice }. O índice aponta para sessao.questoes
-// (o aquecimento não tem índice: a questão dele fica em sessao.aquecimento).
+// (no aquecimento, aponta para sessao.aquecimento).
 function vezAtual(sessao) {
   return sessao.fila[0];
 }
 
 function questaoAtual(sessao) {
   const vez = vezAtual(sessao);
-  return vez.tipo === 'aquecimento' ? sessao.aquecimento : sessao.questoes[vez.indice];
+  return vez.tipo === 'aquecimento' ? sessao.aquecimento[vez.indice] : sessao.questoes[vez.indice];
 }
 
 // Marca uma alternativa. Devolve false se não puder (já verificou,
@@ -404,7 +416,7 @@ function verificarResposta(progresso, sessao) {
   sessao.respondidas += 1;
 
   if (vez.tipo === 'aquecimento') {
-    sessao.aquecimentoCerto = acertou;
+    if (acertou) sessao.certasNoAquecimento.push(vez.indice);
   } else if (vez.tipo === 'nova') {
     sessao.resultados.push(acertou);
     if (acertou) sessao.acertos += 1;
@@ -466,7 +478,7 @@ function concluirLicao(progresso, sessao, hoje = hojeComoTexto()) {
   if (sessao.treino) {
     progresso.vidas = VIDAS_MAXIMAS;
   } else {
-    const revisoesCertas = sessao.consertadas.length + (sessao.aquecimentoCerto ? 1 : 0);
+    const revisoesCertas = sessao.consertadas.length + sessao.certasNoAquecimento.length;
     xp = sessao.acertos * XP_POR_ACERTO + revisoesCertas * XP_DE_REVISAO;
     moedas = MOEDAS_POR_LICAO + (perfeita ? MOEDAS_LICAO_PERFEITA : 0);
     progresso.xp += xp;
@@ -496,17 +508,19 @@ function concluirLicao(progresso, sessao, hoje = hojeComoTexto()) {
 }
 
 // Para o aquecimento: guarda as questões que o aluno errou de primeira
-// nesta vez (no lugar das da vez anterior) e, se ele acertou o
-// aquecimento, tira aquela questão da lista da lição anterior.
+// nesta vez (no lugar das da vez anterior) e tira da lista da lição
+// anterior cada questão do aquecimento que ele acertou.
 function lembrarErros(progresso, sessao) {
   progresso.errosPorLicao[sessao.licao.id] = sessao.questoes
     .filter((_, i) => sessao.resultados[i] === false)
     .map(questao => questao.posicao);
 
-  const aquecimento = sessao.aquecimento;
-  const daAnterior = aquecimento ? progresso.errosPorLicao[aquecimento.idLicao] : null;
-  if (sessao.aquecimentoCerto && Array.isArray(daAnterior)) {
-    progresso.errosPorLicao[aquecimento.idLicao] = daAnterior.filter(posicao => posicao !== aquecimento.posicao);
+  for (const indice of sessao.certasNoAquecimento) {
+    const questao = sessao.aquecimento[indice];
+    const daAnterior = progresso.errosPorLicao[questao.idLicao];
+    if (Array.isArray(daAnterior)) {
+      progresso.errosPorLicao[questao.idLicao] = daAnterior.filter(posicao => posicao !== questao.posicao);
+    }
   }
 }
 

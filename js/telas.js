@@ -331,20 +331,26 @@ function desenharNoDoBau(progresso, unidade, nome, posicao, estrela) {
 
 // Uma parte da barra para cada questão: verde quando o aluno acerta
 // (de primeira ou na revisão), vermelha enquanto está errada e azul
-// na vez dela
+// na vez dela (o aquecimento não tem parte na barra)
 function classeDaParte(sessao, i) {
   const vez = vezAtual(sessao);
   if (sessao.resultados[i] === true || sessao.consertadas.includes(i)) return 'barra-parte barra-parte--certa';
-  if (vez.indice === i) return 'barra-parte barra-parte--atual';
+  if (vez.tipo !== 'aquecimento' && vez.indice === i) return 'barra-parte barra-parte--atual';
   if (sessao.resultados[i] === false) return 'barra-parte barra-parte--errada';
   return 'barra-parte';
+}
+
+// "Aquecimento", ou "Aquecimento 1 de 2" quando ele tem duas questões
+function nomeDoAquecimento(sessao) {
+  const total = sessao.aquecimento.length;
+  return total > 1 ? `Aquecimento ${vezAtual(sessao).indice + 1} de ${total}` : 'Aquecimento';
 }
 
 // O que o leitor de tela fala sobre a barra
 function textoDaBarra(sessao) {
   const vez = vezAtual(sessao);
   const total = sessao.questoes.length;
-  if (vez.tipo === 'aquecimento') return 'Aquecimento';
+  if (vez.tipo === 'aquecimento') return nomeDoAquecimento(sessao);
   if (vez.tipo === 'revisao') {
     const faltam = total - sessao.acertos - sessao.consertadas.length;
     return `Revisão: ${faltam === 1 ? 'falta 1 questão' : `faltam ${faltam} questões`}`;
@@ -357,9 +363,10 @@ function textoDaBarra(sessao) {
 function desenharRotulos(sessao, questao) {
   const vez = vezAtual(sessao);
   if (vez.tipo === 'aquecimento') {
+    const deOnde = sessao.aquecimento.length > 1 ? 'Questões da lição anterior.' : 'Questão da lição anterior.';
     return `
-      <p class="etiqueta etiqueta--aquecimento">Aquecimento</p>
-      <p class="licao-nota">Questão da lição anterior. Errar não tira vida.</p>`;
+      <p class="etiqueta etiqueta--aquecimento">${nomeDoAquecimento(sessao)}</p>
+      <p class="licao-nota">${deOnde} Errar não tira vida.</p>`;
   }
   if (vez.tipo === 'revisao') {
     return `
