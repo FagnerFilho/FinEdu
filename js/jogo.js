@@ -92,8 +92,9 @@ function criarProgressoInicial(hoje = hojeComoTexto()) {
     bausAbertos: [],           // ids das unidades com o baú já aberto
     respostasCertas: 0,        // para a precisão do Perfil
     respostasDadas: 0,
-    errosPorLicao: {}          // id da lição → posições das questões que o aluno
+    errosPorLicao: {},         // id da lição → posições das questões que o aluno
                                // errou de primeira da última vez (para o aquecimento)
+    boasVindasVistas: false    // o aviso de boas-vindas já apareceu?
   };
 }
 
@@ -126,6 +127,11 @@ function prepararProgresso(salvo, hoje = hojeComoTexto()) {
     progresso.errosPorLicao = {};
   }
   progresso.vidas = Math.min(progresso.vidas, VIDAS_MAXIMAS);
+
+  // O aviso de boas-vindas é só para quem começa do zero (progresso
+  // novo ou reiniciado). Um progresso salvo antes de o aviso existir
+  // conta como visto, para não atrapalhar quem já está jogando.
+  progresso.boasVindasVistas = salvo ? salvo.boasVindasVistas !== false : false;
 
   atualizarDia(progresso, hoje);
   return progresso;
@@ -162,6 +168,12 @@ function registrarDiaDeEstudo(progresso, hoje = hojeComoTexto()) {
 
   progresso.sequencia = estudouOntem ? progresso.sequencia + 1 : 1;
   progresso.ultimoDiaDeEstudo = hoje;
+}
+
+// O aviso de boas-vindas apareceu: não aparece mais (até
+// "Reiniciar progresso")
+function marcarBoasVindasVistas(progresso) {
+  progresso.boasVindasVistas = true;
 }
 
 // Porcentagem de respostas certas desde o começo (para o Perfil)

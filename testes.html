@@ -717,6 +717,39 @@
     });
 
 
+    grupo('Aviso de boas-vindas');
+
+    teste('Aparece para quem começa do zero: progresso novo e depois de "Reiniciar progresso"', () => {
+      confere(novoProgresso().boasVindasVistas, false, 'progresso novo');
+      confere(prepararProgresso(null, HOJE).boasVindasVistas, false, 'depois de reiniciar');
+    });
+
+    teste('Aparece uma vez só: depois de aparecer, fica salvo e não volta', () => {
+      const progresso = prepararProgresso(null, HOJE);
+      marcarBoasVindasVistas(progresso);
+      const salvo = JSON.parse(JSON.stringify(progresso));   // como se fosse salvo e lido de novo
+      confere(prepararProgresso(salvo, HOJE).boasVindasVistas, true, 'depois de aparecer');
+    });
+
+    teste('Não atrapalha quem já está jogando: progresso salvo antes do aviso conta como visto', () => {
+      confere(prepararProgresso({ xp: 120, moedas: 45, licoesConcluidas: [LICAO_1.id] }, HOJE).boasVindasVistas, true, 'progresso antigo');
+    });
+
+    teste('O texto fala da mesada (com o valor do jogo.js), da reserva e dos contadores', () => {
+      const aviso = montar(desenharBoasVindas(novoProgresso()));
+      const texto = textoDe(aviso);
+      const trechos = [
+        `mesada de ${MESADA_DE_BOAS_VINDAS} moedas`,
+        'reserva para quando as vidas acabarem',
+        'toque nos contadores para entender vidas, moedas e XP'
+      ];
+      for (const trecho of trechos) {
+        if (!texto.includes(trecho)) throw new Error(`faltou "${trecho}"`);
+      }
+      confere([...aviso.querySelectorAll('[data-acao]')].map(botao => botao.dataset.acao), ['fechar-boas-vindas'], 'botões');
+    });
+
+
     grupo('Simulação dos 3 alunos (seção 4 do plano)');
 
     // Um aluno simulado. Na primeira vez que vê uma questão, ele erra se

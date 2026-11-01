@@ -1106,9 +1106,10 @@ h3:focus {
   margin-top: var(--espaco-p);
 }
 
-/* ----- Janelas do navegador (<dialog>): painel "Como funciona" -----
-   Usam o visual da confirmação de saída (.folha e .folha-caixa).
-   Aqui só sai o visual padrão que o navegador põe no <dialog>. */
+/* ----- Janelas do navegador (<dialog>): painel "Como funciona" e
+   boas-vindas. Usam o visual da confirmação de saída (.folha e
+   .folha-caixa). Aqui só sai o visual padrão que o navegador põe
+   no <dialog>. ----- */
 dialog.folha {
   width: 100%;
   max-width: none;
@@ -1158,6 +1159,22 @@ dialog.folha::backdrop {
 .painel-parte--moedas .icone    { color: var(--cor-moeda); }
 .painel-parte--xp .icone        { color: var(--cor-xp); }
 .painel-parte--sequencia .icone { color: var(--cor-sequencia); }
+
+/* Boas-vindas: os contadores desenhados como estão na tela (só imagem) */
+.boas-vindas-contadores {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espaco-g);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.boas-vindas-contadores span {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-pp);
+}
 
 
 /* ============================================================

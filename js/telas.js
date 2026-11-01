@@ -805,7 +805,7 @@ function mostrarConfirmacaoDeReinicio(mostrar) {
 
 
 // ============================================================
-// 9. JANELAS: PAINEL "COMO FUNCIONA"
+// 9. JANELAS: PAINEL "COMO FUNCIONA" E BOAS-VINDAS
 // ============================================================
 // As janelas são <dialog> do navegador, abertas com showModal(): o
 // Esc fecha sozinho, o Tab não sai da janela e a tela de trás não
@@ -902,4 +902,36 @@ function mostrarPainel(progresso, qual) {
     caixa.scrollTop = distancia - parseFloat(getComputedStyle(caixa).paddingTop);
   }
   titulo.focus({ preventScroll: true });
+}
+
+// O aviso de boas-vindas, para quem começa do zero: a mesada é a
+// reserva, e os contadores explicam como o jogo funciona. Embaixo do
+// texto, os contadores desenhados como estão na tela (só imagem).
+function desenharBoasVindas(progresso) {
+  const contadores = [
+    ['sequencia', 'sequencia', progresso.sequencia],
+    ['xp', 'xp', progresso.xp],
+    ['moedas', 'moeda', progresso.moedas],
+    ['vidas', 'vida', progresso.vidas]
+  ].map(([qual, nomeDoIcone, valor]) => `<span class="contador--${qual}">${icone(nomeDoIcone)}${valor}</span>`).join('');
+  const mesada = `Você ganhou uma mesada de ${MESADA_DE_BOAS_VINDAS} moedas. Ela é a sua reserva para quando as vidas acabarem.`;
+
+  return `
+    <div class="folha-caixa">
+      <h2 class="folha-titulo" id="titulo-boas-vindas" tabindex="-1">Boas-vindas ao FinEdu!</h2>
+      <p class="folha-texto">${mesada}</p>
+      <p class="folha-texto">Na dúvida, toque nos contadores para entender vidas, moedas e XP.</p>
+      <p class="boas-vindas-contadores" aria-hidden="true">${contadores}</p>
+      <div class="folha-botoes">
+        <button type="button" class="botao" data-acao="fechar-boas-vindas">Entendi</button>
+      </div>
+    </div>`;
+}
+
+function mostrarBoasVindas(progresso) {
+  const janela = document.getElementById('boas-vindas');
+  if (!janela || janela.open) return;
+  janela.innerHTML = desenharBoasVindas(progresso);
+  abrirJanela(janela);
+  document.getElementById('titulo-boas-vindas').focus();
 }
