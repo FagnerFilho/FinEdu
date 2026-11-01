@@ -99,6 +99,9 @@ function voltarParaTrilha() {
 function mostrarTelaDoEndereco() {
   const tela = location.hash.slice(1) || 'aprender';
 
+  // Trocou de tela (inclusive pelo voltar do Android): fecha o painel
+  fecharJanelas();
+
   if (!TELAS_DO_MENU.includes(tela) && !TELAS_DE_FOCO.includes(tela)) {
     irPara('aprender', true);         // endereço desconhecido: vai para a trilha
     return;
@@ -326,9 +329,11 @@ function apagarProgresso() {
 
 // Um "ouvinte" só para o app inteiro: olha o data-acao do botão tocado
 function tratarClique(evento) {
-  // Toque no fundo escuro da confirmação de saída = continuar a lição
+  // Toque no fundo escuro: fecha a janela (o painel) ou, na
+  // confirmação de saída, continua a lição
   if (evento.target.classList.contains('folha')) {
-    mostrarConfirmacaoDeSaida(false);
+    if (evento.target.tagName === 'DIALOG') evento.target.close();
+    else mostrarConfirmacaoDeSaida(false);
     return;
   }
 
@@ -347,6 +352,8 @@ function tratarClique(evento) {
     case 'recarregar-vidas':   recarregar(); break;
     case 'treinar':            treinar(botao.dataset.id); break;
     case 'voltar-trilha':      sairDaLicao(); break;   // a tela "sem vidas" pode ter lição parada
+    case 'abrir-painel':       mostrarPainel(estado.progresso, botao.dataset.contador); break;
+    case 'fechar-painel':      fecharJanela('painel'); break;
     case 'reiniciar':          mostrarConfirmacaoDeReinicio(true); break;
     case 'cancelar-reinicio':  mostrarConfirmacaoDeReinicio(false); break;
     case 'confirmar-reinicio': apagarProgresso(); break;

@@ -111,21 +111,22 @@ function marcarMenu(telaAtual) {
   }
 }
 
+// Os contadores são botões: tocar em qualquer um abre o painel
+// "Como funciona" (seção 9) já na parte dele
 function desenharContadores(progresso) {
-  return `
-    <p class="contador contador--sequencia" title="Dias seguidos">
-      ${icone('sequencia')}<span>${progresso.sequencia}</span>
-      <span class="visualmente-oculto">${progresso.sequencia === 1 ? 'dia seguido' : 'dias seguidos'}</span>
-    </p>
-    <p class="contador contador--xp" title="XP">
-      ${icone('xp')}<span>${progresso.xp}</span><span class="visualmente-oculto">de XP</span>
-    </p>
-    <p class="contador contador--moedas" title="Moedas">
-      ${icone('moeda')}<span>${progresso.moedas}</span><span class="visualmente-oculto">moedas</span>
-    </p>
-    <p class="contador contador--vidas" title="Vidas">
-      ${icone('vida')}<span>${progresso.vidas}</span><span class="visualmente-oculto">vidas</span>
-    </p>`;
+  const nivel = nivelDoXp(progresso.xp);
+  const contadores = [
+    { qual: 'sequencia', icone: 'sequencia', valor: progresso.sequencia,
+      nome: `Sequência de ${contarCom(progresso.sequencia, 'dia', 'dias')}` },
+    { qual: 'xp', icone: 'xp', valor: progresso.xp, nome: `${progresso.xp} XP, nível ${nivel.numero}` },
+    { qual: 'moedas', icone: 'moeda', valor: progresso.moedas, nome: contarCom(progresso.moedas, 'moeda', 'moedas') },
+    { qual: 'vidas', icone: 'vida', valor: progresso.vidas, nome: `${progresso.vidas} de ${VIDAS_MAXIMAS} vidas` }
+  ];
+  return contadores.map(contador => `
+    <button type="button" class="contador contador--${contador.qual}" data-acao="abrir-painel"
+      data-contador="${contador.qual}" aria-haspopup="dialog" aria-label="${contador.nome}. Ver como funciona">
+      ${icone(contador.icone)}<span>${contador.valor}</span>
+    </button>`).join('');
 }
 
 // Os contadores aparecem em dois lugares (barra de cima e coluna
@@ -432,6 +433,22 @@ function mostrarAlternativaMarcada(indice) {
   if (verificar) verificar.disabled = false;
 }
 
+// A última frase do feedback de erro. A errada volta no fim da lição
+// (na revisão); o aquecimento não volta. Onde errar não tira vida, o
+// aluno fica sabendo na hora (as vidas lá em cima não mudam). Se as
+// vidas acabaram, a próxima tela explica o que fazer.
+function textoDepoisDoErro(resultado, sessao) {
+  let volta = resultado.tipo === 'revisao' ? 'Ela volta de novo no fim.' : 'Ela volta no fim para você acertar.';
+  if (resultado.tipo === 'aquecimento' || resultado.acabaramAsVidas) volta = '';
+
+  let semPerderVida = '';
+  if (resultado.tipo === 'revisao') semPerderVida = 'Na revisão, errar não tira vida.';
+  else if (resultado.tipo === 'aquecimento') semPerderVida = 'No aquecimento, errar não tira vida.';
+  else if (sessao.treino) semPerderVida = 'No treino, errar não tira vida.';
+
+  return [volta, semPerderVida].filter(Boolean).join(' ');
+}
+
 // Depois do "Verificar": mostra a certa, a errada e o porquê
 function mostrarCorrecao(resultado, sessao, progresso) {
   // 1. Pinta as alternativas
@@ -464,17 +481,14 @@ function mostrarCorrecao(resultado, sessao, progresso) {
     explicacao = `<p class="feedback-texto">${escaparHtml(resultado.correta.explicacao)}</p>`;
     textoParaLer = `${titulo} ${resultado.correta.explicacao}`;
   } else {
-    // A errada volta no fim da lição (na revisão); o aquecimento não
-    // volta. Se as vidas acabaram, a próxima tela explica o que fazer.
-    let volta = resultado.tipo === 'revisao' ? 'Ela volta de novo no fim.' : 'Ela volta no fim para você acertar.';
-    if (resultado.tipo === 'aquecimento' || resultado.acabaramAsVidas) volta = '';
+    const depois = textoDepoisDoErro(resultado, sessao);
     explicacao = `
       <p class="feedback-texto"><strong>Por que não:</strong> ${escaparHtml(resultado.escolhida.explicacao)}</p>
       <p class="feedback-texto"><strong>Resposta certa:</strong> ${escaparHtml(resultado.correta.texto)}</p>
       <p class="feedback-texto">${escaparHtml(resultado.correta.explicacao)}</p>
-      ${volta ? `<p class="feedback-texto">${volta}</p>` : ''}`;
+      ${depois ? `<p class="feedback-texto">${depois}</p>` : ''}`;
     textoParaLer = `${titulo} Por que não: ${resultado.escolhida.explicacao} ` +
-      `Resposta certa: ${resultado.correta.texto}. ${resultado.correta.explicacao} ${volta}`;
+      `Resposta certa: ${resultado.correta.texto}. ${resultado.correta.explicacao} ${depois}`;
   }
 
   const tipo = resultado.acertou ? 'acerto' : 'erro';
@@ -787,4 +801,105 @@ function mostrarConfirmacaoDeReinicio(mostrar) {
   if (botao) botao.setAttribute('aria-expanded', String(mostrar));
   if (mostrar) caixa.querySelector('[data-acao="cancelar-reinicio"]').focus();
   else if (botao) botao.focus();
+}
+
+
+// ============================================================
+// 9. JANELAS: PAINEL "COMO FUNCIONA"
+// ============================================================
+// As janelas são <dialog> do navegador, abertas com showModal(): o
+// Esc fecha sozinho, o Tab não sai da janela e a tela de trás não
+// recebe toque. Fecham também pelo botão e tocando no fundo escuro
+// (app.js).
+
+// Abre uma janela e, quando ela fechar, devolve o foco para quem
+// estava com ele antes (por exemplo, o contador tocado)
+function abrirJanela(janela) {
+  if (janela.open) return;
+  const antes = document.activeElement;
+  janela.addEventListener('close', () => {
+    if (antes && document.body.contains(antes)) antes.focus();
+  }, { once: true });
+  janela.showModal();
+}
+
+function fecharJanela(id) {
+  const janela = document.getElementById(id);
+  if (janela && janela.open) janela.close();
+}
+
+// Fecha qualquer janela aberta (ao trocar de tela)
+function fecharJanelas() {
+  for (const janela of document.querySelectorAll('dialog[open]')) janela.close();
+}
+
+// Uma parte do painel: título com o ícone do contador e os parágrafos
+function desenharParteDoPainel(qual, nomeDoIcone, titulo, paragrafos) {
+  return `
+    <section class="painel-parte painel-parte--${qual}" aria-labelledby="painel-${qual}">
+      <h3 class="painel-parte-titulo" id="painel-${qual}" tabindex="-1">${icone(nomeDoIcone)}${titulo}</h3>
+      ${paragrafos.map(texto => `<p>${texto}</p>`).join('')}
+    </section>`;
+}
+
+// O conteúdo do painel, com os números do aluno. Só explica: a
+// recarga continua só na tela "sem vidas". Os valores vêm das
+// constantes do jogo.js, então o texto muda junto com elas.
+function desenharPainel(progresso) {
+  const nivel = nivelDoXp(progresso.xp);
+  let sobreONivel = `Nível ${nivel.numero}, ${nivel.nome}: o mais alto.`;
+  if (nivel.proximo) {
+    sobreONivel = `Nível ${nivel.numero}, ${nivel.nome}. ` +
+      `Faltam ${nivel.faltam} XP para o nível ${nivel.proximo.numero}, ${nivel.proximo.nome}.`;
+    if (!proximoPasso(progresso)) sobreONivel += ' As próximas lições chegam em breve.';
+  }
+
+  return `
+    <div class="folha-caixa folha-caixa--texto">
+      <h2 class="folha-titulo" id="titulo-painel" tabindex="-1">Como funciona</h2>
+      ${desenharParteDoPainel('vidas', 'vida', `Vidas: ${progresso.vidas} de ${VIDAS_MAXIMAS}`, [
+        'Você perde 1 vida quando erra uma questão numa lição nova. ' +
+          'Na revisão, no aquecimento e no treino, errar não tira vida.',
+        'Acabaram? Dá para recarregar com moedas ou treinar de graça uma lição que você já fez. ' +
+          'E amanhã elas voltam todas.'
+      ])}
+      ${desenharParteDoPainel('moedas', 'moeda', `Moedas: ${progresso.moedas}`, [
+        `São a sua reserva: se as vidas acabarem no meio de uma lição, ${PRECO_DA_RECARGA} moedas ` +
+          `recarregam as ${VIDAS_MAXIMAS}.`,
+        `Você começou com uma mesada de ${MESADA_DE_BOAS_VINDAS} e ganha mais ao concluir uma lição nova ` +
+          `(${MOEDAS_POR_LICAO}, ou ${MOEDAS_POR_LICAO + MOEDAS_LICAO_PERFEITA} se acertar todas de primeira) ` +
+          `e ao abrir o baú (${MOEDAS_DO_BAU}).`
+      ])}
+      ${desenharParteDoPainel('xp', 'xp', `XP: ${progresso.xp}`, [
+        sobreONivel,
+        `XP são pontos de experiência: quanto mais você junta, maior o nível. Você ganha ${XP_POR_ACERTO} ` +
+          `por acerto de primeira numa lição nova, ${XP_DE_REVISAO} por questão consertada na revisão ` +
+          `ou certa no aquecimento, e ${XP_DO_BAU} no baú.`
+      ])}
+      ${desenharParteDoPainel('sequencia', 'sequencia', `Sequência: ${contarCom(progresso.sequencia, 'dia', 'dias')}`, [
+        'Conclua pelo menos uma lição por dia (treino também vale) para ela subir. Se passar um dia sem, volta a zero.'
+      ])}
+      <button type="button" class="botao" data-acao="fechar-painel">Entendi</button>
+    </div>`;
+}
+
+// Abre o painel já na parte do contador tocado ('vidas', 'moedas',
+// 'xp' ou 'sequencia'): ela sobe para o alto da caixa (a das vidas,
+// que é a primeira, fica logo embaixo do título "Como funciona") e o
+// foco vai para o título dela
+function mostrarPainel(progresso, qual) {
+  const painel = document.getElementById('painel');
+  if (!painel || painel.open) return;
+  painel.innerHTML = desenharPainel(progresso);
+  abrirJanela(painel);
+
+  const caixa = painel.querySelector('.folha-caixa');
+  const titulo = document.getElementById(`painel-${qual}`) || document.getElementById('titulo-painel');
+  const parte = titulo.closest('section');
+  caixa.scrollTop = 0;
+  if (parte && parte !== caixa.querySelector('section')) {
+    const distancia = parte.getBoundingClientRect().top - caixa.getBoundingClientRect().top;
+    caixa.scrollTop = distancia - parseFloat(getComputedStyle(caixa).paddingTop);
+  }
+  titulo.focus({ preventScroll: true });
 }

@@ -244,7 +244,8 @@ svg {
 
 /* Títulos recebem foco ao trocar de tela (para leitores de tela), sem contorno */
 h1:focus,
-h2:focus {
+h2:focus,
+h3:focus {
   outline: none;
 }
 
@@ -342,20 +343,38 @@ h2:focus {
   display: none;
 }
 
-/* ----- Contadores ----- */
+/* ----- Contadores -----
+   Cada contador é um botão que abre o painel "Como funciona". O
+   visual continua o de informação; só ganha um fundo ao apertar. */
 .contadores {
   display: flex;
   align-items: center;
-  gap: var(--espaco-g);
+  gap: var(--espaco-pp);
 }
 
 .contador {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--espaco-pp);
+  min-width: var(--alvo-minimo);
+  min-height: var(--alvo-minimo);
+  padding: 0 var(--espaco-p);
+  border-radius: var(--raio-m);
   font-weight: 700;
   font-size: var(--tamanho-base);
   font-variant-numeric: tabular-nums;
+  transition: background-color var(--tempo-rapido);
+}
+
+.contador:active {
+  background: var(--cor-cartao);
+}
+
+@media (hover: hover) {
+  .contador:hover {
+    background: var(--cor-cartao);
+  }
 }
 
 .contador .icone {
@@ -1087,6 +1106,59 @@ h2:focus {
   margin-top: var(--espaco-p);
 }
 
+/* ----- Janelas do navegador (<dialog>): painel "Como funciona" -----
+   Usam o visual da confirmação de saída (.folha e .folha-caixa).
+   Aqui só sai o visual padrão que o navegador põe no <dialog>. */
+dialog.folha {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+}
+
+dialog.folha:not([open]) {
+  display: none;
+}
+
+/* O fundo escuro é a própria .folha; o do navegador fica invisível */
+dialog.folha::backdrop {
+  background: transparent;
+}
+
+/* Caixa com texto corrido: à esquerda e com rolagem se não couber */
+.folha-caixa--texto {
+  align-items: stretch;
+  max-height: 88vh;
+  max-height: 88dvh;
+  overflow-y: auto;
+  text-align: left;
+}
+
+/* Cada parte do painel (vidas, moedas, XP, sequência) */
+.painel-parte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-pp);
+  padding-top: var(--espaco-m);
+  border-top: var(--borda) solid var(--cor-borda);
+}
+
+.painel-parte-titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-p);
+  font-size: var(--tamanho-medio);
+}
+
+.painel-parte--vidas .icone     { color: var(--cor-vida); }
+.painel-parte--moedas .icone    { color: var(--cor-moeda); }
+.painel-parte--xp .icone        { color: var(--cor-xp); }
+.painel-parte--sequencia .icone { color: var(--cor-sequencia); }
+
 
 /* ============================================================
    10. COMEMORAÇÃO (vitória, baú aberto, sem vidas)
@@ -1585,10 +1657,12 @@ h2:focus {
    15. TELAS MAIORES
    ============================================================ */
 
-/* Telinha muito estreita: a Estrela não cabe ao lado da trilha */
+/* Telinha muito estreita: a Estrela não cabe ao lado da trilha, e os
+   contadores ficam mais juntos para caber na barra de cima */
 @media (max-width: 339px) {
   .estrela-guia { display: none; }
-  .contadores { gap: var(--espaco-m); }
+  .topo { gap: var(--espaco-pp); }
+  .contador { padding: 0 var(--espaco-pp); }
 }
 
 @media (min-width: 400px) {

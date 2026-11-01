@@ -68,16 +68,19 @@
     <div id="resultados"></div>
   </main>
 
-  <!-- Só o conteúdo e as regras: os testes não mexem na tela do app nem no progresso salvo -->
+  <!-- O conteúdo, as regras e os textos do telas.js: os testes não mexem na tela do app nem no progresso salvo -->
   <script src="js/dados-licoes.js"></script>
   <script src="js/jogo.js"></script>
+  <script src="js/telas.js"></script>
   <script>
     // ============================================================
-    // testes.html — Testes das regras do jogo (jogo.js)
+    // testes.html — Testes das regras do jogo (jogo.js) e de alguns
+    // textos da interface (telas.js)
     // ============================================================
     // Abra este arquivo com dois cliques. Cada teste monta uma
-    // situação, usa as funções do jogo.js e confere o resultado.
-    // Se algum falhar, ele aparece em vermelho com o motivo.
+    // situação, usa as funções do jogo.js (ou monta um pedaço de
+    // HTML do telas.js numa caixa fora da página) e confere o
+    // resultado. Se algum falhar, ele aparece em vermelho com o motivo.
     // ============================================================
 
 
@@ -201,6 +204,26 @@
     // que ele erra só da primeira vez
     function errandoDePrimeira(posicoes) {
       return sessao => !(vezAtual(sessao).tipo === 'nova' && posicoes.includes(vezAtual(sessao).indice));
+    }
+
+    // Monta um pedaço de HTML do telas.js numa caixa fora da página
+    function montar(html) {
+      const caixa = document.createElement('div');
+      caixa.innerHTML = html;
+      return caixa;
+    }
+
+    // O texto de um pedaço montado, com os espaços juntos
+    function textoDe(caixa) {
+      return caixa.textContent.replace(/\s+/g, ' ').trim();
+    }
+
+    // Um aluno no meio da trilha: lições 1 e 2 feitas, 3 vidas, 35 moedas, 105 XP, 1 dia
+    function alunoNoMeio() {
+      const progresso = novoProgresso();
+      progresso.licoesConcluidas = [LICAO_1.id, LICAO_2.id];
+      Object.assign(progresso, { vidas: 3, moedas: 35, xp: 105, sequencia: 1 });
+      return progresso;
     }
 
 
@@ -607,6 +630,90 @@
     teste('Progresso antigo, sem a lista de erradas, ganha uma lista vazia', () => {
       confere(prepararProgresso({ xp: 10 }, HOJE).errosPorLicao, {}, 'sem o campo');
       confere(prepararProgresso({ errosPorLicao: [1] }, HOJE).errosPorLicao, {}, 'campo estragado');
+    });
+
+
+    grupo('Painel "Como funciona" e feedback do erro (telas.js)');
+
+    teste('Os 4 contadores são botões que abrem o painel, com aria-label dizendo o número', () => {
+      const botoes = [...montar(desenharContadores(alunoNoMeio())).querySelectorAll('button')];
+      confere(botoes.map(botao => [botao.dataset.acao, botao.dataset.contador]),
+        [['abrir-painel', 'sequencia'], ['abrir-painel', 'xp'], ['abrir-painel', 'moedas'], ['abrir-painel', 'vidas']], 'botões');
+      confere(botoes.map(botao => botao.getAttribute('aria-label')), [
+        'Sequência de 1 dia. Ver como funciona',
+        '105 XP, nível 2. Ver como funciona',
+        '35 moedas. Ver como funciona',
+        '3 de 5 vidas. Ver como funciona'
+      ], 'aria-label');
+    });
+
+    teste('O painel tem uma parte para cada contador, com os números do aluno', () => {
+      const painel = montar(desenharPainel(alunoNoMeio()));
+      confere([...painel.querySelectorAll('h3')].map(titulo => [titulo.id, titulo.textContent.trim()]), [
+        ['painel-vidas', 'Vidas: 3 de 5'], ['painel-moedas', 'Moedas: 35'],
+        ['painel-xp', 'XP: 105'], ['painel-sequencia', 'Sequência: 1 dia']
+      ], 'títulos das partes');
+      const xp = textoDe(painel.querySelector('.painel-parte--xp'));
+      if (!xp.includes('Nível 2, Poupador. Faltam 70 XP para o nível 3, Planejador.')) throw new Error(`parte do XP: ${xp}`);
+    });
+
+    teste('O painel explica o que não tira vida e a recarga, com os valores do jogo.js', () => {
+      const texto = textoDe(montar(desenharPainel(alunoNoMeio())));
+      const trechos = [
+        'Na revisão, no aquecimento e no treino, errar não tira vida.',
+        'E amanhã elas voltam todas.',
+        `${PRECO_DA_RECARGA} moedas recarregam as ${VIDAS_MAXIMAS}.`,
+        `mesada de ${MESADA_DE_BOAS_VINDAS}`
+      ];
+      for (const trecho of trechos) {
+        if (!texto.includes(trecho)) throw new Error(`faltou "${trecho}"`);
+      }
+    });
+
+    teste('O painel só explica: o único botão é o "Entendi" (a recarga fica na tela "sem vidas")', () => {
+      const acoes = [...montar(desenharPainel(alunoNoMeio())).querySelectorAll('[data-acao]')].map(botao => botao.dataset.acao);
+      confere(acoes, ['fechar-painel'], 'ações do painel');
+    });
+
+    teste('O painel no nível mais alto e quando não há lição nova para fazer', () => {
+      const maximo = alunoNoMeio();
+      maximo.xp = 500;
+      const xpMaximo = textoDe(montar(desenharPainel(maximo)).querySelector('.painel-parte--xp'));
+      if (!xpMaximo.includes('Nível 5, Investidor: o mais alto.') || xpMaximo.includes('Faltam')) throw new Error(`nível 5: ${xpMaximo}`);
+
+      const fimDaUnidade = novoProgresso();
+      fimDaUnidade.licoesConcluidas = UNIDADE.licoes.map(licao => licao.id);
+      fimDaUnidade.bausAbertos = [UNIDADE.id];
+      fimDaUnidade.xp = 235;
+      const xpFim = textoDe(montar(desenharPainel(fimDaUnidade)).querySelector('.painel-parte--xp'));
+      if (!xpFim.includes('Faltam 65 XP para o nível 4, Estrategista. As próximas lições chegam em breve.')) {
+        throw new Error(`fim da unidade: ${xpFim}`);
+      }
+    });
+
+    teste('Feedback do erro: diz na hora quando errar não tira vida (revisão, aquecimento e treino)', () => {
+      const progresso = novoProgresso();
+      const sessao = abrir(progresso, LICAO_1);
+      confere(textoDepoisDoErro(responder(progresso, sessao, false), sessao), 'Ela volta no fim para você acertar.', 'questão nova');
+      avancarQuestao(progresso, sessao);
+      for (let i = 0; i < 4; i++) responderEContinuar(progresso, sessao, true);
+      confere(textoDepoisDoErro(responder(progresso, sessao, false), sessao),
+        'Ela volta de novo no fim. Na revisão, errar não tira vida.', 'revisão');
+      avancarQuestao(progresso, sessao);
+      jogar(progresso, sessao, () => true);
+      concluirLicao(progresso, sessao, HOJE);
+
+      const segunda = abrir(progresso, LICAO_2);
+      confere(textoDepoisDoErro(responder(progresso, segunda, false), segunda), 'No aquecimento, errar não tira vida.', 'aquecimento');
+
+      const treino = abrir(progresso, LICAO_1);
+      confere(textoDepoisDoErro(responder(progresso, treino, false), treino),
+        'Ela volta no fim para você acertar. No treino, errar não tira vida.', 'treino');
+
+      const ultimaVida = novoProgresso();
+      ultimaVida.vidas = 1;
+      const licao = abrir(ultimaVida, LICAO_1);
+      confere(textoDepoisDoErro(responder(ultimaVida, licao, false), licao), '', 'erro na última vida (a tela "sem vidas" explica)');
     });
 
 
