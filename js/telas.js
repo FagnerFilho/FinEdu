@@ -31,7 +31,8 @@ function escaparHtml(texto) {
 
 // Um ícone do estojo que está no começo do index.html
 function icone(nome, classeExtra = '') {
-  return `<svg class="icone ${classeExtra}" aria-hidden="true" focusable="false"><use href="#i-${nome}"></use></svg>`;
+  const classes = classeExtra ? `icone ${classeExtra}` : 'icone';
+  return `<svg class="${classes}" aria-hidden="true" focusable="false"><use href="#i-${nome}"></use></svg>`;
 }
 
 // "1 dia" ou "3 dias"
@@ -51,59 +52,28 @@ function focarTitulo(lugar) {
 const TITULOS_DE_ACERTO = ['Mandou bem!', 'Isso aí!', 'Certinho!', 'Boa!', 'Arrasou!'];
 const TITULOS_DE_ERRO = ['Quase!', 'Não foi dessa vez', 'Ops, essa não'];
 const LETRAS = ['A', 'B', 'C', 'D'];
+const META_XP_MISSAO_DIARIA = 30;
 
-// Quanto cada bolinha anda para o lado (-1 = esquerda, 1 = direita).
-// Repetindo esta lista, o caminho faz um S.
-const CURVA_DA_TRILHA = [0, 0.75, 1, 0.75, 0, -0.75, -1, -0.75];
-
-
-// ============================================================
-// 2. A ESTRELA (mascote provisória)
-// ============================================================
-// Quando o designer entregar o desenho final, troque só esta
-// função (por exemplo, por <img src="img/estrela-feliz.svg">).
-// Expressões: 'feliz', 'comemorando' e 'triste'.
-
-function desenharEstrela(expressao = 'feliz') {
-  const olhos = {
-    feliz: `
-      <ellipse class="estrela-olho" cx="50" cy="56" rx="6" ry="8"/>
-      <ellipse class="estrela-olho" cx="70" cy="56" rx="6" ry="8"/>
-      <circle class="estrela-pupila" cx="51.5" cy="58" r="3.4"/>
-      <circle class="estrela-pupila" cx="71.5" cy="58" r="3.4"/>`,
-    comemorando: `
-      <path class="estrela-traco" d="M44 58q6-8 12 0"/>
-      <path class="estrela-traco" d="M64 58q6-8 12 0"/>`,
-    triste: `
-      <ellipse class="estrela-olho" cx="50" cy="58" rx="6" ry="7"/>
-      <ellipse class="estrela-olho" cx="70" cy="58" rx="6" ry="7"/>
-      <circle class="estrela-pupila" cx="50" cy="61" r="3.2"/>
-      <circle class="estrela-pupila" cx="70" cy="61" r="3.2"/>
-      <path class="estrela-traco estrela-traco--fino" d="M43 49l11-3"/>
-      <path class="estrela-traco estrela-traco--fino" d="M77 49l-11-3"/>`
-  };
-  const bocas = {
-    feliz: '<path class="estrela-traco" d="M52 70q8 7 16 0"/>',
-    comemorando: '<path class="estrela-boca" d="M50 67q10 14 20 0z"/>',
-    triste: '<path class="estrela-traco" d="M53 76q7-6 14 0"/>'
-  };
-
-  return `
-    <svg class="estrela" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
-      <ellipse class="estrela-sombra" cx="60" cy="114" rx="34" ry="5"/>
-      <path class="estrela-corpo" d="M60 4C66 40 80 54 116 60C80 66 66 80 60 116C54 80 40 66 4 60C40 54 54 40 60 4Z"/>
-      <path class="estrela-brilho" d="M60 4C64 30 72 44 88 52C74 50 64 40 60 4Z"/>
-      ${olhos[expressao]}
-      ${bocas[expressao]}
-    </svg>`;
+// Deslocamentos horizontais da curva em S dentro de cada unidade
+// (fração de --amplitude-curva, seguindo o desenho do Figma).
+// O troféu no fim da unidade fica sempre centralizado em 0.
+function curvasDaUnidade(quantidadeAntesDoTrofeu) {
+  if (quantidadeAntesDoTrofeu === 5) {
+    return [0.47, -0.47, -1, -1, 0.36];
+  }
+  if (quantidadeAntesDoTrofeu === 4) {
+    return [0.47, -0.47, -0.95, 0.32];
+  }
+  const padrao = [0.47, -0.47, -1, -1, -0.12, 0.65, 0.25, -0.45];
+  return Array.from({ length: quantidadeAntesDoTrofeu }, (_, i) => padrao[i % padrao.length]);
 }
 
 
 // ============================================================
-// 3. MENU, CONTADORES, DICA E AVISOS
+// 2. MENU, CONTADORES, COLUNA DIREITA E AVISOS
 // ============================================================
 
-// Marca no menu a tela atual (aria-current="page" pinta de azul)
+// Marca no menu a tela atual (aria-current="page" destaca o item ativo)
 function marcarMenu(telaAtual) {
   for (const link of document.querySelectorAll('.menu-item')) {
     if (link.dataset.tela === telaAtual) link.setAttribute('aria-current', 'page');
@@ -129,8 +99,7 @@ function desenharContadores(progresso) {
     </button>`).join('');
 }
 
-// Os contadores aparecem em dois lugares (barra de cima e coluna
-// da direita); o CSS mostra só o que cabe na tela.
+// Os contadores aparecem na barra de cima (celular) e na coluna da direita (desktop)
 function atualizarContadores(progresso) {
   for (const id of ['contadores-topo', 'contadores-coluna']) {
     const lugar = document.getElementById(id);
@@ -138,18 +107,47 @@ function atualizarContadores(progresso) {
   }
 }
 
-function desenharDica(dica) {
-  const lugar = document.getElementById('dica-da-estrela');
+// Monta os cartões "Desbloqueie as Ligas!" e "Missão do dia" na coluna da direita
+function desenharColunaDireita(progresso) {
+  const lugar = document.getElementById('painel-lateral');
   if (!lugar) return;
-  lugar.innerHTML = dica ? `
-    <section class="dica" aria-labelledby="titulo-dica">
-      <div class="dica-topo">
-        ${desenharEstrela('feliz')}
-        <h2 class="dica-titulo" id="titulo-dica">Dica da Estrela</h2>
+
+  const xpMissao = Math.min(progresso.xp, META_XP_MISSAO_DIARIA);
+  const porcentagemMissao = Math.min(100, Math.round((xpMissao / META_XP_MISSAO_DIARIA) * 100));
+
+  lugar.innerHTML = `
+    <a class="cartao-lateral cartao-lateral--ligas" href="#ligas" aria-label="Desbloqueie as Ligas! Complete mais lições para competir">
+      <h2 class="cartao-lateral-titulo">Desbloqueie as Ligas!</h2>
+      <div class="cartao-lateral-corpo">
+        ${icone('ligas-prata', 'cartao-lateral-medalha')}
+        <p class="cartao-lateral-texto">Complete mais lições para competir</p>
       </div>
-      <p>${escaparHtml(dica)}</p>
-    </section>` : '';
+    </a>
+
+    <section class="cartao-lateral cartao-lateral--missao" aria-labelledby="titulo-missao-lateral">
+      <div class="cartao-lateral-cabecalho">
+        <h2 class="cartao-lateral-titulo" id="titulo-missao-lateral">Missão do dia</h2>
+        <a class="cartao-lateral-ver" href="#missoes">VER</a>
+      </div>
+      <div class="missao-corpo">
+        ${icone('xp', 'missao-raio')}
+        <div class="missao-detalhes">
+          <p class="missao-meta">Ganhe ${META_XP_MISSAO_DIARIA} XP</p>
+          <div class="missao-progresso-linha">
+            <div class="missao-trilho" role="progressbar" aria-label="Progresso da missão: ${xpMissao} de ${META_XP_MISSAO_DIARIA} XP"
+              aria-valuemin="0" aria-valuemax="${META_XP_MISSAO_DIARIA}" aria-valuenow="${xpMissao}">
+              <span class="missao-preenchimento" style="width: ${porcentagemMissao}%"></span>
+              <span class="missao-contagem">${xpMissao}/${META_XP_MISSAO_DIARIA}</span>
+            </div>
+            ${icone('missoes', 'missao-bau')}
+          </div>
+        </div>
+      </div>
+    </section>`;
 }
+
+// Mantida por compatibilidade caso algum trecho chame desenharDica
+function desenharDica() {}
 
 // Aviso rápido que aparece embaixo e some sozinho
 let temporizadorDoAviso = null;
@@ -194,16 +192,14 @@ function esconderProblemasDoConteudo() {
 
 
 // ============================================================
-// 4. TRILHA
+// 3. TRILHA
 // ============================================================
 
 function desenharTrilha(lugar, progresso) {
-  const estrela = escolherLugarDaEstrela(progresso);
   let html = '<h1 class="visualmente-oculto">Sua trilha</h1>';
-  let posicao = 0;   // conta as bolinhas, para a curva continuar de uma unidade para outra
+  let numeroGlobalDaUnidade = 0;
 
   for (const trilha of CONTEUDO.trilhas) {
-    // Trilha ainda sem unidades: só o nome e "Em breve"
     if (trilha.unidades.length === 0) {
       html += `
         <section class="trilha trilha-futura">
@@ -213,18 +209,56 @@ function desenharTrilha(lugar, progresso) {
       continue;
     }
 
-    html += `<section class="trilha"><h2 class="trilha-nome">${escaparHtml(trilha.titulo)}</h2>`;
+    html += `<section class="trilha" aria-label="${escaparHtml(trilha.titulo)}">`;
 
-    trilha.unidades.forEach((unidade, i) => {
-      html += desenharCabecalhoDaUnidade(unidade, i + 1);
+    trilha.unidades.forEach((unidade) => {
+      numeroGlobalDaUnidade += 1;
+      // Alterna a cor de cada unidade: 1 = roxo, 2 = laranja, 3 = verde
+      const tema = ((numeroGlobalDaUnidade - 1) % 3) + 1;
+      const curvas = curvasDaUnidade(unidade.licoes.length + 1);
+      const indiceDoBau = unidade.licoes.length >= 4
+        ? Math.ceil((unidade.licoes.length + 1) / 2)
+        : Math.ceil(unidade.licoes.length / 2);
+      let posNaCurva = 0;
+
+      html += `<div class="bloco-unidade bloco-unidade--tema-${tema}">`;
+      html += desenharCabecalhoDaUnidade(unidade, numeroGlobalDaUnidade);
       html += '<ol class="caminho">';
+
       unidade.licoes.forEach((licao, j) => {
-        html += desenharNoDaLicao(progresso, trilha, licao, `Unidade ${i + 1}, lição ${j + 1}`, posicao, estrela);
-        posicao += 1;
+        if (j === indiceDoBau) {
+          html += desenharNoDoBau(
+            progresso,
+            unidade,
+            `Baú da unidade ${numeroGlobalDaUnidade}`,
+            curvas[posNaCurva++]
+          );
+        }
+        html += desenharNoDaLicao(
+          progresso,
+          trilha,
+          licao,
+          `Unidade ${numeroGlobalDaUnidade}, lição ${j + 1}`,
+          curvas[posNaCurva++]
+        );
       });
-      html += desenharNoDoBau(progresso, unidade, `Baú da unidade ${i + 1}`, posicao, estrela);
-      posicao += 1;
-      html += '</ol>';
+
+      if (indiceDoBau >= unidade.licoes.length) {
+        html += desenharNoDoBau(
+          progresso,
+          unidade,
+          `Baú da unidade ${numeroGlobalDaUnidade}`,
+          curvas[posNaCurva++]
+        );
+      }
+
+      html += desenharNoDoTrofeu(
+        progresso,
+        unidade,
+        `Troféu da unidade ${numeroGlobalDaUnidade}`
+      );
+
+      html += '</ol></div>';
     });
 
     html += '</section>';
@@ -235,58 +269,31 @@ function desenharTrilha(lugar, progresso) {
 
 function desenharCabecalhoDaUnidade(unidade, numero) {
   const emBreve = unidadeEmBreve(unidade);
+  const subtitulo = emBreve && unidade.titulo.toLowerCase() !== 'em breve'
+    ? '<p class="unidade-texto">Em breve</p>'
+    : '';
+
   return `
     <header class="unidade${emBreve ? ' unidade--em-breve' : ''}">
-      <p class="unidade-rotulo">Unidade ${numero}</p>
-      <h3 class="unidade-titulo">${escaparHtml(unidade.titulo)}</h3>
-      ${emBreve ? '<p class="unidade-texto">As lições desta unidade estão sendo preparadas.</p>' : ''}
+      <div class="unidade-info">
+        <p class="unidade-rotulo">
+          ${icone('seta-esquerda', 'unidade-seta')}
+          <span>UNIDADE ${numero}</span>
+        </p>
+        <h2 class="unidade-titulo">${escaparHtml(unidade.titulo)}</h2>
+        ${subtitulo}
+      </div>
+      <a class="unidade-menu" href="#guia" aria-label="Abrir guia da Unidade ${numero}: ${escaparHtml(unidade.titulo)}">
+        ${icone('menu-unidade')}
+      </a>
     </header>`;
 }
 
-// Onde a Estrela fica na trilha e o que ela fala: ao lado do
-// próximo passo (lição atual ou baú liberado). Se não houver,
-// ao lado da primeira lição "em breve".
-function escolherLugarDaEstrela(progresso) {
-  const passo = proximoPasso(progresso);
-  if (passo && passo.tipo === 'licao') {
-    return {
-      id: passo.licao.id,
-      fala: passo.licao.falaDaEstrela || `Bora? Agora é "${passo.licao.titulo}"!`
-    };
-  }
-  if (passo && passo.tipo === 'bau') {
-    return { id: passo.unidade.id, fala: 'Tem prêmio no baú. Abre aí!' };
-  }
-  for (const trilha of CONTEUDO.trilhas) {
-    const emBreve = licoesDaTrilha(trilha).find(item => item.licao.emBreve);
-    if (emBreve) return { id: emBreve.licao.id, fala: 'Lições novas chegando. Fica de olho!' };
-  }
-  return null;
-}
-
-// A Estrela fica do lado vazio da curva
-function desenharEstrelaGuia(fala, posicao) {
-  const curva = CURVA_DA_TRILHA[posicao % CURVA_DA_TRILHA.length];
-  const proximaCurva = CURVA_DA_TRILHA[(posicao + 1) % CURVA_DA_TRILHA.length];
-  const lado = curva > 0 || (curva === 0 && proximaCurva >= 0) ? 'esquerda' : 'direita';
-  return `
-    <div class="estrela-guia estrela-guia--${lado}" aria-hidden="true">
-      <p class="balao">${escaparHtml(fala)}</p>
-      ${desenharEstrela('feliz')}
-    </div>`;
-}
-
-// "nome" é como o leitor de tela chama a bolinha (ex.: "Unidade 1, lição 2")
-function desenharNoDaLicao(progresso, trilha, licao, nome, posicao, estrela) {
+// Bolinha de lição: disco oval 3D com estrela de 6 pontas (ou check quando concluída)
+function desenharNoDaLicao(progresso, trilha, licao, nome, curva) {
   const situacao = situacaoDaLicao(progresso, trilha, licao.id);
-  const curva = CURVA_DA_TRILHA[posicao % CURVA_DA_TRILHA.length];
 
-  const desenho = {
-    concluida: 'check',
-    atual: 'estrela-licao',
-    bloqueada: 'cadeado',
-    'em-breve': 'cadeado'
-  }[situacao];
+  const desenho = situacao === 'concluida' ? 'check' : 'estrela-licao';
 
   const descricao = {
     concluida: `${nome}, ${licao.titulo}: concluída. Toque para treinar.`,
@@ -297,18 +304,16 @@ function desenharNoDaLicao(progresso, trilha, licao, nome, posicao, estrela) {
 
   return `
     <li class="no no--${situacao}" style="--curva: ${curva}">
-      ${situacao === 'atual' ? '<span class="no-comecar" aria-hidden="true">Começar</span>' : ''}
       <div class="no-anel">
         <button type="button" class="no-botao" data-acao="abrir-licao" data-id="${escaparHtml(licao.id)}"
           aria-label="${escaparHtml(descricao)}">${icone(desenho)}</button>
-        ${estrela && estrela.id === licao.id ? desenharEstrelaGuia(estrela.fala, posicao) : ''}
       </div>
     </li>`;
 }
 
-function desenharNoDoBau(progresso, unidade, nome, posicao, estrela) {
+// Nó do baú da unidade: disco oval 3D com o baú em cima
+function desenharNoDoBau(progresso, unidade, nome, curva) {
   const situacao = situacaoDoBau(progresso, unidade);
-  const curva = CURVA_DA_TRILHA[posicao % CURVA_DA_TRILHA.length];
 
   const descricao = {
     trancado: `${nome}: trancado.`,
@@ -319,20 +324,37 @@ function desenharNoDoBau(progresso, unidade, nome, posicao, estrela) {
   return `
     <li class="no no--bau no--bau-${situacao}" style="--curva: ${curva}">
       <div class="no-anel">
-        <button type="button" class="no-botao" data-acao="abrir-bau" data-id="${escaparHtml(unidade.id)}"
+        <button type="button" class="no-botao no-botao--bau" data-acao="abrir-bau" data-id="${escaparHtml(unidade.id)}"
           aria-label="${descricao}">${icone(situacao === 'aberto' ? 'bau-aberto' : 'bau')}</button>
-        ${estrela && estrela.id === unidade.id ? desenharEstrelaGuia(estrela.fala, posicao) : ''}
       </div>
     </li>`;
 }
 
+// Nó final da unidade: troféu centralizado no fim da curva
+function desenharNoDoTrofeu(progresso, unidade, nome) {
+  const situacaoBau = situacaoDoBau(progresso, unidade);
+  const estadoTrofeu = situacaoBau === 'aberto' ? 'conquistado' : (situacaoBau === 'liberado' ? 'liberado' : 'trancado');
+
+  const descricao = {
+    trancado: `${nome}: conclua as lições da unidade para conquistar.`,
+    liberado: `${nome}: abra o baú da unidade para concluir.`,
+    conquistado: `${nome}: unidade concluída!`
+  }[estadoTrofeu];
+
+  return `
+    <li class="no no--trofeu no--trofeu-${estadoTrofeu}" style="--curva: 0">
+      <div class="no-anel">
+        <button type="button" class="no-botao no-botao--trofeu" data-acao="abrir-trofeu" data-id="${escaparHtml(unidade.id)}"
+          aria-label="${descricao}">${icone('trofeu')}</button>
+      </div>
+    </li>`;
+}
+
+
 // ============================================================
-// 5. LIÇÃO
+// 4. LIÇÃO
 // ============================================================
 
-// Uma parte da barra para cada questão: verde quando o aluno acerta
-// (de primeira ou na revisão), vermelha enquanto está errada e azul
-// na vez dela (o aquecimento não tem parte na barra)
 function classeDaParte(sessao, i) {
   const vez = vezAtual(sessao);
   if (sessao.resultados[i] === true || sessao.consertadas.includes(i)) return 'barra-parte barra-parte--certa';
@@ -341,13 +363,11 @@ function classeDaParte(sessao, i) {
   return 'barra-parte';
 }
 
-// "Aquecimento", ou "Aquecimento 1 de 2" quando ele tem duas questões
 function nomeDoAquecimento(sessao) {
   const total = sessao.aquecimento.length;
   return total > 1 ? `Aquecimento ${vezAtual(sessao).indice + 1} de ${total}` : 'Aquecimento';
 }
 
-// O que o leitor de tela fala sobre a barra
 function textoDaBarra(sessao) {
   const vez = vezAtual(sessao);
   const total = sessao.questoes.length;
@@ -359,8 +379,6 @@ function textoDaBarra(sessao) {
   return `Questão ${vez.indice + 1} de ${total}`;
 }
 
-// Etiqueta em cima da pergunta (aquecimento, nível ou revisão) e a
-// nota ao lado
 function desenharRotulos(sessao, questao) {
   const vez = vezAtual(sessao);
   if (vez.tipo === 'aquecimento') {
@@ -422,7 +440,6 @@ function desenharLicao(lugar, sessao, progresso) {
     </div>`;
 }
 
-// Pinta a alternativa escolhida e libera o "Verificar"
 function mostrarAlternativaMarcada(indice) {
   document.querySelectorAll('.alternativa').forEach((botao, i) => {
     const marcada = i === indice;
@@ -433,10 +450,6 @@ function mostrarAlternativaMarcada(indice) {
   if (verificar) verificar.disabled = false;
 }
 
-// A última frase do feedback de erro. A errada volta no fim da lição
-// (na revisão); o aquecimento não volta. Onde errar não tira vida, o
-// aluno fica sabendo na hora (as vidas lá em cima não mudam). Se as
-// vidas acabaram, a próxima tela explica o que fazer.
 function textoDepoisDoErro(resultado, sessao) {
   let volta = resultado.tipo === 'revisao' ? 'Ela volta de novo no fim.' : 'Ela volta no fim para você acertar.';
   if (resultado.tipo === 'aquecimento' || resultado.acabaramAsVidas) volta = '';
@@ -449,9 +462,7 @@ function textoDepoisDoErro(resultado, sessao) {
   return [volta, semPerderVida].filter(Boolean).join(' ');
 }
 
-// Depois do "Verificar": mostra a certa, a errada e o porquê
 function mostrarCorrecao(resultado, sessao, progresso) {
-  // 1. Pinta as alternativas
   document.querySelectorAll('.alternativa').forEach((botao, i) => {
     botao.disabled = true;
     if (i === resultado.indiceDaCorreta) botao.classList.add('alternativa--certa');
@@ -459,8 +470,6 @@ function mostrarCorrecao(resultado, sessao, progresso) {
     else botao.classList.add('alternativa--apagada');
   });
 
-  // 2. Atualiza a barra de progresso e as vidas (o aquecimento não
-  //    tem parte na barra)
   const vez = vezAtual(sessao);
   const parte = vez.tipo === 'aquecimento' ? null : document.querySelectorAll('.barra-parte')[vez.indice];
   if (parte) {
@@ -472,7 +481,6 @@ function mostrarCorrecao(resultado, sessao, progresso) {
     document.getElementById('licao-vidas').classList.add('licao-vidas--perdeu');
   }
 
-  // 3. Monta o painel de baixo com a explicação
   const titulo = sortear(resultado.acertou ? TITULOS_DE_ACERTO : TITULOS_DE_ERRO);
   let explicacao;
   let textoParaLer;
@@ -505,7 +513,6 @@ function mostrarCorrecao(resultado, sessao, progresso) {
       <button type="button" class="botao botao--${tipo}" data-acao="continuar">Continuar</button>
     </div>`;
 
-  // 4. Avisa os leitores de tela e põe o foco no "Continuar"
   anunciar(textoParaLer);
   acoes.querySelector('[data-acao="continuar"]').focus({ preventScroll: true });
 }
@@ -519,7 +526,6 @@ function desenharConfirmacaoDeSaida(treino) {
   return `
     <div class="folha" id="confirmar-saida" hidden>
       <div class="folha-caixa" role="dialog" aria-modal="true" aria-labelledby="titulo-sair">
-        ${desenharEstrela('triste')}
         <h2 class="folha-titulo" id="titulo-sair">${textos.titulo}</h2>
         <p class="folha-texto">${textos.texto}</p>
         <div class="folha-botoes">
@@ -539,23 +545,20 @@ function mostrarConfirmacaoDeSaida(mostrar) {
 
 
 // ============================================================
-// 6. COMEMORAÇÃO, BAÚ E SEM VIDAS
+// 5. COMEMORAÇÃO, BAÚ E SEM VIDAS
 // ============================================================
 
-// As faíscas em volta da figura (a mesma estrela da logo)
 function desenharFaiscas() {
   return [1, 2, 3, 4].map(numero =>
     `<svg class="faisca faisca--${numero}" aria-hidden="true" focusable="false"><use href="#i-faisca"></use></svg>`
   ).join('');
 }
 
-// A linha da sequência, quando ela sobe
 function desenharSequenciaQueSubiu(resumo) {
   return resumo.sequenciaSubiu ? `
     <p class="comemoracao-sequencia">${icone('sequencia')} Sequência de ${contarCom(resumo.sequencia, 'dia', 'dias')}</p>` : '';
 }
 
-// O aviso de nível novo, quando o XP da lição (ou do baú) faz subir
 function desenharNivelQueSubiu(resumo) {
   return resumo.subiuDeNivel ? `
     <p class="comemoracao-nivel">${icone('nivel')} Subiu para o nível ${resumo.nivel.numero}: ${resumo.nivel.nome}!</p>` : '';
@@ -569,7 +572,7 @@ function desenharResultado(lugar, resumo) {
 
   lugar.innerHTML = `
     <div class="comemoracao">
-      <div class="comemoracao-figura">${desenharEstrela('comemorando')}${desenharFaiscas()}</div>
+      <div class="comemoracao-figura">${icone('trofeu', 'icone-grande')}${desenharFaiscas()}</div>
       <h1 class="comemoracao-titulo">${resumo.perfeita ? 'Lição perfeita!' : 'Lição concluída!'}</h1>
       <p class="comemoracao-texto">${escaparHtml(resumo.titulo)}</p>
 
@@ -595,11 +598,10 @@ function desenharResultado(lugar, resumo) {
     </div>`;
 }
 
-// Fim do treino: não vale XP nem moedas, só as vidas
 function desenharFimDoTreino(lugar, resumo) {
   lugar.innerHTML = `
     <div class="comemoracao">
-      <div class="comemoracao-figura">${desenharEstrela('comemorando')}${desenharFaiscas()}</div>
+      <div class="comemoracao-figura">${icone('trofeu', 'icone-grande')}${desenharFaiscas()}</div>
       <h1 class="comemoracao-titulo">Treino concluído!</h1>
       <p class="comemoracao-texto">${resumo.vidasVoltaram ? 'Suas vidas voltaram.' : 'Suas vidas já estavam completas.'}</p>
 
@@ -640,9 +642,6 @@ function desenharBauAberto(lugar, recompensa) {
     </div>`;
 }
 
-// Sem vidas: recarregar com moedas (continua de onde parou) ou
-// treinar de graça (a lição parada recomeça depois). Cada saída
-// diz o que acontece; sem nenhuma das duas, as vidas voltam amanhã.
 function desenharSemVidas(lugar, sessao, progresso) {
   const podePagar = podeRecarregar(progresso);
   const paraTreinar = licaoParaTreinar(progresso);
@@ -663,7 +662,6 @@ function desenharSemVidas(lugar, sessao, progresso) {
       <p class="opcao-texto">As ${VIDAS_MAXIMAS} vidas voltam, e você continua de onde parou.</p>
     </div>` : '';
 
-  // Se o aluno já tinha respondido algo, avisa que a lição parada recomeça
   const recomeca = sessao.respondidas > 0 ? ` Depois, "${escaparHtml(sessao.licao.titulo)}" recomeça do zero.` : '';
   const treino = paraTreinar ? `
     <div class="opcao">
@@ -675,7 +673,7 @@ function desenharSemVidas(lugar, sessao, progresso) {
   const temSaida = podePagar || paraTreinar;
   lugar.innerHTML = `
     <div class="comemoracao">
-      <div class="comemoracao-figura">${desenharEstrela('triste')}</div>
+      <div class="comemoracao-figura">${icone('vida', 'icone-grande icone-grande--vida')}</div>
       <h1 class="comemoracao-titulo">Suas vidas acabaram</h1>
       <p class="comemoracao-texto">${texto}</p>
       ${temSaida ? `<div class="opcoes">${recarga}${treino}</div>` : ''}
@@ -685,7 +683,7 @@ function desenharSemVidas(lugar, sessao, progresso) {
 
 
 // ============================================================
-// 7. CALCULADORA DE METAS E EM BREVE (Guia)
+// 6. LIGAS, MISSÕES, LOJA E GUIA
 // ============================================================
 
 const TELAS_EM_BREVE = {
@@ -696,13 +694,13 @@ const TELAS_EM_BREVE = {
   },
   guia: {
     icone: 'guia',
-    titulo: 'Guia',
-    texto: 'Explicações curtas sobre guardar e investir dinheiro. Quem é menor de idade só investe por meio de um responsável.'
+    titulo: 'Guia da Unidade',
+    texto: 'Explicações curtas sobre guardar, planejar e investir dinheiro. Quem é menor de idade só investe por meio de um responsável.'
   }
 };
 
 function desenharEmBreve(lugar, qual) {
-  const tela = TELAS_EM_BREVE[qual];
+  const tela = TELAS_EM_BREVE[qual] || TELAS_EM_BREVE.guia;
   lugar.innerHTML = `
     <div class="em-breve">
       <div class="em-breve-figura">${icone(tela.icone)}</div>
@@ -713,7 +711,114 @@ function desenharEmBreve(lugar, qual) {
     </div>`;
 }
 
-// Monta a barra de progresso visual quando o aluno já tem parte da meta guardada
+// Tela Ligas: conectada ao progresso real de lições e nível do aluno
+function desenharLigas(lugar, progresso) {
+  const licoes = contarLicoes(progresso);
+  const nivel = nivelDoXp(progresso.xp);
+
+  lugar.innerHTML = `
+    <div class="em-breve">
+      <div class="em-breve-figura em-breve-figura--medalha">${icone('ligas-prata')}</div>
+      <h1 class="em-breve-titulo">Desbloqueie as Ligas!</h1>
+      <span class="selo">Em breve</span>
+      <p class="em-breve-texto">Complete mais lições para competir com a turma. Hoje você está no <strong>Nível ${nivel.numero} (${nivel.nome})</strong> com <strong>${licoes.concluidas} de ${licoes.disponiveis}</strong> lições concluídas.</p>
+      <a class="botao" href="#aprender">Continuar aprendendo</a>
+    </div>`;
+}
+
+// Tela Missões: mostra o progresso ao vivo da Missão do dia (30 XP) e da sequência
+function desenharMissoes(lugar, progresso) {
+  const xpMissao = Math.min(progresso.xp, META_XP_MISSAO_DIARIA);
+  const porcentagemMissao = Math.min(100, Math.round((xpMissao / META_XP_MISSAO_DIARIA) * 100));
+  const concluida = xpMissao >= META_XP_MISSAO_DIARIA;
+
+  lugar.innerHTML = `
+    <div class="secao-pagina">
+      <header class="secao-pagina-topo">
+        <h1 class="perfil-titulo">Missões</h1>
+        <p class="perfil-sub">Conclua metas rápidas estudando educação financeira.</p>
+      </header>
+
+      <section class="cartao-lateral cartao-lateral--pagina" aria-labelledby="titulo-missao-pagina">
+        <div class="cartao-lateral-cabecalho">
+          <h2 class="cartao-lateral-titulo" id="titulo-missao-pagina">Missão do dia</h2>
+          <span class="selo">${concluida ? 'Concluída!' : 'Em andamento'}</span>
+        </div>
+        <div class="missao-corpo">
+          ${icone('xp', 'missao-raio')}
+          <div class="missao-detalhes">
+            <p class="missao-meta">Ganhe ${META_XP_MISSAO_DIARIA} XP</p>
+            <div class="missao-progresso-linha">
+              <div class="missao-trilho" role="progressbar" aria-label="Progresso da missão: ${xpMissao} de ${META_XP_MISSAO_DIARIA} XP"
+                aria-valuemin="0" aria-valuemax="${META_XP_MISSAO_DIARIA}" aria-valuenow="${xpMissao}">
+                <span class="missao-preenchimento" style="width: ${porcentagemMissao}%"></span>
+                <span class="missao-contagem">${xpMissao}/${META_XP_MISSAO_DIARIA}</span>
+              </div>
+              ${icone('missoes', 'missao-bau')}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="painel config-linha">
+        <div>
+          <p class="config-nome">Sequência de estudo: ${contarCom(progresso.sequencia, 'dia', 'dias')}</p>
+          <p class="config-desc">Conclua pelo menos 1 lição por dia para manter sua ofensiva acesa.</p>
+        </div>
+        <a class="botao botao--compacto" href="#aprender">Ir para a trilha</a>
+      </section>
+    </div>`;
+}
+
+// Tela Loja: conectada à reserva de moedas e à recarga de vidas existente no jogo.js
+function desenharLoja(lugar, progresso) {
+  const podeComprar = podeRecarregar(progresso);
+  let statusRecarga = `Suas vidas estão completas (${progresso.vidas}/${VIDAS_MAXIMAS}). Guarde suas moedas como reserva!`;
+  if (progresso.vidas === 0 && podeComprar) {
+    statusRecarga = `Você está sem vidas. Use ${PRECO_DA_RECARGA} moedas da sua reserva para restaurar todas as ${VIDAS_MAXIMAS} vidas agora.`;
+  } else if (progresso.vidas === 0) {
+    statusRecarga = `Você precisa de ${PRECO_DA_RECARGA} moedas para recarregar (ou refaça uma lição concluída como treino gratuito).`;
+  } else if (progresso.vidas < VIDAS_MAXIMAS) {
+    statusRecarga = `Você tem ${progresso.vidas} de ${VIDAS_MAXIMAS} vidas. A recarga libera quando as vidas chegam a 0.`;
+  }
+
+  lugar.innerHTML = `
+    <div class="secao-pagina">
+      <header class="secao-pagina-topo">
+        <h1 class="perfil-titulo">Loja</h1>
+        <p class="perfil-sub">Você tem <strong>${contarCom(progresso.moedas, 'moeda', 'moedas')}</strong> na sua reserva.</p>
+      </header>
+
+      <section class="painel config-linha">
+        <div class="loja-item-info">
+          ${icone('vida', 'loja-icone loja-icone--vida')}
+          <div>
+            <p class="config-nome">Recarga de Vidas (${PRECO_DA_RECARGA} moedas)</p>
+            <p class="config-desc">${statusRecarga}</p>
+          </div>
+        </div>
+        <button type="button" class="botao botao--compacto" data-acao="recarregar-loja" ${podeComprar ? '' : 'disabled'}>
+          ${progresso.vidas === VIDAS_MAXIMAS ? 'Vidas cheias' : `Usar ${PRECO_DA_RECARGA} moedas`}
+        </button>
+      </section>
+
+      <section class="painel config-linha">
+        <div>
+          <p class="config-nome">Como funcionam as moedas e vidas?</p>
+          <p class="config-desc">Veja todas as regras da sua reserva, XP e níveis.</p>
+        </div>
+        <button type="button" class="botao botao--contorno botao--compacto" data-acao="abrir-painel" data-contador="moedas">
+          Como funciona
+        </button>
+      </section>
+    </div>`;
+}
+
+
+// ============================================================
+// 7. CALCULADORA DE METAS
+// ============================================================
+
 function desenharBarraProgressoDaMeta(resultado) {
   if (!resultado || resultado.guardado <= 0 || resultado.metaAtingida) return '';
   return `
@@ -728,7 +833,6 @@ function desenharBarraProgressoDaMeta(resultado) {
     </div>`;
 }
 
-// Formata o trecho de meses em HTML, acrescentando os anos entre parênteses acima de 12 meses
 function desenharPrazoEmMeses(resultado) {
   const equivalente = resultado.equivalenteAnos !== undefined
     ? resultado.equivalenteAnos
@@ -739,7 +843,6 @@ function desenharPrazoEmMeses(resultado) {
     : `<strong>${textoMeses}</strong>`;
 }
 
-// Monta o cartão de resultado (Aba 1: Sem Juros, Aba 2: Com Juros ou Aba 3: Simular Futuro)
 function desenharResultadoCalculadora(resultado) {
   if (!resultado || !resultado.valido) return '';
 
@@ -855,7 +958,6 @@ function desenharResultadoCalculadora(resultado) {
     </section>`;
 }
 
-// Monta a tela completa da Calculadora de Metas com as 3 abas independentes
 function desenharCalculadora(lugar, dados = {}) {
   const abasValidas = ['sem-juros', 'com-juros', 'simular-futuro'];
   const aba = abasValidas.includes(dados.aba) ? dados.aba : 'sem-juros';
@@ -993,7 +1095,6 @@ function desenharCalculadora(lugar, dados = {}) {
   return html;
 }
 
-// Atualiza o erro ou o resultado na tela sem recriar os campos digitados
 function mostrarResultadoCalculadora(resultado) {
   const caixaErro = document.getElementById('calculadora-erro');
   const caixaResultado = document.getElementById('calculadora-resultado');
@@ -1020,7 +1121,7 @@ function mostrarResultadoCalculadora(resultado) {
 
 
 // ============================================================
-// 8. PERFIL (com as Configurações dentro)
+// 8. PERFIL E CONFIGURAÇÕES (MAIS)
 // ============================================================
 
 function desenharEstatistica(tipo, nomeDoIcone, valor, nome) {
@@ -1031,7 +1132,7 @@ function desenharEstatistica(tipo, nomeDoIcone, valor, nome) {
     </li>`;
 }
 
-function desenharPerfil(lugar, progresso, podeSalvar) {
+function desenharPerfil(lugar, progresso) {
   const licoes = contarLicoes(progresso);
   const nivel = nivelDoXp(progresso.xp);
   const falta = nivel.proximo ? `Faltam ${nivel.faltam} XP para o nível ${nivel.proximo.numero}` : 'O nível mais alto';
@@ -1039,7 +1140,7 @@ function desenharPerfil(lugar, progresso, podeSalvar) {
   lugar.innerHTML = `
     <div class="perfil">
       <header class="perfil-topo">
-        <div class="perfil-avatar">${desenharEstrela('feliz')}</div>
+        <div class="perfil-avatar">${icone('perfil', 'perfil-avatar-icone')}</div>
         <div>
           <h1 class="perfil-titulo">Perfil</h1>
           <p class="perfil-sub">Seu progresso fica salvo só neste aparelho.</p>
@@ -1059,8 +1160,30 @@ function desenharPerfil(lugar, progresso, podeSalvar) {
         </ul>
       </section>
 
+      <section class="painel config-linha">
+        <div>
+          <p class="config-nome">Configurações do aplicativo</p>
+          <p class="config-desc">Reiniciar progresso, regras do jogo e informações do projeto.</p>
+        </div>
+        <a class="botao botao--contorno botao--compacto" href="#mais">Abrir Configurações</a>
+      </section>
+    </div>`;
+}
+
+// Tela "Mais": as configurações do aplicativo (reiniciar progresso, ajuda e sobre)
+function desenharConfiguracoes(lugar, progresso, podeSalvar) {
+  lugar.innerHTML = `
+    <div class="perfil">
+      <header class="perfil-topo">
+        <div class="perfil-avatar">${icone('ajustes', 'perfil-avatar-icone')}</div>
+        <div>
+          <h1 class="perfil-titulo">Configurações</h1>
+          <p class="perfil-sub">Ajustes do aplicativo, ajuda das regras e informações.</p>
+        </div>
+      </header>
+
       <section aria-labelledby="titulo-configuracoes">
-        <h2 class="secao-titulo" id="titulo-configuracoes">${icone('ajustes')} Configurações</h2>
+        <h2 class="secao-titulo" id="titulo-configuracoes">${icone('ajustes')} Progresso</h2>
         <div class="painel">
           <div class="config-linha">
             <div>
@@ -1086,6 +1209,19 @@ function desenharPerfil(lugar, progresso, podeSalvar) {
         </div>
       </section>
 
+      <section aria-labelledby="titulo-ajuda-config">
+        <h2 class="secao-titulo" id="titulo-ajuda-config">${icone('info')} Como funciona</h2>
+        <div class="painel config-linha">
+          <div>
+            <p class="config-nome">Regras de vidas, moedas, XP e níveis</p>
+            <p class="config-desc">Entenda como ganhar recompensas e usar sua reserva.</p>
+          </div>
+          <button type="button" class="botao botao--contorno botao--compacto" data-acao="abrir-painel" data-contador="vidas">
+            Ver regras
+          </button>
+        </div>
+      </section>
+
       <section aria-labelledby="titulo-sobre">
         <h2 class="secao-titulo" id="titulo-sobre">${icone('info')} Sobre o FinEdu</h2>
         <div class="painel sobre">
@@ -1097,7 +1233,6 @@ function desenharPerfil(lugar, progresso, podeSalvar) {
     </div>`;
 }
 
-// Abre ou fecha a confirmação do "Reiniciar progresso"
 function mostrarConfirmacaoDeReinicio(mostrar) {
   const caixa = document.getElementById('confirmar-reinicio');
   const botao = document.querySelector('[data-acao="reiniciar"]');
@@ -1112,13 +1247,7 @@ function mostrarConfirmacaoDeReinicio(mostrar) {
 // ============================================================
 // 9. JANELAS: PAINEL "COMO FUNCIONA" E BOAS-VINDAS
 // ============================================================
-// As janelas são <dialog> do navegador, abertas com showModal(): o
-// Esc fecha sozinho, o Tab não sai da janela e a tela de trás não
-// recebe toque. Fecham também pelo botão e tocando no fundo escuro
-// (app.js).
 
-// Abre uma janela e, quando ela fechar, devolve o foco para quem
-// estava com ele antes (por exemplo, o contador tocado)
 function abrirJanela(janela) {
   if (janela.open) return;
   const antes = document.activeElement;
@@ -1133,12 +1262,10 @@ function fecharJanela(id) {
   if (janela && janela.open) janela.close();
 }
 
-// Fecha qualquer janela aberta (ao trocar de tela)
 function fecharJanelas() {
   for (const janela of document.querySelectorAll('dialog[open]')) janela.close();
 }
 
-// Uma parte do painel: título com o ícone do contador e os parágrafos
 function desenharParteDoPainel(qual, nomeDoIcone, titulo, paragrafos) {
   return `
     <section class="painel-parte painel-parte--${qual}" aria-labelledby="painel-${qual}">
@@ -1147,9 +1274,6 @@ function desenharParteDoPainel(qual, nomeDoIcone, titulo, paragrafos) {
     </section>`;
 }
 
-// O conteúdo do painel, com os números do aluno. Só explica: a
-// recarga continua só na tela "sem vidas". Os valores vêm das
-// constantes do jogo.js, então o texto muda junto com elas.
 function desenharPainel(progresso) {
   const nivel = nivelDoXp(progresso.xp);
   let sobreONivel = `Nível ${nivel.numero}, ${nivel.nome}: o mais alto.`;
@@ -1188,10 +1312,6 @@ function desenharPainel(progresso) {
     </div>`;
 }
 
-// Abre o painel já na parte do contador tocado ('vidas', 'moedas',
-// 'xp' ou 'sequencia'): ela sobe para o alto da caixa (a das vidas,
-// que é a primeira, fica logo embaixo do título "Como funciona") e o
-// foco vai para o título dela
 function mostrarPainel(progresso, qual) {
   const painel = document.getElementById('painel');
   if (!painel || painel.open) return;
@@ -1209,9 +1329,6 @@ function mostrarPainel(progresso, qual) {
   titulo.focus({ preventScroll: true });
 }
 
-// O aviso de boas-vindas, para quem começa do zero: a mesada é a
-// reserva, e os contadores explicam como o jogo funciona. Embaixo do
-// texto, os contadores desenhados como estão na tela (só imagem).
 function desenharBoasVindas(progresso) {
   const contadores = [
     ['sequencia', 'sequencia', progresso.sequencia],

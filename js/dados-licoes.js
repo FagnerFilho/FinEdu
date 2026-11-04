@@ -44,7 +44,7 @@ const CONTEUDO = {
         // ------------------------------------------------------
         {
           id: 'ef-unidade-1',
-          titulo: 'Primeiros passos',   // provisório
+          titulo: 'Primeiros Passos',   // provisório
           licoes: [
 
             // ----- Lição: Querer ou precisar? -----
@@ -599,6 +599,19 @@ const CONTEUDO = {
             { id: 'ef-u2-licao-1', titulo: 'Em breve', emBreve: true },
             { id: 'ef-u2-licao-2', titulo: 'Em breve', emBreve: true },
             { id: 'ef-u2-licao-3', titulo: 'Em breve', emBreve: true }
+          ]
+        },
+
+        // ------------------------------------------------------
+        // Unidade 3 (em breve)
+        // ------------------------------------------------------
+        {
+          id: 'ef-unidade-3',
+          titulo: 'Em breve',
+          licoes: [
+            { id: 'ef-u3-licao-1', titulo: 'Em breve', emBreve: true },
+            { id: 'ef-u3-licao-2', titulo: 'Em breve', emBreve: true },
+            { id: 'ef-u3-licao-3', titulo: 'Em breve', emBreve: true }
           ]
         }
       ]

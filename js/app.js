@@ -22,8 +22,8 @@ const estado = {
   telaDeFocoEmpilhada: false  // ver voltarParaTrilha()
 };
 
-// Telas do menu, e telas "de foco" (sem menu, para o aluno se concentrar)
-const TELAS_DO_MENU = ['aprender', 'calculadora', 'guia', 'perfil'];
+// Telas do menu ("mais" abre as configurações do app) e telas de foco (sem menu)
+const TELAS_DO_MENU = ['aprender', 'calculadora', 'ligas', 'missoes', 'loja', 'perfil', 'mais', 'guia'];
 const TELAS_DE_FOCO = ['licao', 'resultado', 'bau', 'sem-vidas'];
 
 
@@ -62,30 +62,22 @@ function salvar() {
 // ============================================================
 // 3. NAVEGAÇÃO
 // ============================================================
-// A tela atual fica no fim do endereço: index.html#perfil,
-// index.html#licao... Assim o botão "voltar" do celular volta
-// para a tela anterior em vez de sair do site.
 
-// Vai para uma tela. Com substituir = true, a tela atual sai do
-// histórico (o "voltar" não passa mais por ela).
 function irPara(tela, substituir = false) {
   if (location.hash === '#' + tela) {
-    mostrarTelaDoEndereco();          // já está nela: só redesenha
+    mostrarTelaDoEndereco();
   } else if (substituir) {
     location.replace('#' + tela);
   } else {
-    location.hash = tela;             // o navegador avisa e mostrarTelaDoEndereco() roda
+    location.hash = tela;
   }
 }
 
-// Abre uma tela de foco (lição, baú...) lembrando que dá para voltar
 function abrirTelaDeFoco(tela) {
   estado.telaDeFocoEmpilhada = true;
   irPara(tela);
 }
 
-// Volta para a trilha sem deixar telas "fantasmas" no histórico:
-// se a tela de foco foi aberta a partir da trilha, é só "voltar".
 function voltarParaTrilha() {
   if (estado.telaDeFocoEmpilhada) {
     estado.telaDeFocoEmpilhada = false;
@@ -95,21 +87,16 @@ function voltarParaTrilha() {
   }
 }
 
-// Lê o endereço e mostra a tela certa
 function mostrarTelaDoEndereco() {
   const tela = location.hash.slice(1) || 'aprender';
 
-  // Trocou de tela (inclusive pelo voltar do Android): fecha qualquer
-  // janela aberta (o painel ou as boas-vindas)
   fecharJanelas();
 
   if (!TELAS_DO_MENU.includes(tela) && !TELAS_DE_FOCO.includes(tela)) {
-    irPara('aprender', true);         // endereço desconhecido: vai para a trilha
+    irPara('aprender', true);
     return;
   }
 
-  // Chegou numa tela do menu vindo de uma lição aberta (botão voltar):
-  // a lição é abandonada.
   if (TELAS_DO_MENU.includes(tela)) {
     estado.telaDeFocoEmpilhada = false;
     if (estado.sessao) {
@@ -118,11 +105,8 @@ function mostrarTelaDoEndereco() {
     }
   }
 
-  // Virou o dia? As vidas voltam e a sequência é conferida.
   if (atualizarDia(estado.progresso)) salvar();
 
-  // Telas que dependem de algo que não existe mais
-  // (por exemplo, a página foi recarregada no meio da lição)
   const faltaAlgo =
     (tela === 'licao' && !estado.sessao) ||
     (tela === 'resultado' && !estado.resumo) ||
@@ -137,21 +121,24 @@ function mostrarTelaDoEndereco() {
 }
 
 function mostrarTela(tela) {
-  // Mostra só a <section> da tela pedida
   for (const secao of document.querySelectorAll('.tela')) {
     secao.hidden = secao.id !== `tela-${tela}`;
   }
   document.body.classList.toggle('modo-foco', TELAS_DE_FOCO.includes(tela));
   marcarMenu(tela);
   atualizarContadores(estado.progresso);
-  desenharDica(dicaDoDia());
+  desenharColunaDireita(estado.progresso);
 
   const lugar = document.getElementById(`tela-${tela}`);
   switch (tela) {
     case 'aprender':    desenharTrilha(lugar, estado.progresso); break;
     case 'calculadora': desenharCalculadora(lugar); break;
-    case 'guia':        desenharEmBreve(lugar, 'guia'); break;
+    case 'ligas':       desenharLigas(lugar, estado.progresso); break;
+    case 'missoes':     desenharMissoes(lugar, estado.progresso); break;
+    case 'loja':        desenharLoja(lugar, estado.progresso); break;
     case 'perfil':      desenharPerfil(lugar, estado.progresso, estado.podeSalvar); break;
+    case 'mais':        desenharConfiguracoes(lugar, estado.progresso, estado.podeSalvar); break;
+    case 'guia':        desenharEmBreve(lugar, 'guia'); break;
     case 'licao':       desenharLicao(lugar, estado.sessao, estado.progresso); break;
     case 'resultado':   desenharResultado(lugar, estado.resumo); break;
     case 'bau':         desenharBauAberto(lugar, estado.recompensaDoBau); break;
@@ -160,7 +147,6 @@ function mostrarTela(tela) {
 
   window.scrollTo(0, 0);
 
-  // Na trilha, se o próximo passo estiver fora da tela, rola até ele
   if (tela === 'aprender') {
     const proximo = lugar.querySelector('.no--atual, .no--bau-liberado');
     if (proximo) proximo.scrollIntoView({ block: 'nearest' });
@@ -168,8 +154,6 @@ function mostrarTela(tela) {
 
   focarTitulo(lugar);
 
-  // Quem começa do zero vê as boas-vindas uma vez, numa tela do menu
-  // (nunca no meio da lição). Já fica salvo que elas apareceram.
   if (!estado.progresso.boasVindasVistas && TELAS_DO_MENU.includes(tela)) {
     marcarBoasVindasVistas(estado.progresso);
     salvar();
@@ -182,8 +166,6 @@ function mostrarTela(tela) {
 // 4. LIÇÃO
 // ============================================================
 
-// Com substituir = true, a lição entra no lugar da tela atual no
-// histórico (usado pelo "Treinar de graça" da tela "sem vidas")
 function abrirLicao(idLicao, substituir = false) {
   const achada = encontrarLicao(idLicao);
   if (!achada) return;
@@ -201,8 +183,6 @@ function abrirLicao(idLicao, substituir = false) {
   if (atualizarDia(estado.progresso)) salvar();
   estado.sessao = iniciarLicao(estado.progresso, achada.licao);
 
-  // Lição nova sem vidas: primeiro a tela "sem vidas". O treino
-  // (lição já concluída) não precisa de vida.
   const tela = !estado.sessao.treino && estado.progresso.vidas === 0 ? 'sem-vidas' : 'licao';
   if (substituir) irPara(tela, true);
   else abrirTelaDeFoco(tela);
@@ -217,8 +197,8 @@ function escolher(indice) {
 function verificar() {
   if (!estado.sessao) return;
   const resultado = verificarResposta(estado.progresso, estado.sessao);
-  if (!resultado) return;                 // nenhuma alternativa marcada
-  salvar();                               // a vida perdida já fica salva
+  if (!resultado) return;
+  salvar();
   mostrarCorrecao(resultado, estado.sessao, estado.progresso);
 }
 
@@ -234,16 +214,14 @@ function continuar() {
     return;
   }
 
-  // A lição fica guardada: se o aluno recarregar, ela continua daqui
   if (proximo === 'sem-vidas') {
     irPara('sem-vidas', true);
     return;
   }
 
-  terminarLicao();   // proximo === 'fim'
+  terminarLicao();
 }
 
-// Lição (ou treino) concluída!
 function terminarLicao() {
   estado.resumo = concluirLicao(estado.progresso, estado.sessao);
   estado.sessao = null;
@@ -251,13 +229,11 @@ function terminarLicao() {
   irPara('resultado', true);
 }
 
-// Sem vidas: paga a recarga e volta para a lição de onde parou
 function recarregar() {
   if (!estado.sessao || !recarregarVidas(estado.progresso)) return;
   salvar();
   mostrarAviso('Vidas recarregadas.');
 
-  // Parou depois de responder uma questão? Segue para a próxima vez.
   if (estado.sessao.verificada && avancarQuestao(estado.progresso, estado.sessao) === 'fim') {
     terminarLicao();
     return;
@@ -265,7 +241,16 @@ function recarregar() {
   irPara('licao', true);
 }
 
-// Sem vidas: deixa a lição parada para trás e treina uma concluída
+function recarregarNaLoja() {
+  if (!recarregarVidas(estado.progresso)) return;
+  salvar();
+  atualizarContadores(estado.progresso);
+  desenharColunaDireita(estado.progresso);
+  const lugar = document.getElementById('tela-loja');
+  if (lugar && !lugar.hidden) desenharLoja(lugar, estado.progresso);
+  mostrarAviso('Vidas recarregadas.');
+}
+
 function treinar(idLicao) {
   estado.sessao = null;
   abrirLicao(idLicao, true);
@@ -273,7 +258,6 @@ function treinar(idLicao) {
 
 function pedirParaSair() {
   if (!estado.sessao) return;
-  // Ainda não respondeu nada? Sai direto, sem perguntar.
   if (estado.sessao.respondidas === 0) {
     sairDaLicao();
     return;
@@ -281,7 +265,6 @@ function pedirParaSair() {
   mostrarConfirmacaoDeSaida(true);
 }
 
-// Deixa para trás a lição aberta (se tiver) e volta para a trilha
 function sairDaLicao() {
   estado.sessao = null;
   voltarParaTrilha();
@@ -289,7 +272,7 @@ function sairDaLicao() {
 
 
 // ============================================================
-// 5. BAÚ
+// 5. BAÚ E TROFÉU DA UNIDADE
 // ============================================================
 
 function tocarNoBau(idUnidade) {
@@ -302,7 +285,9 @@ function tocarNoBau(idUnidade) {
     return;
   }
   if (situacao === 'trancado') {
-    mostrarAviso('Conclua todas as lições da unidade para abrir o baú.');
+    mostrarAviso(unidadeEmBreve(unidade)
+      ? 'As lições desta unidade chegam em breve.'
+      : 'Conclua todas as lições da unidade para abrir o baú.');
     return;
   }
 
@@ -318,9 +303,27 @@ function tocarNoBau(idUnidade) {
   abrirTelaDeFoco('bau');
 }
 
+function tocarNoTrofeu(idUnidade) {
+  const unidade = encontrarUnidade(idUnidade);
+  if (!unidade) return;
+
+  const situacao = situacaoDoBau(estado.progresso, unidade);
+  if (situacao === 'liberado') {
+    tocarNoBau(idUnidade);
+    return;
+  }
+  if (situacao === 'aberto') {
+    mostrarAviso('Troféu conquistado! Você concluiu esta unidade.');
+    return;
+  }
+  mostrarAviso(unidadeEmBreve(unidade)
+    ? 'As lições desta unidade chegam em breve.'
+    : 'Conclua todas as lições e o baú desta unidade para conquistar o troféu.');
+}
+
 
 // ============================================================
-// 6. CALCULADORA E PERFIL
+// 6. CALCULADORA E CONFIGURAÇÕES
 // ============================================================
 
 let camposCalculadoraEmMemoria = {
@@ -431,10 +434,7 @@ function apagarProgresso() {
 // 7. TOQUES E TECLADO
 // ============================================================
 
-// Um "ouvinte" só para o app inteiro: olha o data-acao do botão tocado
 function tratarClique(evento) {
-  // Toque no fundo escuro: fecha a janela (o painel ou as boas-vindas)
-  // ou, na confirmação de saída, continua a lição
   if (evento.target.classList.contains('folha')) {
     if (evento.target.tagName === 'DIALOG') evento.target.close();
     else mostrarConfirmacaoDeSaida(false);
@@ -447,6 +447,7 @@ function tratarClique(evento) {
   switch (botao.dataset.acao) {
     case 'abrir-licao':          abrirLicao(botao.dataset.id); break;
     case 'abrir-bau':            tocarNoBau(botao.dataset.id); break;
+    case 'abrir-trofeu':         tocarNoTrofeu(botao.dataset.id); break;
     case 'escolher':             escolher(Number(botao.dataset.indice)); break;
     case 'verificar':            verificar(); break;
     case 'continuar':            continuar(); break;
@@ -454,8 +455,9 @@ function tratarClique(evento) {
     case 'cancelar-saida':       mostrarConfirmacaoDeSaida(false); break;
     case 'confirmar-saida':      sairDaLicao(); break;
     case 'recarregar-vidas':     recarregar(); break;
+    case 'recarregar-loja':      recarregarNaLoja(); break;
     case 'treinar':              treinar(botao.dataset.id); break;
-    case 'voltar-trilha':        sairDaLicao(); break;   // a tela "sem vidas" pode ter lição parada
+    case 'voltar-trilha':        sairDaLicao(); break;
     case 'abrir-painel':         mostrarPainel(estado.progresso, botao.dataset.contador); break;
     case 'fechar-painel':        fecharJanela('painel'); break;
     case 'fechar-boas-vindas':   fecharJanela('boas-vindas'); break;
@@ -473,10 +475,6 @@ function tratarClique(evento) {
   }
 }
 
-// Atalhos no notebook:
-//   Na calculadora: Enter em qualquer campo dispara o cálculo da aba ativa
-//   Durante a lição: 1 a 4 (ou A a D) escolhem a alternativa,
-//     Enter verifica ou continua, Esc pede para sair
 function tratarTecla(evento) {
   if (evento.ctrlKey || evento.metaKey || evento.altKey) return;
 
@@ -510,10 +508,7 @@ function tratarTecla(evento) {
     return;
   }
 
-  // Se o foco estiver num botão, o próprio botão já responde ao Enter
   if (evento.key === 'Enter' && !evento.target.closest('button, a')) {
-    // Sem isto, o mesmo Enter "aperta" também o Continuar, que
-    // acabou de receber o foco, e pula a explicação
     evento.preventDefault();
     if (estado.sessao.verificada) continuar();
     else verificar();
@@ -521,5 +516,4 @@ function tratarTecla(evento) {
 }
 
 
-// Os scripts estão no fim do <body>: a página já existe, pode começar
 iniciar();
