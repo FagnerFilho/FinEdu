@@ -1,6 +1,6 @@
 # DOCUMENTO-MESTRE · FinEdu
 
-Última atualização: 04/11/2026, madrugada (Claude Code, Parte 3: missão do dia). Antes: 04/11 (Parte 2: correções do design aprovadas pelo líder), 03/11, noite (conversa de planejamento, com a varredura e as decisões novas) e Parte 1 (conferência com o código). Descreve o código da Parte 3 (o design do João com as correções da Parte 2, mais a missão do dia) e o que foi decidido para os próximos dias.
+Última atualização: 04/11/2026, manhã (Claude Code: push das Partes 1, 2 e 3). Antes: 04/11, madrugada (Parte 3: missão do dia), 04/11 (Parte 2: correções do design aprovadas pelo líder), 03/11, noite (conversa de planejamento, com a varredura e as decisões novas) e Parte 1 (conferência com o código). Descreve o código da Parte 3 (o design do João com as correções da Parte 2, mais a missão do dia) e o que foi decidido para os próximos dias.
 
 ## Visão
 Site estilo Duolingo de educação financeira e investimentos.
@@ -344,10 +344,10 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 
 - testes.html: 84 testes (eram 68). Os das regras passaram a rodar em 05/11, um dia de missão da calculadora, para a missão não mudar os números do plano. Grupo novo "Missão do dia" (13 testes) e 3 testes da simulação com a missão em 11/11. Conferido também que os testes novos falham quando a regra é estragada de propósito (recompensa repetida, treino sem contar, missão sem zerar, calculadora sem contar, rodízio sem data, tela olhando o XP total).
 - Conferido no navegador (celular em pé e tablet deitado): lição pelos botões, lição com erro (volta na revisão), Reiniciar progresso (as boas-vindas voltam), as 3 abas da calculadora (conta com erro de digitação não conta; pelo Enter conta), aviso com subida de nível, painel e cartões. Sem erro no console e sem rolagem para o lado.
 - Para o líder e o João: ver a linha nova da vitória nos prints (3.3 e 3.4) e dizer se fica.
+- Push em 04/11, de manhã, com o OK do líder, junto com as Partes 1 e 2.
 
 ## Pendências
 - Fila até 11/11 (detalhes no CLAUDE.md): Parte 1 (documentos, feita em 03/11), Parte 2 (correções do design, feita em 04/11), Parte 3 (missão do dia, feita em 04/11, de madrugada), Parte 4 (onboarding), questões novas da Unidade 1, modo apresentação, teste no tablet (09/11) e código congelado (10/11).
-- Push das Partes 1, 2 e 3 (commits só no computador do líder): esperando o OK dele. Depois do push, conferir o site no GitHub Pages.
 - Missão do dia: o João vê a linha nova da vitória (prints da Parte 3). No ensaio de 09/11 a missão é a da lição perfeita; para ensaiar com a de 11/11 ("Conclua 1 lição"), mudar a data do tablet. O modo apresentação pode considerar a missão.
 - Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEdu/). Nunca foi testado no tablet.
 - Trocar o link antigo do site (com FinEduu, dá 404) onde ele foi divulgado: mensagens da equipe, favorito no tablet e QR code, se tiver.

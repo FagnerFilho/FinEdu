@@ -5,7 +5,7 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 @projeto/documento-mestre.md
 @projeto/arquitetura.md
 
-Última atualização: 04/11/2026, madrugada (Claude Code, Parte 3). Antes: 04/11 (Parte 2), 03/11, noite (conversa de planejamento, depois do design do João) e Parte 1 (conferência com o código).
+Última atualização: 04/11/2026, manhã (Claude Code, push das Partes 1, 2 e 3). Antes: 04/11, madrugada (Parte 3), 04/11 (Parte 2), 03/11, noite (conversa de planejamento, depois do design do João) e Parte 1 (conferência com o código).
 
 ## O projeto
 
@@ -76,7 +76,7 @@ A fazer, uma parte por vez, com commit ao fim de cada uma e o OK do Fagner antes
 
 5. ~~**Parte 1 · Conferir os documentos**~~ (feita em 03/11; o que mudou está em "Parte 1 · Conferência dos documentos", no documento-mestre). O planejamento já gravou no GitHub os documentos novos (CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, README.md). `git pull`; conferir cada afirmação com o código; corrigir o documento onde estiver errado; commit.
 6. ~~**Parte 2 · Correções do design, com antes/depois**~~ (feita em 04/11, aprovada pelo Fagner sem o João, que vê os prints depois; o que mudou e o que ficou para decidir estão em "Parte 2 · Correções do design", no documento-mestre). Obrigatórias: contraste do item ativo do menu; contraste dos rótulos das unidades 2 e 3; licença da Fredoka (`css/fontes/OFL-Fredoka.txt`, texto copiado do repositório oficial da fonte, sem inventar o cabeçalho); tirar o botão "Guia da Unidade" da faixa da unidade; conferir que os 7 itens do menu têm pelo menos 48px num celular de 360px. Propostas para o Fagner e o João decidirem: letra normal no lugar das MAIÚSCULAS, estrela de 5 pontas nos discos das lições, Unidades 2 e 3 como um cartão compacto "Em breve", nomes das abas da calculadora em letra normal, limpeza do código morto da Estrela. Detalhes na seção "Identidade visual" e em "Decisões por conversa (03/11)" do documento-mestre.
-7. ~~**Parte 3 · Missão do dia (05/11).**~~ (feita em 04/11, de madrugada; os 20 XP confirmados pelo Fagner no plano; o que mudou está em "Parte 3 · Missão do dia", no documento-mestre). Seção "Missão do dia" do documento-mestre: 1 missão por dia, em rodízio pela data, `XP_DA_MISSAO` = 20, sem moedas, treino conta, zera no dia seguinte. Consertou o erro do `META_XP_MISSAO_DIARIA`. Push esperando o OK do Fagner (junto com as Partes 1 e 2).
+7. ~~**Parte 3 · Missão do dia (05/11).**~~ (feita em 04/11, de madrugada; os 20 XP confirmados pelo Fagner no plano; o que mudou está em "Parte 3 · Missão do dia", no documento-mestre). Seção "Missão do dia" do documento-mestre: 1 missão por dia, em rodízio pela data, `XP_DA_MISSAO` = 20, sem moedas, treino conta, zera no dia seguinte. Consertou o erro do `META_XP_MISSAO_DIARIA`. Enviada ao GitHub em 04/11, de manhã, junto com as Partes 1 e 2 (OK do Fagner).
 8. **Parte 4 · Onboarding (05 e 06/11).** Seção "Onboarding" do documento-mestre: "Como devemos te chamar?" → avatar → tutorial "Como usar o FinEdu" → trilha. Depois, o tutorial fica em Mais; o Perfil mostra apelido e avatar; "Reiniciar progresso" traz o onboarding de volta. Substitui o aviso de boas-vindas.
 9. **Questões novas da Unidade 1 (07/11).** O planejamento manda o conteúdo pronto; só o `dados-licoes.js` muda.
 10. **Modo apresentação (07/11).** Botão que deixa o app pronto para demonstrar. Considerar o onboarding.
