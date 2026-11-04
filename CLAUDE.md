@@ -5,21 +5,22 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 @projeto/documento-mestre.md
 @projeto/arquitetura.md
 
-Última atualização: 04/11/2026, manhã (Claude Code, push das Partes 1, 2 e 3). Antes: 04/11, madrugada (Parte 3), 04/11 (Parte 2), 03/11, noite (conversa de planejamento, depois do design do João) e Parte 1 (conferência com o código).
+Última atualização: 04/11/2026, tarde (Claude Code, Parte 4: onboarding). Antes: 04/11, manhã (push das Partes 1, 2 e 3), 04/11, madrugada (Parte 3), 04/11 (Parte 2), 03/11, noite (conversa de planejamento, depois do design do João) e Parte 1 (conferência com o código).
 
 ## O projeto
 
 - **FinEdu:** site estilo Duolingo que ensina educação financeira para alunos do CETI Dom Severino (ensino fundamental e médio, Teresina-PI).
 - Projeto de extensão de Engenharia de Computação da Uni-CET. Equipe: Fagner (líder), João (design, jgcosta350 no GitHub), Eufy (calculadora, eufyzn), Samuel de Assunção e Samuel Medeiros (conteúdo) e William.
 - **Apresentação: 11/11/2026, de manhã**, num tablet Samsung (Android, pelo link do GitHub Pages) e num notebook.
-- **O que já está pronto** (Parte 3, 04/11, 84 testes passando):
+- **O que já está pronto** (Parte 4, 04/11, 93 testes passando):
   - trilha com a Unidade 1 completa (4 lições + baú), lição com feedback por alternativa, vitória, Perfil, "Reiniciar progresso";
-  - gamificação: revisão das erradas, aquecimento (duplo para quem erra muito), vidas, recarga e treino, níveis por XP, painel "Como funciona" e boas-vindas;
+  - gamificação: revisão das erradas, aquecimento (duplo para quem erra muito), vidas, recarga e treino, níveis por XP e painel "Como funciona";
   - missão do dia (Parte 3, 04/11): 1 por dia, em rodízio pela data (11/11 é "Conclua 1 lição"), +20 XP uma vez por dia, o treino e a calculadora contam;
+  - onboarding (Parte 4, 04/11): apelido (opcional) → avatar (6 bichos, desenhos provisórios) → tutorial "Como usar o FinEdu" (5 cartões) → trilha. Depois, o Perfil mostra apelido e avatar ("Trocar apelido e avatar"), e Mais tem o tutorial. Tomou o lugar do aviso de boas-vindas;
   - Calculadora de Metas com 3 abas (Eufy, 01/11);
   - design do João (03/11) com as correções da Parte 2 (04/11): paleta, fonte Fredoka, lobo na logo, trilha com discos (estrela de 5 pontas), menu com 7 itens em letra normal (Aprender, Calculadora, Ligas, Missões, Loja, Perfil, Mais), Unidades 2 e 3 como cartão "Em breve".
 - **Em breve:** Ligas, Unidades 2 e 3 e Trilha 2 (investimentos).
-- **Não existe mais:** o mascote Estrela (nem o código morto dele) e o botão da faixa da unidade que abria "Guia da Unidade · Em breve" (os dois saíram na Parte 2; a rota `#guia` continua, sem botão, até a Parte 4). O "Guia da Unidade" de conteúdo foi descartado: o Guia agora é o tutorial "Como usar o FinEdu" (Parte 4).
+- **Não existe mais:** o mascote Estrela (nem o código morto dele) e o botão da faixa da unidade que abria "Guia da Unidade · Em breve" (os dois saíram na Parte 2), o aviso de boas-vindas e a tela "Em breve" do guia (saíram na Parte 4). O "Guia da Unidade" de conteúdo foi descartado: a rota `#guia` agora é o tutorial "Como usar o FinEdu".
 
 ## Quem vai trabalhar com você
 
@@ -59,8 +60,8 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 
 ## Antes de entregar qualquer mudança
 
-1. Siga o checklist da seção 9 do arquitetura.md.
-2. Rode o `testes.html` e confira que tudo passa (eram 84 em 04/11, depois da Parte 3; o número só cresce).
+1. Siga o checklist da seção 9 do arquitetura.md (10 itens desde a Parte 4).
+2. Rode o `testes.html` e confira que tudo passa (eram 93 em 04/11, depois da Parte 4; o número só cresce).
 3. Atualize `projeto/documento-mestre.md` (decisões e pendências) e, se mudou alguma regra, o `projeto/arquitetura.md`.
 4. Termine com um resumo curto: o que mudou, em quais arquivos, o que testou e o que ficou pendente.
 
@@ -77,7 +78,7 @@ A fazer, uma parte por vez, com commit ao fim de cada uma e o OK do Fagner antes
 5. ~~**Parte 1 · Conferir os documentos**~~ (feita em 03/11; o que mudou está em "Parte 1 · Conferência dos documentos", no documento-mestre). O planejamento já gravou no GitHub os documentos novos (CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, README.md). `git pull`; conferir cada afirmação com o código; corrigir o documento onde estiver errado; commit.
 6. ~~**Parte 2 · Correções do design, com antes/depois**~~ (feita em 04/11, aprovada pelo Fagner sem o João, que vê os prints depois; o que mudou e o que ficou para decidir estão em "Parte 2 · Correções do design", no documento-mestre). Obrigatórias: contraste do item ativo do menu; contraste dos rótulos das unidades 2 e 3; licença da Fredoka (`css/fontes/OFL-Fredoka.txt`, texto copiado do repositório oficial da fonte, sem inventar o cabeçalho); tirar o botão "Guia da Unidade" da faixa da unidade; conferir que os 7 itens do menu têm pelo menos 48px num celular de 360px. Propostas para o Fagner e o João decidirem: letra normal no lugar das MAIÚSCULAS, estrela de 5 pontas nos discos das lições, Unidades 2 e 3 como um cartão compacto "Em breve", nomes das abas da calculadora em letra normal, limpeza do código morto da Estrela. Detalhes na seção "Identidade visual" e em "Decisões por conversa (03/11)" do documento-mestre.
 7. ~~**Parte 3 · Missão do dia (05/11).**~~ (feita em 04/11, de madrugada; os 20 XP confirmados pelo Fagner no plano; o que mudou está em "Parte 3 · Missão do dia", no documento-mestre). Seção "Missão do dia" do documento-mestre: 1 missão por dia, em rodízio pela data, `XP_DA_MISSAO` = 20, sem moedas, treino conta, zera no dia seguinte. Consertou o erro do `META_XP_MISSAO_DIARIA`. Enviada ao GitHub em 04/11, de manhã, junto com as Partes 1 e 2 (OK do Fagner).
-8. **Parte 4 · Onboarding (05 e 06/11).** Seção "Onboarding" do documento-mestre: "Como devemos te chamar?" → avatar → tutorial "Como usar o FinEdu" → trilha. Depois, o tutorial fica em Mais; o Perfil mostra apelido e avatar; "Reiniciar progresso" traz o onboarding de volta. Substitui o aviso de boas-vindas.
+8. ~~**Parte 4 · Onboarding (05 e 06/11).**~~ (feita em 04/11, à tarde; prints aprovados pelo Fagner, com a saudação "Oi, Duda!" na trilha; o que mudou está em "Parte 4 · Onboarding", no documento-mestre; prints em `finedu-v1\antes-depois\parte-4`). Seção "Onboarding" do documento-mestre: "Como a gente te chama?" → avatar → tutorial "Como usar o FinEdu" → trilha. Depois, o tutorial fica em Mais; o Perfil mostra apelido e avatar; "Reiniciar progresso" traz o onboarding de volta. Substituiu o aviso de boas-vindas.
 9. **Questões novas da Unidade 1 (07/11).** O planejamento manda o conteúdo pronto; só o `dados-licoes.js` muda.
 10. **Modo apresentação (07/11).** Botão que deixa o app pronto para demonstrar. Considerar o onboarding.
 11. **09/11:** teste completo no tablet de verdade e ensaio. **10/11:** código congelado, só correção de erro.

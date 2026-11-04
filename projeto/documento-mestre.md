@@ -1,6 +1,6 @@
 # DOCUMENTO-MESTRE · FinEdu
 
-Última atualização: 04/11/2026, manhã (Claude Code: push das Partes 1, 2 e 3). Antes: 04/11, madrugada (Parte 3: missão do dia), 04/11 (Parte 2: correções do design aprovadas pelo líder), 03/11, noite (conversa de planejamento, com a varredura e as decisões novas) e Parte 1 (conferência com o código). Descreve o código da Parte 3 (o design do João com as correções da Parte 2, mais a missão do dia) e o que foi decidido para os próximos dias.
+Última atualização: 04/11/2026, tarde (Claude Code: Parte 4, onboarding). Antes: 04/11, manhã (push das Partes 1, 2 e 3), 04/11, madrugada (Parte 3: missão do dia), 04/11 (Parte 2: correções do design aprovadas pelo líder), 03/11, noite (conversa de planejamento, com a varredura e as decisões novas) e Parte 1 (conferência com o código). Descreve o código da Parte 4 (o design do João com as correções da Parte 2, a missão do dia e o onboarding) e o que foi decidido para os próximos dias.
 
 ## Visão
 Site estilo Duolingo de educação financeira e investimentos.
@@ -39,14 +39,14 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - Concluir uma lição desbloqueia a próxima da mesma trilha. Lição concluída pode ser refeita, como treino.
 - Cada unidade tem um baú, que libera quando todas as lições da unidade estão concluídas. (No design do João, o baú fica no meio do caminho, antes da última lição, e o troféu fecha a unidade.)
 - Gamificação: XP e níveis, moedas, vidas, sequência de dias, aquecimento (duplo para quem errou muito), revisão das erradas, recarga e treino, painel "Como funciona" nos contadores (seção Gamificação). Desde a Parte 3 (04/11): missão do dia (seção Missão do dia).
-- Primeira vez no app: onboarding com apelido, avatar e o tutorial "Como usar o FinEdu" (seção Onboarding). Ele substitui o aviso de boas-vindas.
+- Primeira vez no app: onboarding com apelido, avatar e o tutorial "Como usar o FinEdu" (seção Onboarding, feito na Parte 4). O aviso de boas-vindas saiu.
 
 ## Mascote e logo
 - A Estrela foi removida (decisão da equipe em 31/10) e saiu do código no design do João (03/11): não existe mais `desenharEstrela`.
 - O lobo do João é a logo: aparece na barra de cima e no menu lateral (símbolo `#i-logo` no index.html). Por enquanto não é personagem nas telas (não fala e não tem expressões).
 - Cuidado na apresentação: a ideia original do lobo "remete ao lobo de Wall Street". O filme conta a história de um corretor condenado por fraude, o contrário do que o app ensina. Melhor apresentar o lobo como esperto, estratégico e que anda em grupo (planeja junto), sem citar o filme.
 - O código morto da Estrela (`dicaDoDia()`, `dicasDaEstrela`, `falaDaEstrela` e `desenharDica()`) saiu na Parte 2 (04/11).
-- Outras sobras, sem relação com a Estrela (achadas na Parte 1, ainda no código): `simularRendimento()` no jogo.js (nenhuma tela usa) e a entrada `calculadora` de `TELAS_EM_BREVE` no telas.js (a calculadora tem tela própria).
+- Outras sobras, sem relação com a Estrela (achadas na Parte 1): `simularRendimento()` no jogo.js (nenhuma tela usa, ainda no código). A `TELAS_EM_BREVE` (com a entrada `calculadora` que sobrou) e o `desenharEmBreve()` saíram na Parte 4, quando o #guia virou o tutorial.
 - A ideia da raposa foi descartada antes.
 
 ## Identidade visual (aplicada pelo João em 03/11, com as correções da Parte 2 em 04/11)
@@ -80,11 +80,12 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - Deitado a partir de 1024px: a barra de cima some, e a coluna da direita mostra os contadores e os cartões "Desbloqueie as Ligas!" e "Missão do dia". (Antes do design do João, a coluna aparecia a partir de 1200px.)
 - Os contadores são botões: abrem o painel "Como funciona".
 - A troca é pela orientação da tela, não só pela largura, porque tablet Samsung em pé tem ~800px.
-- Durante a lição, a vitória, o baú e a tela "sem vidas", os menus somem (modo foco). O onboarding também vai ser tela de foco.
+- Durante a lição, a vitória, o baú, a tela "sem vidas" e o onboarding, os menus somem (modo foco).
+- Abaixo de 360px de largura (Parte 4), o círculo do Perfil e do Mais fica em cima do título: em 320px, "Configurações" não cabia ao lado do círculo e empurrava a tela para o lado.
 - O botão voltar do Android navega entre as telas (o endereço termina com #aprender, #perfil, #licao...).
 
 ## Telas
-- Aprender (trilha): faixa colorida da unidade ("Unidade N" e o título), caminho de discos com estrela de 5 pontas (a lição atual ganha um anel em volta), baú no meio do caminho (na Unidade 1, entre a 3ª e a 4ª lição; só abre com as 4 concluídas) e troféu no fim da unidade (com o baú liberado, tocar no troféu também abre o baú). O nome da Trilha 1 e o balão "Começar" saíram no design do João; o nome só aparece na Trilha 2, "Em breve". As Unidades 2 e 3, ainda sem lições, aparecem como cartões compactos "Em breve", como o da Trilha 2 (Parte 2). O botão da faixa que abria "Guia da Unidade · Em breve" saiu na Parte 2.
+- Aprender (trilha): faixa colorida da unidade ("Unidade N" e o título), caminho de discos com estrela de 5 pontas (a lição atual ganha um anel em volta), baú no meio do caminho (na Unidade 1, entre a 3ª e a 4ª lição; só abre com as 4 concluídas) e troféu no fim da unidade (com o baú liberado, tocar no troféu também abre o baú). O nome da Trilha 1 e o balão "Começar" saíram no design do João; o nome só aparece na Trilha 2, "Em breve". As Unidades 2 e 3, ainda sem lições, aparecem como cartões compactos "Em breve", como o da Trilha 2 (Parte 2). O botão da faixa que abria "Guia da Unidade · Em breve" saiu na Parte 2. Desde a Parte 4, quem tem apelido vê "Oi, Duda!" acima da faixa da unidade.
 - Lição: barra com 5 partes (verde quando acerta, vermelha quando erra; a vermelha fica verde quando o aluno acerta na revisão), etiqueta Fácil/Média/Difícil (ou Aquecimento e Revisão, com uma nota dizendo que errar ali não tira vida; no aquecimento duplo, "Aquecimento 1 de 2"), botão Verificar embaixo, feedback com o porquê. No notebook: teclas 1 a 4 (ou A a D), Enter e Esc.
 - Vitória: XP, moedas, precisão, sequência e, quando o aluno sobe de nível, o aviso "Subiu para o nível 2: Poupador!" (o baú aberto também mostra). Fim do treino: as vidas que voltaram. Quando a lição (ou o treino) termina a missão do dia, os dois mostram "Missão do dia concluída: +20 XP", antes do aviso de nível (Parte 3).
 - Baú aberto, Sem vidas (recarregar com moedas ou treinar de graça) e confirmação ao sair no meio da lição ou do treino.
@@ -92,40 +93,38 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - Ligas: "Em breve" (decisão de 03/11: fica como está). Mostra o nível e as lições concluídas. Competir de verdade precisa de outros jogadores; a ideia de amigos por QR code fica para depois (o líder conversa com o João). Resposta para a banca: "Em breve. A versão 1 não tem cadastro de propósito (LGPD, público menor de idade); comparar com a turma vem numa próxima versão."
 - Missões (desde a Parte 3): o cartão "Missão do dia" com a missão de hoje e o que o aluno já fez hoje (ex.: "Conclua 2 lições" e "1/2" na barra), o selo "Em andamento" ou "Concluída!" e o subtítulo "Todo dia tem uma missão nova, que vale mais 20 XP.". O cartão da coluna da direita mostra o mesmo. Até a Parte 2 mostrava "Ganhe 30 XP" e contava o XP total, não o de hoje (quem tinha 30 XP via a missão concluída para sempre).
 - Loja: recarga de vidas por 20 moedas, que só libera com 0 vidas (segue a regra), e o botão "Como funciona".
-- Perfil (sem dado pessoal): nível e quanto falta para o próximo, estatísticas e o atalho "Abrir Configurações" (vai para Mais). Na Parte 4 ganha o avatar e o apelido.
-- Mais (Configurações): "Reiniciar progresso" com confirmação na tela, "Ver regras" (abre o painel) e Sobre. Na Parte 4 ganha "Como usar o FinEdu".
+- Perfil (sem dado pessoal além do apelido opcional): o avatar no círculo (sem avatar, o chapéu do menu), o apelido como título (sem apelido, "Perfil"; o leitor de tela ouve "Perfil de Duda"), o botão "Trocar apelido e avatar" (Parte 4), nível e quanto falta para o próximo, estatísticas e o atalho "Abrir Configurações" (vai para Mais).
+- Mais (Configurações): "Reiniciar progresso" com confirmação na tela (que avisa que o apelido e o avatar são apagados), "Como usar o FinEdu" com o botão "Ver tutorial" (Parte 4), "Ver regras" (abre o painel) e Sobre.
 - Contadores (barra de cima e coluna da direita): cada um é um botão que abre o painel "Como funciona" (vidas, moedas, XP e nível, sequência). Na parte do XP, uma linha sobre a missão do dia, com a de hoje (Parte 3).
-- Boas-vindas: hoje é um aviso na primeira vez (mesada de 20 moedas e dica dos contadores). Na Parte 4, o onboarding toma o lugar dele.
-- Guia: a rota #guia ainda mostra "Guia da Unidade · Em breve", mas nenhum botão leva até ela desde a Parte 2. Na Parte 4, vira o tutorial "Como usar o FinEdu".
+- Onboarding (Parte 4): apelido, avatar e o tutorial "Como usar o FinEdu" (#apelido, #avatar e #guia), na primeira vez e depois de "Reiniciar progresso". O aviso de boas-vindas saiu.
 
-## Onboarding (decidido em 03/11; Parte 4 da fila)
-Ordem: "Como devemos te chamar?" → avatar → tutorial "Como usar o FinEdu" → trilha.
+## Onboarding (decidido em 03/11; feito na Parte 4, 04/11)
+Ordem: "Como a gente te chama?" → avatar → tutorial "Como usar o FinEdu" → trilha. O líder aprovou o plano, o título novo da etapa 1, o avatar sorteado e os textos revisados (04/11).
 
 - Quando aparece: na primeira vez que o app abre e depois de "Reiniciar progresso". Quem já tinha progresso salvo (os aparelhos da equipe) também passa uma vez, para escolher apelido e avatar; o progresso não muda.
-- Tela de foco (sem menu), uma etapa por vez. O voltar do Android volta uma etapa. Recarregar a página no meio recomeça do apelido. Ninguém fica preso: dá para seguir sem apelido e pular o tutorial.
-- Etapa 1, apelido:
-  - Título "Como devemos te chamar?"; campo com rótulo, até 20 caracteres; texto de apoio "Pode ser um apelido. Ele fica salvo só neste aparelho."
-  - Opcional: com o campo vazio, o app segue sem nome. Não pedimos nome completo nem nenhum outro dado (LGPD, público menor de idade).
-  - O apelido fica dentro do progresso, salvo pelo armazenamento.js, e nunca sai do aparelho. Sempre aparece na tela por `escaparHtml()`.
-- Etapa 2, avatar:
-  - Título "Escolha seu avatar". 6 bichos do Brasil (proposta: arara, capivara, tatu, onça, coruja e tamanduá). Sem lobo, para não confundir com a logo.
-  - Desenhos simples no estilo dos ícones do app (`<symbol>` no index.html, cores por variável). Os primeiros são provisórios, feitos pelo Claude Code; o João pode trocar os desenhos depois sem mexer no resto do código.
-  - Um já vem marcado, então "Continuar" sempre funciona. Cada avatar é um botão com o nome do bicho para o leitor de tela.
-- Etapa 3, tutorial "Como usar o FinEdu":
-  - 5 cartões curtos, um por vez, com "Próximo", "Voltar", a contagem ("2 de 5") e "Pular" sempre à vista.
-  - Rascunho dos textos (o Claude Code revisa com a skill de UX copy, mantendo o sentido):
-    1. A trilha: "Cada lição concluída libera a próxima. No fim da unidade tem um baú com prêmio."
+- Telas de foco (sem menu), uma etapa por vez, com o esqueleto da lição: o conteúdo em cima e o botão principal embaixo, ao alcance do polegar. O voltar do Android volta uma etapa; depois do fim, ele não cai de novo no onboarding. Recarregar a página no meio recomeça do apelido. Ninguém fica preso: dá para seguir sem apelido e pular o tutorial.
+- Etapa 1, apelido (#apelido): o lobo grande num círculo, "Boas-vindas ao FinEdu!" e o título "Como a gente te chama?" (era "Como devemos te chamar?"; mais o jeito da turma falar), o campo "Apelido (opcional)", até 20 caracteres, e o apoio "Ele fica salvo só neste aparelho."
+  - Opcional: com o campo vazio, o app segue sem nome. Não pedimos nome completo nem nenhum outro dado (LGPD, público menor de idade). O campo não sugere nomes salvos no navegador (autocomplete desligado).
+  - O apelido fica dentro do progresso, salvo pelo armazenamento.js, e nunca sai do aparelho. Sempre aparece na tela por `escaparHtml()`. Espaço sobrando e caracteres invisíveis saem; o corte em 20 caracteres não quebra acento nem emoji.
+  - Enter (ou o botão "Próximo" do teclado do celular) faz o mesmo que "Continuar".
+- Etapa 2, avatar (#avatar): "Escolha seu avatar" e "Dá para trocar depois, no Perfil."
+  - 6 bichos do Brasil: arara, capivara, tatu, onça, coruja e tamanduá (com a língua de fora, para não parecer uma lâmpada). Sem lobo, para não confundir com a logo.
+  - Desenhos provisórios, feitos pelo Claude Code no estilo dos ícones do menu: cabeça de frente, formas chapadas, detalhes no azul-escuro do fundo, só cores que já existem no app (`<symbol>` no index.html). O João pode trocar os desenhos sem mexer no resto do código.
+  - Grade de 3 colunas; o marcado fica como a alternativa marcada da lição (borda e fundo roxos), com um check no canto, para a escolha não depender só da cor. São botões de opção de verdade: as setas do teclado trocam, e o leitor de tela fala o nome e se está marcado.
+  - Um já vem marcado: sorteado, para a turma não sair toda com o mesmo bicho ("Continuar" sempre funciona).
+- Etapa 3, tutorial "Como usar o FinEdu" (#guia): 5 cartões, um por vez, com a barra de 5 partes e a contagem ("2 de 5") em cima, "Pular" no canto, a figura (ícones do app), o título e o texto, e "Voltar" (a partir do cartão 2) e "Próximo" embaixo. As setas ← e → também trocam de cartão.
+  - Textos (revisados com a skill de UX copy; os números vêm das constantes do jogo.js):
+    1. A trilha: "Cada lição concluída libera a próxima. No fim da unidade, tem um baú com prêmio."
     2. A lição: "São 5 questões, do fácil ao difícil. Errou? Você vê o porquê, e a questão volta no fim para você consertar."
-    3. Vidas e moedas: "Errar uma questão nova tira 1 vida. Sem vidas, use 20 moedas da sua reserva ou treine uma lição de graça. Você já começa com uma mesada de 20 moedas."
-    4. XP e missão do dia: "Cada acerto vale XP, e o XP sobe o seu nível. Todo dia tem uma missão nova que vale XP extra."
-    5. Calculadora: "Quer comprar alguma coisa? A Calculadora de Metas mostra quanto guardar por mês." Botão final "Bora começar", que leva à trilha. Uma linha lembra: "Para ver de novo: Mais → Como usar o FinEdu."
-  - Os números dos cartões vêm das constantes do jogo.js (vidas, preço da recarga, mesada, XP da missão), como no painel "Como funciona".
+    3. Vidas e moedas: "Você começa com 5 vidas e uma mesada de 20 moedas. Errar uma questão nova tira 1 vida. Sem vidas? Recarregue com 20 moedas da sua reserva ou treine de graça uma lição que você já fez."
+    4. XP e missão do dia: "Cada acerto de primeira vale 10 XP, e o XP sobe o seu nível. Todo dia tem uma missão nova, que vale mais 20 XP. Na dúvida, toque nos contadores para ver as regras." Embaixo, os contadores do aluno, como na barra de cima.
+    5. Calculadora de Metas: "Quer comprar alguma coisa? A Calculadora de Metas mostra quanto guardar por mês." Botão final "Bora começar", que leva à trilha, e a linha "Para ver de novo, é só abrir Mais."
 - Depois do onboarding:
-  - Mais ganha "Como usar o FinEdu", que abre só o tutorial e, no fim, volta para Mais.
-  - Perfil mostra o avatar e o apelido (no lugar do ícone genérico) e um botão "Trocar apelido e avatar" (abre as etapas 1 e 2 e volta para o Perfil).
-  - Saudação com o apelido no topo da trilha: só se ficar boa no design do João (antes/depois e OK).
-- "Reiniciar progresso" apaga também o apelido e o avatar, e o onboarding volta (bom para a apresentação: cada aluno começa do zero). O texto da confirmação passa a citar apelido e avatar.
-- O aviso de boas-vindas sai: a mesada passa a ser contada no cartão 3.
+  - Mais tem "Como usar o FinEdu" ("Trilha, lição, vidas, XP e calculadora em 5 cartões.", botão "Ver tutorial"), que abre só o tutorial, com "Fechar" no lugar do "Pular" e "Entendi" no último cartão, e volta para Mais.
+  - Perfil mostra o avatar e o apelido e o botão "Trocar apelido e avatar": abre as etapas 1 e 2, com "Cancelar" em cima e "Salvar" no fim (aviso "Apelido e avatar salvos."), e volta para o Perfil. Cancelar (ou o voltar do Android) não salva nada.
+  - Saudação "Oi, Duda!" no topo da trilha, acima da faixa da unidade, quando o aluno tem apelido: aprovada pelo líder nos prints com e sem (04/11).
+- "Reiniciar progresso" apaga também o apelido e o avatar, e o onboarding volta (bom para a apresentação: cada aluno começa do zero). A confirmação diz: "XP, moedas, vidas, sequência e lições voltam ao começo, e o apelido e o avatar são apagados. Não dá para desfazer."
+- O aviso de boas-vindas saiu: a mesada é contada no cartão 3, e a dica dos contadores no cartão 4.
 
 ## Missão do dia (decidido em 03/11; feita na Parte 3, 04/11)
 - Pedido do líder: missões diferentes a cada dia (exemplo dele: "faça duas lições → 30 XP"), sem dar XP demais. O contexto é a apresentação na escola.
@@ -166,9 +165,9 @@ Ordem: "Como devemos te chamar?" → avatar → tutorial "Como usar o FinEdu" �
 ## Estrutura do código
 - Versão 1 sem back-end. Progresso em localStorage, sempre via js/armazenamento.js.
 - HTML, CSS e JS puro, código próprio escrito do zero na conversa 02 (Antigravity só como referência).
-- Estrutura: index.html, css/estilo.css, css/fontes/ (Fredoka, Baloo 2 e Figtree), js/dados-licoes.js, js/armazenamento.js, js/jogo.js, js/telas.js, js/app.js, img/favicon.svg, testes.html, README.md, CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, projeto/plano-gamificacao.md. (Nenhum arquivo novo na Parte 3.)
+- Estrutura: index.html, css/estilo.css, css/fontes/ (Fredoka, Baloo 2 e Figtree), js/dados-licoes.js, js/armazenamento.js, js/jogo.js, js/telas.js, js/app.js, img/favicon.svg, testes.html, README.md, CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, projeto/plano-gamificacao.md. (Nenhum arquivo novo nas Partes 3 e 4.)
 - Funciona abrindo o index.html com dois cliques (sem servidor).
-- testes.html: testes das regras do jogo e da calculadora no navegador, com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação (sem e com a missão do dia) e confere os textos do painel, das boas-vindas, do feedback do erro, da tela Missões e da vitória. 84 testes, todos passando (04/11, Parte 3).
+- testes.html: testes das regras do jogo e da calculadora no navegador, com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação (sem e com a missão do dia) e confere os textos do painel, do feedback do erro, da tela Missões, da vitória e do onboarding. 93 testes, todos passando (04/11, Parte 4).
 - O arquitetura.md guarda as regras do código e o passo a passo para criar lições. A versão oficial fica em projeto/arquitetura.md.
 - O app confere o dados-licoes.js e mostra um aviso vermelho no topo se algo estiver fora do padrão.
 - Depois da apresentação, as regras do arquitetura.md viram uma skill de arquiteto.
@@ -346,15 +345,31 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 
 - Para o líder e o João: ver a linha nova da vitória nos prints (3.3 e 3.4) e dizer se fica.
 - Push em 04/11, de manhã, com o OK do líder, junto com as Partes 1 e 2.
 
+### Parte 4 · Onboarding (Claude Code, 04/11, tarde)
+- Plano mostrado e aprovado pelo líder, com o título "Como a gente te chama?", o avatar sorteado e os textos revisados. Skills usadas: frontend-design (avatares e telas), UX copy (todo texto novo, inclusive os do leitor de tela) e web-design-guidelines (revisão, antes dos prints).
+- O que mudou (detalhes na seção "Onboarding" e nas seções 5 a 9 do arquitetura.md):
+  - jogo.js: `APELIDO_MAXIMO`, `AVATARES` e `QUESTOES_POR_LICAO` no topo; campos `apelido`, `avatar` e `onboardingFeito` no progresso (saiu o `boasVindasVistas`); `limparApelido`, `avatarPeloId`, `sortearAvatar`, `definirApelido`, `definirAvatar` e `concluirOnboarding`.
+  - telas.js: as 3 etapas (`desenharApelido`, `desenharEscolhaDoAvatar`, `desenharTutorial`, com os textos em `cartoesDoTutorial`); Perfil com avatar, apelido e "Trocar apelido e avatar"; Mais com "Como usar o FinEdu"; confirmação do Reiniciar e atalho do Perfil com os textos novos; saudação "Oi, Duda!" na trilha. Saíram o aviso de boas-vindas, `TELAS_EM_BREVE` e `desenharEmBreve()`.
+  - app.js: seção nova "7. Onboarding": o caminho das etapas e o voltar do Android (`history.state.etapa`), a troca a partir do Perfil, o tutorial a partir de Mais e o teclado (Enter, setas e Esc).
+  - index.html: os 6 avatares (`#i-avatar-...`) e as telas #apelido, #avatar e #guia (de foco). Saíram o `<dialog>` das boas-vindas e o ícone `#i-guia`, que ninguém mais usava.
+  - estilo.css: seção nova "13. Onboarding", o botão de texto `.botao-discreto` ("Cancelar", "Pular", "Fechar") e, abaixo de 360px, o círculo do Perfil e do Mais em cima do título. Só variáveis que já existiam, nenhuma cor nova.
+- Revisão com a web-design-guidelines (regras baixadas do repositório vercel-labs/web-interface-guidelines em 04/11). Corrigido: o campo do apelido ganhou `name`; botões e campos das etapas sem o zoom de dois toques (`touch-action`); o campo com o foco do teclado não fica escondido atrás da barra de baixo (`scroll-margin-bottom`); títulos dos cartões com `text-wrap: balance`; em 320px, o "Configurações" que empurrava a tela (Mais). Não mudou, porque briga com regra do projeto ou com texto aprovado: "Title Case" em títulos e botões (regra de inglês; o projeto usa letra normal), "Continuar" (a regra pede um nome mais específico, mas o texto foi aprovado) e o aviso antes de sair da troca sem salvar (o "Cancelar" é a saída de propósito). Achado sem mudança, do design do João: os discos da trilha têm 46px de altura, abaixo dos 48px da regra 11.
+- Contraste medido (mínimo 3 para ícone e 4,5 para texto): os 6 avatares sobre o círculo, de 3,40 (capivara) a 7,91 (tamanduá); os olhos e as pintas, de 3,75 a 13,08. Os detalhes de dois tons (pele branca da arara, focinho da capivara e da onça, cabeça do tatu) ficam entre 1,77 e 2,80, como os dois tons dos ícones do menu: o nome do bicho está escrito embaixo. O check do avatar marcado tem 4,44; a borda roxa sozinha teria 2,95. Textos novos: de 7,0 a 13,1.
+- Conferido no navegador (celular de 390px e de 320px, tablet deitado, notebook): o caminho todo pelo toque e pelo teclado, campo vazio, recarregar no meio, voltar e avançar do navegador, troca com Salvar e com Cancelar, tutorial vindo de Mais, Reiniciar progresso, sem rolagem para o lado e sem erro no console. Mais o checklist da seção 9 (lição com erro e revisão, painel, calculadora e Missões).
+- testes.html: 93 testes (eram 84). Saíram os 4 do aviso de boas-vindas; entrou o grupo "Onboarding" (13 testes), que confere, entre outros: progresso novo, reiniciado e antigo; apelido vazio, limpo e cortado; o `<script>` que aparece como texto; avatar fora da lista; as telas das etapas; os números do tutorial (com outros números, o texto muda junto).
+- Prints de antes e depois em `finedu-v1/antes-depois/parte-4`, feitos com `antes-depois/ferramentas/prints-parte-4.ps1` (o "antes" de 320px veio de uma cópia do último commit, em `antes-depois/base-parte-4`), e juntos em 6 folhas com legenda em `parte-4/folhas` (`folhas-parte-4.ps1`).
+- Aprovado pelo líder em 04/11, pelos prints: as telas novas, o Perfil e o Mais (inclusive o círculo em cima do título abaixo de 360px) e a saudação "Oi, Duda!" na trilha. O João ainda vê os prints depois.
+
 ## Pendências
-- Fila até 11/11 (detalhes no CLAUDE.md): Parte 1 (documentos, feita em 03/11), Parte 2 (correções do design, feita em 04/11), Parte 3 (missão do dia, feita em 04/11, de madrugada), Parte 4 (onboarding), questões novas da Unidade 1, modo apresentação, teste no tablet (09/11) e código congelado (10/11).
+- Fila até 11/11 (detalhes no CLAUDE.md): Parte 1 (documentos, feita em 03/11), Parte 2 (correções do design, feita em 04/11), Parte 3 (missão do dia, feita em 04/11, de madrugada), Parte 4 (onboarding, feita em 04/11, à tarde), questões novas da Unidade 1, modo apresentação, teste no tablet (09/11) e código congelado (10/11).
+- Onboarding: o João vê os prints da Parte 4 (`finedu-v1/antes-depois/parte-4/folhas`), aprovada pelo líder em 04/11, e, se quiser, redesenha os 6 avatares (provisórios).
 - Missão do dia: o João vê a linha nova da vitória (prints da Parte 3). No ensaio de 09/11 a missão é a da lição perfeita; para ensaiar com a de 11/11 ("Conclua 1 lição"), mudar a data do tablet. O modo apresentação pode considerar a missão.
 - Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEdu/). Nunca foi testado no tablet.
 - Trocar o link antigo do site (com FinEduu, dá 404) onde ele foi divulgado: mensagens da equipe, favorito no tablet e QR code, se tiver.
 - Questões novas da Unidade 1 (Samuels), depois formatadas pelo planejamento.
 - Professor: revisar a Unidade 1 (marcas // REVISAR) e as abas com juros da calculadora.
-- João: ver os prints da Parte 2 (`finedu-v1/antes-depois/parte-2`), aprovada pelo líder em 04/11, e dizer se quer ajustar algo; (se der tempo) desenhar os 6 avatares.
-- Acessibilidade: 4 textos ainda abaixo do contraste mínimo e o menu com 47,4px a 360px (ver "Parte 2 · Correções do design"). O líder decide se entram antes da apresentação.
+- João: ver os prints da Parte 2 (`finedu-v1/antes-depois/parte-2`), aprovada pelo líder em 04/11, e dizer se quer ajustar algo.
+- Acessibilidade: 4 textos ainda abaixo do contraste mínimo, o menu com 47,4px a 360px (ver "Parte 2 · Correções do design") e os discos da trilha com 46px de altura (achado na Parte 4). O líder decide se entram antes da apresentação.
 - Título final da Unidade 1.
 - Banner: texto e QR code (o planejamento pode adiantar), arte do João, gráfica até 06 ou 07/11. Confirmar tamanho e modelo exigidos pela faculdade.
 - Modo apresentação: depois do onboarding, considerando o apelido e o avatar.

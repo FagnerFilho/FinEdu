@@ -14,10 +14,11 @@
    10. Comemoração (vitória, baú, sem vidas)
    11. Calculadora de Metas, Ligas, Missões, Loja e Em breve
    12. Perfil e Configurações (Mais)
-   13. Avisos
-   14. Telas maiores e tela deitada (3 colunas do Figma)
-   15. Modo foco (lição e comemorações, sem menu)
-   16. Animações e movimento reduzido
+   13. Onboarding (apelido, avatar e tutorial)
+   14. Avisos
+   15. Telas maiores e tela deitada (3 colunas do Figma)
+   16. Modo foco (lição, comemorações e onboarding, sem menu)
+   17. Animações e movimento reduzido
    ============================================================ */
 
 
@@ -556,6 +557,35 @@ h3:focus {
   color: var(--cor-texto);
 }
 
+/* Botão de texto discreto, sem sombra, como o X da lição: "Cancelar",
+   "Pular" e "Fechar", no canto de cima do onboarding */
+.botao-discreto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--alvo-minimo);
+  min-height: var(--alvo-minimo);
+  padding: 0 var(--espaco-m);
+  flex-shrink: 0;
+  border-radius: var(--raio-m);
+  color: var(--cor-texto-secundario);
+  font-family: var(--fonte-titulo);
+  font-weight: 600;
+  font-size: var(--tamanho-medio);
+  transition: background-color var(--tempo-rapido), color var(--tempo-rapido);
+}
+
+.botao-discreto:active {
+  background: var(--cor-cartao);
+  color: var(--cor-texto);
+}
+
+@media (hover: hover) {
+  .botao-discreto:hover {
+    color: var(--cor-texto);
+  }
+}
+
 
 /* ============================================================
    7. TRILHA (Cartão da Unidade + Caminho de Discos 3D)
@@ -568,6 +598,16 @@ h3:focus {
 
 .trilha + .trilha {
   margin-top: var(--espaco-xgg);
+}
+
+/* "Oi, Duda!" acima da faixa da unidade, quando o aluno tem apelido (Parte 4) */
+.trilha-saudacao {
+  margin-bottom: var(--espaco-m);
+  color: var(--cor-titulo);
+  font-family: var(--fonte-titulo);
+  font-weight: 600;
+  font-size: var(--tamanho-titulo-p);
+  overflow-wrap: anywhere;
 }
 
 /* Temas de cor alternados por unidade (roxo, laranja, verde) */
@@ -1310,22 +1350,6 @@ dialog.folha::backdrop {
 .painel-parte--xp .icone        { color: var(--cor-xp); }
 .painel-parte--sequencia .icone { color: var(--cor-sequencia); }
 
-.boas-vindas-contadores {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--espaco-g);
-  font-family: var(--fonte-titulo);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
-.boas-vindas-contadores span {
-  display: flex;
-  align-items: center;
-  gap: var(--espaco-pp);
-}
-
 
 /* ============================================================
    10. COMEMORAÇÃO (vitória, baú aberto, sem vidas)
@@ -1911,8 +1935,27 @@ dialog.folha::backdrop {
   height: 44px;
 }
 
+/* O avatar do onboarding ocupa mais o círculo que o chapéu */
+.perfil-avatar-bicho {
+  width: 64px;
+  height: 64px;
+}
+
+.perfil-quem {
+  min-width: 0;
+}
+
 .perfil-titulo {
   font-size: var(--tamanho-titulo-g);
+}
+
+/* Apelido sem espaço (até 20 letras) quebra em vez de empurrar a tela */
+.perfil-titulo--apelido {
+  overflow-wrap: anywhere;
+}
+
+.perfil-trocar {
+  margin-top: var(--espaco-m);
 }
 
 .perfil-sub {
@@ -2002,6 +2045,13 @@ dialog.folha::backdrop {
   gap: var(--espaco-m);
 }
 
+/* Painel com mais de uma linha (Mais → Como funciona): uma linha entre elas */
+.painel--linhas .config-linha + .config-linha {
+  margin-top: var(--espaco-g);
+  padding-top: var(--espaco-g);
+  border-top: var(--borda) solid var(--cor-borda);
+}
+
 .config-nome {
   color: var(--cor-titulo);
   font-family: var(--fonte-titulo);
@@ -2064,7 +2114,289 @@ dialog.folha::backdrop {
 
 
 /* ============================================================
-   13. AVISOS
+   13. ONBOARDING (apelido, avatar e tutorial)
+   ============================================================
+   As etapas usam o esqueleto da lição (.licao, .licao-conteudo,
+   .licao-topo, .barra e .licao-acoes): o conteúdo em cima e o botão
+   principal embaixo, ao alcance do polegar. O único destaque é o lobo
+   grande da etapa 1, a primeira tela de quem chega pelo QR code. */
+.etapa-topo {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--espaco-m);
+}
+
+.etapa-lobo {
+  display: grid;
+  place-items: center;
+  width: 128px;
+  height: 128px;
+  margin: var(--espaco-g) auto var(--espaco-gg);
+  border: var(--borda-cartao) solid var(--cor-borda-cartao);
+  border-radius: 50%;
+  background: var(--cor-cartao);
+  color: var(--cor-titulo);
+}
+
+.etapa-lobo-marca {
+  width: 80px;
+  height: 80px;
+}
+
+.etapa-titulo {
+  font-size: var(--tamanho-titulo-g);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.etapa-boas-vindas {
+  display: block;
+  margin-bottom: var(--espaco-p);
+  color: var(--cor-destaque-texto);
+  font-weight: 600;
+  font-size: var(--tamanho-titulo-p);
+}
+
+.etapa-pergunta {
+  display: block;
+}
+
+.etapa-texto {
+  margin-top: var(--espaco-p);
+  color: var(--cor-texto-secundario);
+  text-align: center;
+}
+
+.etapa-campo {
+  margin-top: var(--espaco-xg);
+}
+
+/* Toque rápido (dois toques no "Próximo") não dá zoom, e o campo ou o
+   avatar com o foco do teclado não fica escondido atrás da barra de baixo */
+.etapa button,
+.etapa input {
+  touch-action: manipulation;
+}
+
+.etapa input {
+  scroll-margin-bottom: calc(var(--espaco-xgg) * 2 + var(--margem-segura-baixo));
+}
+
+/* ----- Etapa 2: os 6 avatares ----- */
+.avatares {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--espaco-m);
+  margin-top: var(--espaco-gg);
+}
+
+.avatar-opcao {
+  position: relative;
+  display: block;
+}
+
+/* O botão de opção de verdade cobre o cartão inteiro, sem aparecer: o
+   toque, as setas do teclado e o leitor de tela usam ele, e o cartão
+   embaixo mostra o desenho (o marcado fica como a alternativa marcada) */
+.avatar-radio {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.avatar-cartao {
+  --cor-da-borda: var(--cor-borda);
+  --cor-da-sombra: var(--cor-borda);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-p);
+  padding: var(--espaco-m) var(--espaco-pp);
+  border: var(--borda) solid var(--cor-da-borda);
+  border-radius: var(--raio-m);
+  box-shadow: 0 var(--sombra-solida) 0 var(--cor-da-sombra);
+  transition: transform var(--tempo-rapido), box-shadow var(--tempo-rapido),
+              border-color var(--tempo-rapido), background-color var(--tempo-rapido);
+}
+
+.avatar-radio:active + .avatar-cartao {
+  transform: translateY(var(--sombra-solida));
+  box-shadow: 0 0 0 var(--cor-da-sombra);
+}
+
+.avatar-radio:checked + .avatar-cartao {
+  --cor-da-borda: var(--cor-destaque-claro);
+  --cor-da-sombra: var(--cor-destaque-sombra);
+  background: var(--cor-destaque-suave);
+}
+
+.avatar-radio:focus-visible + .avatar-cartao {
+  outline: 3px solid var(--cor-texto);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .avatar-radio:hover:not(:checked) + .avatar-cartao {
+    background: var(--cor-cartao);
+  }
+}
+
+.avatar-figura {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--cor-cartao);
+}
+
+.avatar-desenho {
+  width: 60px;
+  height: 60px;
+}
+
+.avatar-nome {
+  color: var(--cor-texto);
+  font-family: var(--fonte-titulo);
+  font-weight: 600;
+  font-size: var(--tamanho-base);
+  line-height: 1.2;
+}
+
+/* Check no canto do marcado: a escolha não depende só da cor */
+.avatar-marca {
+  position: absolute;
+  top: var(--espaco-p);
+  right: var(--espaco-p);
+  display: none;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--cor-destaque-claro);
+  color: var(--cor-sobre-destaque);
+}
+
+.avatar-marca .icone {
+  width: 16px;
+  height: 16px;
+}
+
+.avatar-radio:checked + .avatar-cartao .avatar-marca {
+  display: grid;
+}
+
+/* ----- Etapa 3: tutorial "Como usar o FinEdu" ----- */
+.tutorial-contagem {
+  color: var(--cor-texto-secundario);
+  font-family: var(--fonte-titulo);
+  font-weight: 600;
+  font-size: var(--tamanho-pequeno);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tutorial-cartao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-g);
+  max-width: 440px;
+  margin: var(--espaco-g) auto 0;
+  text-align: center;
+}
+
+.tutorial-figura {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-p);
+  width: 128px;
+  height: 128px;
+  border: var(--borda-cartao) solid var(--cor-borda-cartao);
+  border-radius: 50%;
+  background: var(--cor-cartao);
+}
+
+.tutorial-figura .icone {
+  width: 56px;
+  height: 56px;
+}
+
+.tutorial-cartao--trilha .tutorial-figura .icone { color: var(--cor-destaque-texto); }
+.tutorial-cartao--licao .tutorial-figura .icone  { color: var(--cor-acerto); }
+.tutorial-cartao--xp .tutorial-figura .icone     { color: var(--cor-xp); }
+
+/* Vidas e moedas: o coração e a moeda lado a lado (a moeda é estreita) */
+.tutorial-cartao--vidas .tutorial-figura .icone {
+  width: 42px;
+  height: 42px;
+  color: var(--cor-vida);
+}
+
+.tutorial-cartao--vidas .tutorial-figura .icone + .icone {
+  width: 29px;
+  color: var(--cor-moeda);
+}
+
+.tutorial-titulo {
+  font-size: var(--tamanho-titulo-m);
+  text-wrap: balance;
+}
+
+.tutorial-texto {
+  max-width: 36ch;
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-medio);
+}
+
+.tutorial-nota {
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-pequeno);
+}
+
+/* Os contadores do aluno, como na barra de cima (cartão do XP) */
+.tutorial-contadores {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espaco-g);
+  font-family: var(--fonte-titulo);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.tutorial-contadores span {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-pp);
+}
+
+/* Voltar e Próximo lado a lado, o Próximo maior */
+.licao-acoes-dentro.tutorial-botoes {
+  flex-direction: row;
+}
+
+.tutorial-botoes .botao {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+}
+
+.tutorial-botoes .botao:not(.botao--contorno) {
+  flex-grow: 2;
+}
+
+
+/* ============================================================
+   14. AVISOS
    ============================================================ */
 .aviso {
   position: fixed;
@@ -2137,12 +2469,18 @@ dialog.folha::backdrop {
 
 
 /* ============================================================
-   14. TELAS MAIORES E LAYOUT DE 3 COLUNAS DO FIGMA
+   15. TELAS MAIORES E LAYOUT DE 3 COLUNAS DO FIGMA
    ============================================================ */
 @media (max-width: 359px) {
   .topo { gap: var(--espaco-pp); }
   .contador { padding: 0 var(--espaco-pp); min-width: 40px; }
   :root { --amplitude-curva: 64px; }
+  .avatar-figura { width: 60px; height: 60px; }
+  .avatar-desenho { width: 50px; height: 50px; }
+  .avatar-nome { font-size: var(--tamanho-pequeno); }
+  /* Perfil e Mais: o círculo vai para cima do título, que ganha a largura
+     toda ("Configurações" não cabia ao lado do círculo e empurrava a tela) */
+  .perfil-topo { flex-direction: column; align-items: flex-start; }
 }
 
 @media (min-width: 480px) {
@@ -2171,6 +2509,12 @@ dialog.folha::backdrop {
     min-width: 200px;
     margin-left: auto;
     flex-shrink: 0;
+  }
+  .licao-acoes-dentro.tutorial-botoes { justify-content: flex-end; }
+  .licao-acoes-dentro.tutorial-botoes .botao {
+    flex: 0 0 auto;
+    min-width: 160px;
+    margin-left: 0;
   }
   .folha { align-items: center; }
   .folha-caixa {
@@ -2315,7 +2659,7 @@ dialog.folha::backdrop {
 
 
 /* ============================================================
-   15. MODO FOCO (lição e comemorações): sem menu, sem distração
+   16. MODO FOCO (lição, comemorações e onboarding): sem menu, sem distração
    ============================================================ */
 .modo-foco .app {
   display: block;
@@ -2338,7 +2682,7 @@ dialog.folha::backdrop {
 
 
 /* ============================================================
-   16. ANIMAÇÕES
+   17. ANIMAÇÕES
    ============================================================ */
 @keyframes pulsar {
   0%, 100% { transform: scale(1); }

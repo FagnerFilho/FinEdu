@@ -71,9 +71,10 @@ function textoDaMissaoConcluida() {
   return `Missão do dia concluída: +${XP_DA_MISSAO}${ESPACO_FIXO}XP`;
 }
 
-// "Todo dia tem uma missão nova, que vale mais 20 XP." (tela Missões e painel)
-function textoDaRegraDaMissao() {
-  return `Todo dia tem uma missão nova, que vale mais ${XP_DA_MISSAO}${ESPACO_FIXO}XP.`;
+// "Todo dia tem uma missão nova, que vale mais 20 XP." (tela Missões, painel
+// e tutorial). O tutorial passa o valor: ver numerosDoTutorial().
+function textoDaRegraDaMissao(xp = XP_DA_MISSAO) {
+  return `Todo dia tem uma missão nova, que vale mais ${xp}${ESPACO_FIXO}XP.`;
 }
 
 function textoDoNivelQueSubiu(nivel) {
@@ -238,6 +239,8 @@ function esconderProblemasDoConteudo() {
 
 function desenharTrilha(lugar, progresso) {
   let html = '<h1 class="visualmente-oculto">Sua trilha</h1>';
+  // Saudação com o apelido (aprovada pelo Fagner nos prints com e sem, Parte 4)
+  if (progresso.apelido) html += `<p class="trilha-saudacao">Oi, ${escaparHtml(progresso.apelido)}!</p>`;
   let numeroGlobalDaUnidade = 0;
 
   for (const trilha of CONTEUDO.trilhas) {
@@ -750,33 +753,8 @@ function desenharSemVidas(lugar, sessao, progresso) {
 
 
 // ============================================================
-// 6. LIGAS, MISSÕES, LOJA E GUIA
+// 6. LIGAS, MISSÕES E LOJA
 // ============================================================
-
-const TELAS_EM_BREVE = {
-  calculadora: {
-    icone: 'calculadora',
-    titulo: 'Calculadora de Metas',
-    texto: 'Aqui você vai simular quanto junta guardando um pouco de dinheiro todo mês.'
-  },
-  guia: {
-    icone: 'guia',
-    titulo: 'Guia da Unidade',
-    texto: 'Explicações curtas sobre guardar, planejar e investir dinheiro. Quem é menor de idade só investe por meio de um responsável.'
-  }
-};
-
-function desenharEmBreve(lugar, qual) {
-  const tela = TELAS_EM_BREVE[qual] || TELAS_EM_BREVE.guia;
-  lugar.innerHTML = `
-    <div class="em-breve">
-      <div class="em-breve-figura">${icone(tela.icone)}</div>
-      <h1 class="em-breve-titulo">${tela.titulo}</h1>
-      <span class="selo">Em breve</span>
-      <p class="em-breve-texto">${tela.texto}</p>
-      <a class="botao botao--contorno" href="#aprender">Ir para a trilha</a>
-    </div>`;
-}
 
 // Tela Ligas: conectada ao progresso real de lições e nível do aluno
 function desenharLigas(lugar, progresso) {
@@ -1184,18 +1162,30 @@ function desenharEstatistica(tipo, nomeDoIcone, valor, nome) {
     </li>`;
 }
 
+// O Perfil mostra o avatar e o apelido do onboarding. Sem avatar, fica o
+// chapéu do menu; sem apelido, o título continua "Perfil".
 function desenharPerfil(lugar, progresso) {
   const licoes = contarLicoes(progresso);
   const nivel = nivelDoXp(progresso.xp);
   const falta = nivel.proximo ? `Faltam ${nivel.faltam} XP para o nível ${nivel.proximo.numero}` : 'O nível mais alto';
 
+  const avatar = avatarPeloId(progresso.avatar);
+  const desenho = avatar
+    ? `<div class="perfil-avatar" role="img" aria-label="Seu avatar: ${escaparHtml(avatar.nome)}">${icone(`avatar-${avatar.id}`, 'perfil-avatar-bicho')}</div>`
+    : `<div class="perfil-avatar">${icone('perfil', 'perfil-avatar-icone')}</div>`;
+  const titulo = progresso.apelido
+    ? `<span class="visualmente-oculto">Perfil de </span>${escaparHtml(progresso.apelido)}`
+    : 'Perfil';
+
   lugar.innerHTML = `
     <div class="perfil">
       <header class="perfil-topo">
-        <div class="perfil-avatar">${icone('perfil', 'perfil-avatar-icone')}</div>
-        <div>
-          <h1 class="perfil-titulo">Perfil</h1>
+        ${desenho}
+        <div class="perfil-quem">
+          <h1 class="perfil-titulo perfil-titulo--apelido">${titulo}</h1>
           <p class="perfil-sub">Seu progresso fica salvo só neste aparelho.</p>
+          <button type="button" class="botao botao--contorno botao--compacto perfil-trocar"
+            data-acao="trocar-apelido-e-avatar">Trocar apelido e avatar</button>
         </div>
       </header>
 
@@ -1215,7 +1205,7 @@ function desenharPerfil(lugar, progresso) {
       <section class="painel config-linha">
         <div>
           <p class="config-nome">Configurações do aplicativo</p>
-          <p class="config-desc">Reiniciar progresso, regras do jogo e informações do projeto.</p>
+          <p class="config-desc">Reiniciar progresso, tutorial, regras do jogo e informações do projeto.</p>
         </div>
         <a class="botao botao--contorno botao--compacto" href="#mais">Abrir Configurações</a>
       </section>
@@ -1248,7 +1238,7 @@ function desenharConfiguracoes(lugar, progresso, podeSalvar) {
 
           <div class="confirmacao" id="confirmar-reinicio" hidden>
             <h3 class="confirmacao-titulo">Reiniciar todo o progresso?</h3>
-            <p class="confirmacao-texto">XP, moedas, vidas, sequência e lições voltam ao começo. Não dá para desfazer.</p>
+            <p class="confirmacao-texto">XP, moedas, vidas, sequência e lições voltam ao começo, e o apelido e o avatar são apagados. Não dá para desfazer.</p>
             <div class="confirmacao-botoes">
               <button type="button" class="botao botao--erro" data-acao="confirmar-reinicio">Reiniciar progresso</button>
               <button type="button" class="botao botao--contorno" data-acao="cancelar-reinicio">Cancelar</button>
@@ -1263,14 +1253,23 @@ function desenharConfiguracoes(lugar, progresso, podeSalvar) {
 
       <section aria-labelledby="titulo-ajuda-config">
         <h2 class="secao-titulo" id="titulo-ajuda-config">${icone('info')} Como funciona</h2>
-        <div class="painel config-linha">
-          <div>
-            <p class="config-nome">Regras de vidas, moedas, XP e níveis</p>
-            <p class="config-desc">Entenda como ganhar recompensas e usar sua reserva.</p>
+        <div class="painel painel--linhas">
+          <div class="config-linha">
+            <div>
+              <p class="config-nome">Como usar o FinEdu</p>
+              <p class="config-desc">Trilha, lição, vidas, XP e calculadora em ${cartoesDoTutorial().length} cartões.</p>
+            </div>
+            <button type="button" class="botao botao--contorno botao--compacto" data-acao="ver-tutorial">Ver tutorial</button>
           </div>
-          <button type="button" class="botao botao--contorno botao--compacto" data-acao="abrir-painel" data-contador="vidas">
-            Ver regras
-          </button>
+          <div class="config-linha">
+            <div>
+              <p class="config-nome">Regras de vidas, moedas, XP e níveis</p>
+              <p class="config-desc">Entenda como ganhar recompensas e usar sua reserva.</p>
+            </div>
+            <button type="button" class="botao botao--contorno botao--compacto" data-acao="abrir-painel" data-contador="vidas">
+              Ver regras
+            </button>
+          </div>
         </div>
       </section>
 
@@ -1297,7 +1296,7 @@ function mostrarConfirmacaoDeReinicio(mostrar) {
 
 
 // ============================================================
-// 9. JANELAS: PAINEL "COMO FUNCIONA" E BOAS-VINDAS
+// 9. JANELAS: PAINEL "COMO FUNCIONA"
 // ============================================================
 
 function abrirJanela(janela) {
@@ -1387,31 +1386,201 @@ function mostrarPainel(progresso, qual) {
   titulo.focus({ preventScroll: true });
 }
 
-function desenharBoasVindas(progresso) {
+
+
+// ============================================================
+// 10. ONBOARDING: APELIDO, AVATAR E TUTORIAL (Parte 4)
+// ============================================================
+// Telas de foco (sem menu) com o esqueleto da lição: o conteúdo em cima e
+// o botão principal embaixo, ao alcance do polegar. Cada uma recebe o
+// "fluxo" que o app.js guarda enquanto o aluno passa por elas:
+//   { modo, apelido, avatar, cartao }
+// 'primeira-vez': apelido → avatar → tutorial. Dá para seguir sem apelido
+//   e pular o tutorial, mas o aluno só chega à trilha pelo fim do fluxo.
+// 'trocar': apelido → avatar, a partir do Perfil, com "Cancelar".
+// 'mais': só o tutorial, a partir de Mais.
+
+// "Etapa 1 de 3. " só para o leitor de tela (na tela, a etapa não aparece)
+function textoDaEtapa(fluxo, numero) {
+  const total = fluxo.modo === 'trocar' ? 2 : 3;
+  return `<span class="visualmente-oculto">Etapa ${numero} de ${total}. </span>`;
+}
+
+// Botão de texto do canto de cima: "Cancelar" (trocar) e "Pular" ou
+// "Fechar" (tutorial). O nome completo fica para o leitor de tela.
+function desenharBotaoDoCanto(acao, texto, nomeCompleto) {
+  return `<button type="button" class="botao-discreto" data-acao="${acao}" aria-label="${nomeCompleto}">${texto}</button>`;
+}
+
+function desenharCancelarTroca() {
+  return `<div class="etapa-topo">${desenharBotaoDoCanto('cancelar-troca', 'Cancelar', 'Cancelar e voltar ao Perfil')}</div>`;
+}
+
+// Etapa 1: o apelido. Na primeira vez, é a primeira tela que o aluno vê
+// (pelo QR code): o lobo grande e as boas-vindas são o destaque.
+function desenharApelido(lugar, fluxo) {
+  const primeiraVez = fluxo.modo === 'primeira-vez';
+  const topo = primeiraVez ? `
+        <div class="etapa-lobo">
+          <svg class="etapa-lobo-marca" aria-hidden="true" focusable="false"><use href="#i-logo"></use></svg>
+        </div>` : desenharCancelarTroca();
+  const boasVindas = primeiraVez ? '<span class="etapa-boas-vindas">Boas-vindas ao FinEdu!</span> ' : '';
+
+  lugar.innerHTML = `
+    <div class="licao etapa">
+      <div class="licao-conteudo">
+        ${topo}
+        <h1 class="etapa-titulo">${textoDaEtapa(fluxo, 1)}${boasVindas}<span class="etapa-pergunta">Como a gente te chama?</span></h1>
+        <div class="campo etapa-campo">
+          <label class="campo-rotulo" for="campo-apelido">Apelido <span class="campo-detalhe">(opcional)</span></label>
+          <input class="campo-entrada" id="campo-apelido" name="apelido" type="text" maxlength="${APELIDO_MAXIMO}"
+            value="${escaparHtml(fluxo.apelido)}" autocomplete="off" autocapitalize="words" spellcheck="false"
+            enterkeyhint="next" aria-describedby="dica-apelido">
+          <p class="campo-detalhe" id="dica-apelido">Ele fica salvo só neste aparelho.</p>
+        </div>
+      </div>
+
+      <div class="licao-acoes">
+        <div class="licao-acoes-dentro">
+          <button type="button" class="botao" data-acao="confirmar-apelido">Continuar</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// Etapa 2: o avatar. Os 6 bichos são botões de opção de verdade (as setas
+// do teclado trocam, e o leitor de tela fala o nome e se está marcado).
+// Um já vem marcado: o sorteado na primeira vez ou o atual, na troca.
+function desenharEscolhaDoAvatar(lugar, fluxo) {
+  const primeiraVez = fluxo.modo === 'primeira-vez';
+  const opcoes = AVATARES.map(avatar => `
+    <label class="avatar-opcao">
+      <input class="avatar-radio" type="radio" name="avatar" value="${avatar.id}"${avatar.id === fluxo.avatar ? ' checked' : ''}>
+      <span class="avatar-cartao">
+        <span class="avatar-figura">${icone(`avatar-${avatar.id}`, 'avatar-desenho')}</span>
+        <span class="avatar-nome">${escaparHtml(avatar.nome)}</span>
+        <span class="avatar-marca">${icone('check')}</span>
+      </span>
+    </label>`).join('');
+
+  lugar.innerHTML = `
+    <div class="licao etapa">
+      <div class="licao-conteudo">
+        ${primeiraVez ? '' : desenharCancelarTroca()}
+        <h1 class="etapa-titulo">${textoDaEtapa(fluxo, 2)}<span id="titulo-avatar">Escolha seu avatar</span></h1>
+        ${primeiraVez ? '<p class="etapa-texto">Dá para trocar depois, no Perfil.</p>' : ''}
+        <div class="avatares" role="radiogroup" aria-labelledby="titulo-avatar">${opcoes}</div>
+      </div>
+
+      <div class="licao-acoes">
+        <div class="licao-acoes-dentro">
+          <button type="button" class="botao" data-acao="confirmar-avatar">${primeiraVez ? 'Continuar' : 'Salvar'}</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// Os números das regras que o tutorial conta, lidos das constantes do
+// jogo.js: se uma regra mudar lá, o texto muda junto
+function numerosDoTutorial() {
+  return {
+    questoes: QUESTOES_POR_LICAO,
+    vidas: VIDAS_MAXIMAS,
+    mesada: MESADA_DE_BOAS_VINDAS,
+    recarga: PRECO_DA_RECARGA,
+    xpPorAcerto: XP_POR_ACERTO,
+    xpDaMissao: XP_DA_MISSAO
+  };
+}
+
+// Os 5 cartões do tutorial "Como usar o FinEdu": a figura (ícones do
+// estojo, cada um na cor da sua regra), o título e o texto
+function cartoesDoTutorial(numeros = numerosDoTutorial()) {
+  return [
+    {
+      id: 'trilha', icones: ['estrela-licao'], titulo: 'A trilha',
+      texto: 'Cada lição concluída libera a próxima. No fim da unidade, tem um baú com prêmio.'
+    },
+    {
+      id: 'licao', icones: ['check'], titulo: 'A lição',
+      texto: `São ${numeros.questoes} questões, do fácil ao difícil. ` +
+        'Errou? Você vê o porquê, e a questão volta no fim para você consertar.'
+    },
+    {
+      id: 'vidas', icones: ['vida', 'moeda'], titulo: 'Vidas e moedas',
+      texto: `Você começa com ${numeros.vidas} vidas e uma mesada de ${numeros.mesada} moedas. ` +
+        'Errar uma questão nova tira 1 vida. ' +
+        `Sem vidas? Recarregue com ${numeros.recarga} moedas da sua reserva ou treine de graça uma lição que você já fez.`
+    },
+    {
+      id: 'xp', icones: ['xp'], titulo: 'XP e missão do dia',
+      texto: `Cada acerto de primeira vale ${numeros.xpPorAcerto}${ESPACO_FIXO}XP, e o XP sobe o seu nível. ` +
+        `${textoDaRegraDaMissao(numeros.xpDaMissao)} Na dúvida, toque nos contadores para ver as regras.`
+    },
+    {
+      id: 'calculadora', icones: ['calculadora'], titulo: 'Calculadora de Metas',
+      texto: 'Quer comprar alguma coisa? A Calculadora de Metas mostra quanto guardar por mês.'
+    }
+  ];
+}
+
+// Os contadores do aluno, como na barra de cima, para o cartão do XP
+// mostrar do que ele está falando (só desenho: o leitor de tela pula)
+function desenharContadoresDeExemplo(progresso) {
   const contadores = [
     ['sequencia', 'sequencia', progresso.sequencia],
     ['xp', 'xp', progresso.xp],
     ['moedas', 'moeda', progresso.moedas],
     ['vidas', 'vida', progresso.vidas]
   ].map(([qual, nomeDoIcone, valor]) => `<span class="contador--${qual}">${icone(nomeDoIcone)}${valor}</span>`).join('');
-  const mesada = `Você ganhou uma mesada de ${MESADA_DE_BOAS_VINDAS} moedas. Ela é a sua reserva para quando as vidas acabarem.`;
-
-  return `
-    <div class="folha-caixa">
-      <h2 class="folha-titulo" id="titulo-boas-vindas" tabindex="-1">Boas-vindas ao FinEdu!</h2>
-      <p class="folha-texto">${mesada}</p>
-      <p class="folha-texto">Na dúvida, toque nos contadores para entender vidas, moedas e XP.</p>
-      <p class="boas-vindas-contadores" aria-hidden="true">${contadores}</p>
-      <div class="folha-botoes">
-        <button type="button" class="botao" data-acao="fechar-boas-vindas">Entendi</button>
-      </div>
-    </div>`;
+  return `<p class="tutorial-contadores" aria-hidden="true">${contadores}</p>`;
 }
 
-function mostrarBoasVindas(progresso) {
-  const janela = document.getElementById('boas-vindas');
-  if (!janela || janela.open) return;
-  janela.innerHTML = desenharBoasVindas(progresso);
-  abrirJanela(janela);
-  document.getElementById('titulo-boas-vindas').focus();
+// Etapa 3 (e "Como usar o FinEdu", em Mais): um cartão por vez. Os cartões
+// trocam no lugar, sem mexer no histórico do voltar do Android.
+function desenharTutorial(lugar, fluxo, progresso) {
+  const cartoes = cartoesDoTutorial();
+  const total = cartoes.length;
+  const numero = fluxo.cartao + 1;
+  const cartao = cartoes[fluxo.cartao];
+  const primeiraVez = fluxo.modo === 'primeira-vez';
+  const ultimo = numero === total;
+
+  const partes = cartoes
+    .map((_, i) => `<span class="barra-parte${i <= fluxo.cartao ? ' barra-parte--atual' : ''}"></span>`)
+    .join('');
+  const canto = primeiraVez
+    ? desenharBotaoDoCanto('fechar-tutorial', 'Pular', 'Pular o tutorial')
+    : desenharBotaoDoCanto('fechar-tutorial', 'Fechar', 'Fechar o tutorial');
+  const paraOLeitor = `${primeiraVez ? 'Etapa 3 de 3. ' : ''}Como usar o FinEdu, cartão ${numero} de ${total}: `;
+
+  const voltar = fluxo.cartao > 0
+    ? '<button type="button" class="botao botao--contorno" data-acao="cartao-anterior">Voltar</button>'
+    : '';
+  const principal = ultimo
+    ? `<button type="button" class="botao" data-acao="fechar-tutorial">${primeiraVez ? 'Bora começar' : 'Entendi'}</button>`
+    : '<button type="button" class="botao" data-acao="proximo-cartao">Próximo</button>';
+
+  lugar.innerHTML = `
+    <div class="licao etapa tutorial">
+      <div class="licao-conteudo">
+        <div class="licao-topo">
+          <div class="barra" aria-hidden="true">${partes}</div>
+          <p class="tutorial-contagem" aria-hidden="true">${numero} de ${total}</p>
+          ${canto}
+        </div>
+
+        <div class="tutorial-cartao tutorial-cartao--${cartao.id}">
+          <div class="tutorial-figura" aria-hidden="true">${cartao.icones.map(nome => icone(nome)).join('')}</div>
+          <h1 class="tutorial-titulo"><span class="visualmente-oculto">${paraOLeitor}</span>${cartao.titulo}</h1>
+          <p class="tutorial-texto">${cartao.texto}</p>
+          ${cartao.id === 'xp' ? desenharContadoresDeExemplo(progresso) : ''}
+          ${ultimo && primeiraVez ? '<p class="tutorial-nota">Para ver de novo, é só abrir Mais.</p>' : ''}
+        </div>
+      </div>
+
+      <div class="licao-acoes">
+        <div class="licao-acoes-dentro tutorial-botoes">${voltar}${principal}</div>
+      </div>
+    </div>`;
 }

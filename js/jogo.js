@@ -2,8 +2,8 @@
 // jogo.js — As regras do FinEdu
 // ============================================================
 // XP, níveis, moedas, vidas, sequência de dias, o que está liberado
-// na trilha, o aquecimento, a revisão, a recarga, o treino, o baú e
-// a missão do dia.
+// na trilha, o aquecimento, a revisão, a recarga, o treino, o baú,
+// a missão do dia e o apelido e o avatar do onboarding.
 // Este arquivo só faz contas e decide regras: não desenha nada
 // (isso é o telas.js) e não salva nada (quem salva é o app.js,
 // usando o armazenamento.js).
@@ -35,6 +35,9 @@ const ERROS_PARA_AQUECIMENTO_DUPLO = 3;  // errou 3 ou mais de primeira na liç�
 // Formato de toda lição: quantas questões de cada nível
 const QUESTOES_POR_DIFICULDADE = { facil: 2, media: 2, dificil: 1 };
 
+// Quantas questões tem uma lição (5): a soma dos três níveis
+const QUESTOES_POR_LICAO = Object.values(QUESTOES_POR_DIFICULDADE).reduce((soma, quantas) => soma + quantas, 0);
+
 // Ordem em que os níveis aparecem e o nome de cada um na tela
 const ORDEM_DAS_DIFICULDADES = ['facil', 'media', 'dificil'];
 const NOME_DA_DIFICULDADE = { facil: 'Fácil', media: 'Média', dificil: 'Difícil' };
@@ -64,6 +67,20 @@ const MISSOES = [
   { texto: 'Acerte 10 questões', conta: 'acertos', meta: 10 },
   { texto: 'Acerte de primeira todas as questões de uma lição', conta: 'perfeitas', meta: 1 },
   { texto: 'Faça uma conta na Calculadora de Metas', conta: 'contas', meta: 1 }
+];
+
+// Onboarding (Parte 4): o apelido é opcional e fica só neste aparelho,
+// junto com o resto do progresso. Os avatares são 6 bichos do Brasil: o
+// "id" dá nome ao desenho no index.html (<symbol id="i-avatar-arara">) e
+// o "nome" aparece embaixo dele (é também o que o leitor de tela fala).
+const APELIDO_MAXIMO = 20;   // caracteres
+const AVATARES = [
+  { id: 'arara', nome: 'Arara' },
+  { id: 'capivara', nome: 'Capivara' },
+  { id: 'tatu', nome: 'Tatu' },
+  { id: 'onca', nome: 'Onça' },
+  { id: 'coruja', nome: 'Coruja' },
+  { id: 'tamandua', nome: 'Tamanduá' }
 ];
 
 // Calculadora de Metas
@@ -120,7 +137,9 @@ function criarProgressoInicial(hoje = hojeComoTexto()) {
     respostasDadas: 0,
     errosPorLicao: {},         // id da lição → posições das questões que o aluno
     // errou de primeira da última vez (para o aquecimento)
-    boasVindasVistas: false,   // o aviso de boas-vindas já apareceu?
+    apelido: '',               // como o aluno quer ser chamado ('' = sem apelido)
+    avatar: null,              // id do bicho escolhido (AVATARES) ou null
+    onboardingFeito: false,    // já passou pelo apelido, pelo avatar e pelo tutorial?
     missao: missaoZerada(hoje) // o que o aluno fez hoje para a missão do dia (seção 8)
   };
 }
@@ -156,10 +175,13 @@ function prepararProgresso(salvo, hoje = hojeComoTexto()) {
   if (!missaoEstaBoa(progresso.missao)) progresso.missao = missaoZerada(hoje);
   progresso.vidas = Math.min(progresso.vidas, VIDAS_MAXIMAS);
 
-  // O aviso de boas-vindas é só para quem começa do zero (progresso
-  // novo ou reiniciado). Um progresso salvo antes de o aviso existir
-  // conta como visto, para não atrapalhar quem já está jogando.
-  progresso.boasVindasVistas = salvo ? salvo.boasVindasVistas !== false : false;
+  // Onboarding: o apelido passa pela mesma limpeza da tela, um avatar que
+  // não está na lista volta a null, e só true conta como onboarding feito.
+  // Um progresso salvo antes da Parte 4 não tem esses campos: ele passa
+  // pelo onboarding uma vez, sem perder XP, moedas nem lições.
+  progresso.apelido = limparApelido(progresso.apelido);
+  if (!avatarPeloId(progresso.avatar)) progresso.avatar = null;
+  progresso.onboardingFeito = progresso.onboardingFeito === true;
 
   atualizarDia(progresso, hoje);
   return progresso;
@@ -204,10 +226,46 @@ function registrarDiaDeEstudo(progresso, hoje = hojeComoTexto()) {
   progresso.ultimoDiaDeEstudo = hoje;
 }
 
-// O aviso de boas-vindas apareceu: não aparece mais (até
-// "Reiniciar progresso")
-function marcarBoasVindasVistas(progresso) {
-  progresso.boasVindasVistas = true;
+// ----- Onboarding: apelido e avatar (Parte 4) -----
+
+// Caracteres invisíveis que mudam como o texto aparece (de controle e de
+// direção do texto): saem do apelido. Tab e quebra de linha viram espaço.
+const CARACTERES_INVISIVEIS = /[\u0000-\u0008\u000E-\u001F\u007F-\u009F\u202A-\u202E\u2066-\u2069]/g;
+
+// Limpa o apelido digitado: sem caractere invisível, sem espaço sobrando
+// (nas pontas ou repetido) e com no máximo APELIDO_MAXIMO caracteres.
+// Conta caractere por caractere de verdade (Array.from): um emoji não é
+// cortado no meio. Qualquer coisa que não seja texto vira '' (sem apelido).
+function limparApelido(texto) {
+  if (typeof texto !== 'string') return '';
+  const limpo = texto.replace(CARACTERES_INVISIVEIS, '').replace(/\s+/g, ' ').trim();
+  return Array.from(limpo).slice(0, APELIDO_MAXIMO).join('').trim();
+}
+
+// O avatar com esse id ({ id, nome }) ou null, se não estiver na lista
+function avatarPeloId(id) {
+  return AVATARES.find(avatar => avatar.id === id) || null;
+}
+
+// Um avatar ao acaso: é o que já vem marcado na primeira vez, para a
+// turma não sair toda com o mesmo bicho
+function sortearAvatar() {
+  return sortear(AVATARES).id;
+}
+
+function definirApelido(progresso, texto) {
+  progresso.apelido = limparApelido(texto);
+}
+
+// Um id que não está na lista não muda nada
+function definirAvatar(progresso, id) {
+  if (avatarPeloId(id)) progresso.avatar = id;
+}
+
+// O aluno terminou (ou pulou) o tutorial da primeira vez: o onboarding
+// não aparece mais, até "Reiniciar progresso"
+function concluirOnboarding(progresso) {
+  progresso.onboardingFeito = true;
 }
 
 // Porcentagem de respostas certas desde o começo (para o Perfil)

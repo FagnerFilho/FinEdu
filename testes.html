@@ -722,36 +722,199 @@
     });
 
 
-    grupo('Aviso de boas-vindas');
+    grupo('Onboarding: apelido, avatar e tutorial (Parte 4)');
 
-    teste('Aparece para quem começa do zero: progresso novo e depois de "Reiniciar progresso"', () => {
-      confere(novoProgresso().boasVindasVistas, false, 'progresso novo');
-      confere(prepararProgresso(null, HOJE).boasVindasVistas, false, 'depois de reiniciar');
+    // Um fluxo do onboarding, como o app.js guarda (estado.onboarding)
+    function fluxo(modo, extra = {}) {
+      return { modo, apelido: '', avatar: 'arara', cartao: 0, ...extra };
+    }
+
+    teste('Progresso novo e reiniciado começam pelo onboarding, sem apelido e sem avatar', () => {
+      confere((({ apelido, avatar, onboardingFeito }) => [apelido, avatar, onboardingFeito])(novoProgresso()),
+        ['', null, false], 'progresso novo');
+      confere((({ apelido, avatar, onboardingFeito }) => [apelido, avatar, onboardingFeito])(prepararProgresso(null, HOJE)),
+        ['', null, false], 'depois de "Reiniciar progresso"');
     });
 
-    teste('Aparece uma vez só: depois de aparecer, fica salvo e não volta', () => {
-      const progresso = prepararProgresso(null, HOJE);
-      marcarBoasVindasVistas(progresso);
-      const salvo = JSON.parse(JSON.stringify(progresso));   // como se fosse salvo e lido de novo
-      confere(prepararProgresso(salvo, HOJE).boasVindasVistas, true, 'depois de aparecer');
+    teste('Progresso salvo antes da Parte 4 passa pelo onboarding uma vez, sem perder nada', () => {
+      const antigo = {
+        versao: 1, xp: 120, moedas: 45, vidas: 3, diaDasVidas: HOJE, sequencia: 2, ultimoDiaDeEstudo: HOJE,
+        licoesConcluidas: [LICAO_1.id, LICAO_2.id], bausAbertos: [], respostasCertas: 9, respostasDadas: 10,
+        errosPorLicao: { [LICAO_2.id]: [3] }, boasVindasVistas: true, missao: missaoZerada(HOJE)
+      };
+      const progresso = prepararProgresso(JSON.parse(JSON.stringify(antigo)), HOJE);
+      confere([progresso.apelido, progresso.avatar, progresso.onboardingFeito], ['', null, false], 'o onboarding fica por fazer');
+      for (const campo of ['xp', 'moedas', 'vidas', 'sequencia', 'licoesConcluidas', 'respostasCertas', 'respostasDadas', 'errosPorLicao']) {
+        confere(progresso[campo], antigo[campo], campo);
+      }
+      confere('boasVindasVistas' in progresso, false, 'o campo do aviso antigo sai');
+
+      definirApelido(progresso, 'Duda');
+      definirAvatar(progresso, 'onca');
+      concluirOnboarding(progresso);
+      const depois = prepararProgresso(JSON.parse(JSON.stringify(progresso)), HOJE);   // salvo e lido de novo
+      confere([depois.apelido, depois.avatar, depois.onboardingFeito, depois.xp], ['Duda', 'onca', true, 120],
+        'depois do onboarding, ele não volta');
     });
 
-    teste('Não atrapalha quem já está jogando: progresso salvo antes do aviso conta como visto', () => {
-      confere(prepararProgresso({ xp: 120, moedas: 45, licoesConcluidas: [LICAO_1.id] }, HOJE).boasVindasVistas, true, 'progresso antigo');
+    teste('Apelido vazio funciona: só espaços vira "", o Perfil continua "Perfil" e a trilha fica sem saudação', () => {
+      const progresso = novoProgresso();
+      definirApelido(progresso, '   ');
+      confere(progresso.apelido, '', 'só espaços');
+      const perfil = document.createElement('div');
+      desenharPerfil(perfil, progresso);
+      confere(textoDe(perfil.querySelector('h1')), 'Perfil', 'título do Perfil');
+      const trilha = document.createElement('div');
+      desenharTrilha(trilha, progresso);
+      confere(trilha.querySelector('.trilha-saudacao'), null, 'saudação');
     });
 
-    teste('O texto fala da mesada (com o valor do jogo.js), da reserva e dos contadores', () => {
-      const aviso = montar(desenharBoasVindas(novoProgresso()));
-      const texto = textoDe(aviso);
+    teste('Um apelido com <script> aparece como texto (Perfil, trilha e campo do apelido)', () => {
+      const perigoso = '<script>x</' + 'script>';   // partido em dois para não fechar o <script> desta página
+      const progresso = novoProgresso();
+      definirApelido(progresso, perigoso);
+      confere(progresso.apelido, perigoso, 'o apelido guarda o texto como veio');
+
+      const perfil = document.createElement('div');
+      desenharPerfil(perfil, progresso);
+      confere(textoDe(perfil.querySelector('h1')), `Perfil de ${perigoso}`, 'título do Perfil');
+      const trilha = document.createElement('div');
+      desenharTrilha(trilha, progresso);
+      confere(trilha.querySelector('.trilha-saudacao').textContent, `Oi, ${perigoso}!`, 'saudação da trilha');
+      const etapa = document.createElement('div');
+      desenharApelido(etapa, fluxo('trocar', { apelido: perigoso }));
+      confere(etapa.querySelector('#campo-apelido').value, perigoso, 'campo do apelido');
+      confere([perfil, trilha, etapa].map(caixa => caixa.querySelectorAll('script').length), [0, 0, 0], 'nenhum <script> de verdade');
+    });
+
+    teste('O apelido é limpo: espaço sobrando, caracteres invisíveis e no máximo 20 caracteres', () => {
+      const direcaoDoTexto = String.fromCharCode(0x202E);   // invisível, inverte o texto na tela
+      const campainha = String.fromCharCode(7);
+      const emoji = String.fromCodePoint(0x1F600);           // 2 "pedaços" no JavaScript
+      confere(limparApelido('  Maria   Eduarda  '), 'Maria Eduarda', 'espaços');
+      confere(limparApelido('Ma\tria\nEduarda'), 'Ma ria Eduarda', 'tab e quebra de linha viram espaço');
+      confere(limparApelido(`Du${direcaoDoTexto}da${campainha}`), 'Duda', 'caracteres invisíveis saem');
+      confere(limparApelido('abcdefghijklmnopqrstuvwxyz'), 'abcdefghijklmnopqrst', 'no máximo 20');
+      confere(limparApelido('ação '.repeat(6)), 'ação ação ação ação', 'acento conta 1 (e o espaço do corte sai)');
+      confere(limparApelido(emoji.repeat(25)), emoji.repeat(APELIDO_MAXIMO), 'emoji não é cortado no meio');
+      confere([limparApelido(42), limparApelido(null), limparApelido(undefined)], ['', '', ''], 'o que não é texto');
+    });
+
+    teste('Avatar: só os 6 da lista; o sorteado é sempre um deles, e um id de fora não muda nada', () => {
+      confere(AVATARES.map(avatar => avatar.id), ['arara', 'capivara', 'tatu', 'onca', 'coruja', 'tamandua'], 'ids');
+      for (let i = 0; i < 40; i++) {
+        if (!avatarPeloId(sortearAvatar())) throw new Error('sorteou um avatar fora da lista');
+      }
+      const progresso = novoProgresso();
+      definirAvatar(progresso, 'coruja');
+      definirAvatar(progresso, 'lobo');
+      confere(progresso.avatar, 'coruja', 'id fora da lista');
+    });
+
+    teste('Dados estragados do onboarding voltam ao inicial; apelido comprido salvo é cortado', () => {
+      const estragado = prepararProgresso({ apelido: 42, avatar: 'lobo', onboardingFeito: 'sim' }, HOJE);
+      confere([estragado.apelido, estragado.avatar, estragado.onboardingFeito], ['', null, false], 'estragado');
+      const comprido = prepararProgresso({ apelido: '  ' + 'a'.repeat(30), avatar: 'tatu', onboardingFeito: true }, HOJE);
+      confere([comprido.apelido, comprido.avatar, comprido.onboardingFeito], ['a'.repeat(20), 'tatu', true], 'comprido');
+    });
+
+    teste('Etapa 1: na primeira vez, lobo e boas-vindas; na troca, "Cancelar"; a etapa vai para o leitor de tela', () => {
+      const primeira = document.createElement('div');
+      desenharApelido(primeira, fluxo('primeira-vez'));
+      confere(textoDe(primeira.querySelector('h1')), 'Etapa 1 de 3. Boas-vindas ao FinEdu! Como a gente te chama?', 'título');
+      confere(textoDe(primeira.querySelector('label')), 'Apelido (opcional)', 'rótulo');
+      const campo = primeira.querySelector('#campo-apelido');
+      confere([campo.maxLength, campo.getAttribute('autocomplete')], [APELIDO_MAXIMO, 'off'], 'campo');
+      confere([Boolean(primeira.querySelector('.etapa-lobo')), primeira.querySelector('[data-acao="cancelar-troca"]')], [true, null], 'lobo, sem Cancelar');
+
+      const troca = document.createElement('div');
+      desenharApelido(troca, fluxo('trocar', { apelido: 'Duda' }));
+      confere(textoDe(troca.querySelector('h1')), 'Etapa 1 de 2. Como a gente te chama?', 'título na troca');
+      confere(troca.querySelector('.etapa-lobo'), null, 'sem o lobo na troca');
+      confere(troca.querySelector('[data-acao="cancelar-troca"]').getAttribute('aria-label'), 'Cancelar e voltar ao Perfil', 'Cancelar');
+    });
+
+    teste('Etapa 2: 6 bichos com nome, um só marcado, num grupo com o nome da tela; na troca, "Salvar"', () => {
+      const caixa = document.createElement('div');
+      desenharEscolhaDoAvatar(caixa, fluxo('primeira-vez', { avatar: 'tatu' }));
+      const opcoes = [...caixa.querySelectorAll('input[type="radio"][name="avatar"]')];
+      confere(opcoes.map(opcao => textoDe(opcao.closest('label'))), ['Arara', 'Capivara', 'Tatu', 'Onça', 'Coruja', 'Tamanduá'], 'nomes');
+      confere(opcoes.filter(opcao => opcao.checked).map(opcao => opcao.value), ['tatu'], 'marcado');
+      const grupo = caixa.querySelector('[role="radiogroup"]');
+      confere(textoDe(caixa.querySelector('#' + grupo.getAttribute('aria-labelledby'))), 'Escolha seu avatar', 'nome do grupo');
+      confere(textoDe(caixa.querySelector('h1')), 'Etapa 2 de 3. Escolha seu avatar', 'título');
+      confere(caixa.querySelector('[data-acao="confirmar-avatar"]').textContent, 'Continuar', 'botão');
+
+      desenharEscolhaDoAvatar(caixa, fluxo('trocar', { avatar: 'onca' }));
+      confere([caixa.querySelector('[data-acao="confirmar-avatar"]').textContent, caixa.querySelector('input:checked').value],
+        ['Salvar', 'onca'], 'na troca');
+    });
+
+    teste('Os números do tutorial vêm das constantes do jogo.js', () => {
+      const textoDosCartoes = numeros => textoDe(montar(cartoesDoTutorial(numeros).map(cartao => `<p>${cartao.texto}</p>`).join(' ')));
+      const hoje = textoDosCartoes();
       const trechos = [
-        `mesada de ${MESADA_DE_BOAS_VINDAS} moedas`,
-        'reserva para quando as vidas acabarem',
-        'toque nos contadores para entender vidas, moedas e XP'
+        `São ${QUESTOES_POR_LICAO} questões`, `com ${VIDAS_MAXIMAS} vidas`, `mesada de ${MESADA_DE_BOAS_VINDAS} moedas`,
+        `Recarregue com ${PRECO_DA_RECARGA} moedas`, `vale ${XP_POR_ACERTO} XP`, `vale mais ${XP_DA_MISSAO} XP`
       ];
       for (const trecho of trechos) {
-        if (!texto.includes(trecho)) throw new Error(`faltou "${trecho}"`);
+        if (!hoje.includes(trecho)) throw new Error(`faltou "${trecho}"`);
       }
-      confere([...aviso.querySelectorAll('[data-acao]')].map(botao => botao.dataset.acao), ['fechar-boas-vindas'], 'botões');
+      confere(numerosDoTutorial(), {
+        questoes: QUESTOES_POR_LICAO, vidas: VIDAS_MAXIMAS, mesada: MESADA_DE_BOAS_VINDAS,
+        recarga: PRECO_DA_RECARGA, xpPorAcerto: XP_POR_ACERTO, xpDaMissao: XP_DA_MISSAO
+      }, 'números lidos das constantes');
+
+      // Com outros números, o texto muda junto: nenhum número está escrito à mão
+      // (o "1 vida" é a regra de perder uma vida por erro)
+      const outros = textoDosCartoes({ questoes: 7, vidas: 3, mesada: 15, recarga: 25, xpPorAcerto: 12, xpDaMissao: 30 });
+      confere(outros.match(/\d+/g), ['7', '3', '15', '1', '25', '12', '30'], 'todos os números do texto');
+    });
+
+    teste('Tutorial: 5 cartões; na primeira vez, "Pular" e "Bora começar"; vindo de Mais, "Fechar" e "Entendi"', () => {
+      confere(cartoesDoTutorial().map(cartao => cartao.titulo),
+        ['A trilha', 'A lição', 'Vidas e moedas', 'XP e missão do dia', 'Calculadora de Metas'], 'títulos');
+      const progresso = novoProgresso();
+      const caixa = document.createElement('div');
+      const botoes = () => [...caixa.querySelectorAll('[data-acao]')].map(botao => botao.textContent.trim());
+
+      desenharTutorial(caixa, fluxo('primeira-vez'), progresso);
+      confere(textoDe(caixa.querySelector('h1')), 'Etapa 3 de 3. Como usar o FinEdu, cartão 1 de 5: A trilha', 'título do cartão 1');
+      confere(botoes(), ['Pular', 'Próximo'], 'botões do cartão 1 (sem Voltar)');
+      confere(caixa.querySelector('[data-acao="fechar-tutorial"]').getAttribute('aria-label'), 'Pular o tutorial', 'nome do Pular');
+
+      desenharTutorial(caixa, fluxo('primeira-vez', { cartao: 4 }), progresso);
+      confere(botoes(), ['Pular', 'Voltar', 'Bora começar'], 'botões do último cartão');
+      confere(textoDe(caixa.querySelector('.tutorial-nota')), 'Para ver de novo, é só abrir Mais.', 'nota');
+
+      desenharTutorial(caixa, fluxo('mais', { cartao: 4 }), progresso);
+      confere(textoDe(caixa.querySelector('h1')), 'Como usar o FinEdu, cartão 5 de 5: Calculadora de Metas', 'título vindo de Mais');
+      confere(botoes(), ['Fechar', 'Voltar', 'Entendi'], 'botões vindo de Mais');
+      confere(caixa.querySelector('.tutorial-nota'), null, 'sem a nota vindo de Mais');
+    });
+
+    teste('Perfil mostra o apelido e o avatar, com o botão "Trocar apelido e avatar"', () => {
+      const progresso = novoProgresso();
+      definirApelido(progresso, 'Duda');
+      definirAvatar(progresso, 'capivara');
+      const caixa = document.createElement('div');
+      desenharPerfil(caixa, progresso);
+      confere(textoDe(caixa.querySelector('h1')), 'Perfil de Duda', 'título (o leitor de tela ouve "Perfil de")');
+      confere(caixa.querySelector('.perfil-avatar').getAttribute('aria-label'), 'Seu avatar: Capivara', 'avatar');
+      confere(caixa.querySelector('.perfil-avatar use').getAttribute('href'), '#i-avatar-capivara', 'desenho');
+      confere(caixa.querySelector('[data-acao="trocar-apelido-e-avatar"]').textContent.trim(), 'Trocar apelido e avatar', 'botão');
+
+      desenharPerfil(caixa, novoProgresso());
+      confere(caixa.querySelector('.perfil-avatar use').getAttribute('href'), '#i-perfil', 'sem avatar, o chapéu do menu');
+    });
+
+    teste('Mais tem "Como usar o FinEdu", e o "Reiniciar progresso" avisa que apaga o apelido e o avatar', () => {
+      const caixa = document.createElement('div');
+      desenharConfiguracoes(caixa, novoProgresso(), true);
+      const linha = caixa.querySelector('[data-acao="ver-tutorial"]').closest('.config-linha');
+      confere(textoDe(linha), 'Como usar o FinEdu Trilha, lição, vidas, XP e calculadora em 5 cartões. Ver tutorial', 'linha do tutorial');
+      const reinicio = textoDe(caixa.querySelector('#confirmar-reinicio'));
+      if (!reinicio.includes('e o apelido e o avatar são apagados')) throw new Error(`confirmação: ${reinicio}`);
     });
 
 
