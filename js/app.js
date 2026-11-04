@@ -375,6 +375,19 @@ function calcularMetaNaTela(modoForcado) {
   const aba = modoForcado || campos.aba;
   const resultado = calcularPorModo(aba, campos);
   mostrarResultadoCalculadora(resultado);
+  if (resultado.valido) contarContaNaMissao();
+}
+
+// Uma conta com resultado conta para a missão do dia. Se ela terminar
+// a missão, os XP entram na hora: os contadores e o cartão da missão
+// mudam, e um aviso conta a recompensa (e o nível, se subiu).
+function contarContaNaMissao() {
+  const recompensa = registrarContaNaCalculadora(estado.progresso);
+  salvar();
+  if (!recompensa) return;
+  atualizarContadores(estado.progresso);
+  desenharColunaDireita(estado.progresso);
+  avisarMissaoConcluida(recompensa);
 }
 
 function temCamposObrigatoriosDaAba(aba, campos) {

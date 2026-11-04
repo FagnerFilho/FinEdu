@@ -1,6 +1,6 @@
 # DOCUMENTO-MESTRE · FinEdu
 
-Última atualização: 04/11/2026 (Claude Code, Parte 2: correções do design aprovadas pelo líder). Antes: 03/11, noite (conversa de planejamento, com a varredura e as decisões novas) e Parte 1 (conferência com o código). Descreve o código da Parte 2 (o design do João com as correções) mais o que foi decidido para os próximos dias.
+Última atualização: 04/11/2026, madrugada (Claude Code, Parte 3: missão do dia). Antes: 04/11 (Parte 2: correções do design aprovadas pelo líder), 03/11, noite (conversa de planejamento, com a varredura e as decisões novas) e Parte 1 (conferência com o código). Descreve o código da Parte 3 (o design do João com as correções da Parte 2, mais a missão do dia) e o que foi decidido para os próximos dias.
 
 ## Visão
 Site estilo Duolingo de educação financeira e investimentos.
@@ -38,7 +38,7 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - No erro, o feedback mostra por que a escolhida está errada e por que a certa está certa.
 - Concluir uma lição desbloqueia a próxima da mesma trilha. Lição concluída pode ser refeita, como treino.
 - Cada unidade tem um baú, que libera quando todas as lições da unidade estão concluídas. (No design do João, o baú fica no meio do caminho, antes da última lição, e o troféu fecha a unidade.)
-- Gamificação: XP e níveis, moedas, vidas, sequência de dias, aquecimento (duplo para quem errou muito), revisão das erradas, recarga e treino, painel "Como funciona" nos contadores (seção Gamificação). A partir de 03/11: missão do dia (seção Missão do dia).
+- Gamificação: XP e níveis, moedas, vidas, sequência de dias, aquecimento (duplo para quem errou muito), revisão das erradas, recarga e treino, painel "Como funciona" nos contadores (seção Gamificação). Desde a Parte 3 (04/11): missão do dia (seção Missão do dia).
 - Primeira vez no app: onboarding com apelido, avatar e o tutorial "Como usar o FinEdu" (seção Onboarding). Ele substitui o aviso de boas-vindas.
 
 ## Mascote e logo
@@ -86,15 +86,15 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 ## Telas
 - Aprender (trilha): faixa colorida da unidade ("Unidade N" e o título), caminho de discos com estrela de 5 pontas (a lição atual ganha um anel em volta), baú no meio do caminho (na Unidade 1, entre a 3ª e a 4ª lição; só abre com as 4 concluídas) e troféu no fim da unidade (com o baú liberado, tocar no troféu também abre o baú). O nome da Trilha 1 e o balão "Começar" saíram no design do João; o nome só aparece na Trilha 2, "Em breve". As Unidades 2 e 3, ainda sem lições, aparecem como cartões compactos "Em breve", como o da Trilha 2 (Parte 2). O botão da faixa que abria "Guia da Unidade · Em breve" saiu na Parte 2.
 - Lição: barra com 5 partes (verde quando acerta, vermelha quando erra; a vermelha fica verde quando o aluno acerta na revisão), etiqueta Fácil/Média/Difícil (ou Aquecimento e Revisão, com uma nota dizendo que errar ali não tira vida; no aquecimento duplo, "Aquecimento 1 de 2"), botão Verificar embaixo, feedback com o porquê. No notebook: teclas 1 a 4 (ou A a D), Enter e Esc.
-- Vitória: XP, moedas, precisão, sequência e, quando o aluno sobe de nível, o aviso "Subiu para o nível 2: Poupador!" (o baú aberto também mostra). Fim do treino: as vidas que voltaram.
+- Vitória: XP, moedas, precisão, sequência e, quando o aluno sobe de nível, o aviso "Subiu para o nível 2: Poupador!" (o baú aberto também mostra). Fim do treino: as vidas que voltaram. Quando a lição (ou o treino) termina a missão do dia, os dois mostram "Missão do dia concluída: +20 XP", antes do aviso de nível (Parte 3).
 - Baú aberto, Sem vidas (recarregar com moedas ou treinar de graça) e confirmação ao sair no meio da lição ou do treino.
-- Calculadora de Metas (Eufy, 01/11): 3 abas, "Meta na gaveta" (quanto guardar por mês), "Meta com juros" e "Simular futuro" (nomes em letra normal desde a Parte 2). Taxa de exemplo de 0,8% ao mês, editável, com o aviso fixo "Simulação. O rendimento de verdade muda com o tempo. Menor de idade investe com um responsável." As abas com juros precisam da revisão do professor.
+- Calculadora de Metas (Eufy, 01/11): 3 abas, "Meta na gaveta" (quanto guardar por mês), "Meta com juros" e "Simular futuro" (nomes em letra normal desde a Parte 2). Taxa de exemplo de 0,8% ao mês, editável, com o aviso fixo "Simulação. O rendimento de verdade muda com o tempo. Menor de idade investe com um responsável." As abas com juros precisam da revisão do professor. Desde a Parte 3, cada conta com resultado conta para a missão do dia; no dia da missão da calculadora, a primeira conta dá +20 XP, com um aviso embaixo.
 - Ligas: "Em breve" (decisão de 03/11: fica como está). Mostra o nível e as lições concluídas. Competir de verdade precisa de outros jogadores; a ideia de amigos por QR code fica para depois (o líder conversa com o João). Resposta para a banca: "Em breve. A versão 1 não tem cadastro de propósito (LGPD, público menor de idade); comparar com a turma vem numa próxima versão."
-- Missões: hoje mostra "Missão do dia: Ganhe 30 XP", mas conta o XP total, e não o de hoje (quem tem 30 XP vê a missão concluída para sempre). Vira a missão do dia de verdade na Parte 3.
+- Missões (desde a Parte 3): o cartão "Missão do dia" com a missão de hoje e o que o aluno já fez hoje (ex.: "Conclua 2 lições" e "1/2" na barra), o selo "Em andamento" ou "Concluída!" e o subtítulo "Todo dia tem uma missão nova, que vale mais 20 XP.". O cartão da coluna da direita mostra o mesmo. Até a Parte 2 mostrava "Ganhe 30 XP" e contava o XP total, não o de hoje (quem tinha 30 XP via a missão concluída para sempre).
 - Loja: recarga de vidas por 20 moedas, que só libera com 0 vidas (segue a regra), e o botão "Como funciona".
 - Perfil (sem dado pessoal): nível e quanto falta para o próximo, estatísticas e o atalho "Abrir Configurações" (vai para Mais). Na Parte 4 ganha o avatar e o apelido.
 - Mais (Configurações): "Reiniciar progresso" com confirmação na tela, "Ver regras" (abre o painel) e Sobre. Na Parte 4 ganha "Como usar o FinEdu".
-- Contadores (barra de cima e coluna da direita): cada um é um botão que abre o painel "Como funciona" (vidas, moedas, XP e nível, sequência).
+- Contadores (barra de cima e coluna da direita): cada um é um botão que abre o painel "Como funciona" (vidas, moedas, XP e nível, sequência). Na parte do XP, uma linha sobre a missão do dia, com a de hoje (Parte 3).
 - Boas-vindas: hoje é um aviso na primeira vez (mesada de 20 moedas e dica dos contadores). Na Parte 4, o onboarding toma o lugar dele.
 - Guia: a rota #guia ainda mostra "Guia da Unidade · Em breve", mas nenhum botão leva até ela desde a Parte 2. Na Parte 4, vira o tutorial "Como usar o FinEdu".
 
@@ -127,29 +127,34 @@ Ordem: "Como devemos te chamar?" → avatar → tutorial "Como usar o FinEdu" �
 - "Reiniciar progresso" apaga também o apelido e o avatar, e o onboarding volta (bom para a apresentação: cada aluno começa do zero). O texto da confirmação passa a citar apelido e avatar.
 - O aviso de boas-vindas sai: a mesada passa a ser contada no cartão 3.
 
-## Missão do dia (decidido em 03/11; Parte 3 da fila)
+## Missão do dia (decidido em 03/11; feita na Parte 3, 04/11)
 - Pedido do líder: missões diferentes a cada dia (exemplo dele: "faça duas lições → 30 XP"), sem dar XP demais. O contexto é a apresentação na escola.
-- 1 missão por dia, a mesma para todo mundo no mesmo dia, em rodízio pela data, numa lista fixa no jogo.js.
-- Recompensa: +20 XP (constante `XP_DA_MISSAO`), uma vez por dia, sem moedas. (Recomendação do planejamento; o líder confirma no plano da Parte 3.)
-- Lista inicial (todas dão para fazer em uns 10 minutos):
+- 1 missão por dia, a mesma para todo mundo no mesmo dia, em rodízio pela data, numa lista fixa no jogo.js (`MISSOES`).
+- Recompensa: +20 XP (constante `XP_DA_MISSAO`), uma vez por dia, sem moedas. Confirmado pelo líder no plano da Parte 3 (04/11).
+- Lista (todas dão para fazer em uns 10 minutos), nesta ordem:
   1. Conclua 1 lição.
   2. Conclua 2 lições.
   3. Acerte 10 questões.
   4. Acerte de primeira todas as questões de uma lição.
   5. Faça uma conta na Calculadora de Metas.
+- Rodízio: conta os dias desde 01/11/2026 (`PRIMEIRO_DIA_DAS_MISSOES`) e usa o resto da divisão por 5 como posição na lista. Não precisou mudar a ordem: 11/11 dá resto 0, "Conclua 1 lição". Calendário até a apresentação: 04/11 lição perfeita; 05/11 calculadora; 06/11 1 lição; 07/11 2 lições; 08/11 10 acertos; 09/11 (ensaio) lição perfeita; 10/11 calculadora; **11/11 (apresentação) 1 lição**. Para ensaiar com a missão de 11/11, dá para mudar a data do tablet.
 - O treino conta para a missão (senão, quem terminou a Unidade 1 nunca mais cumpre uma). O treino continua sem XP: só a recompensa da missão entra. Acertos contam em qualquer parte (lição nova, revisão, aquecimento e treino).
-- O progresso da missão zera no dia seguinte (campo novo no progresso, com a data do dia).
-- A recompensa entra quando a missão termina: no fim da lição ou do treino (a vitória mostra "Missão do dia concluída: +20 XP") ou na hora da conta da calculadora (aviso na tela). Se ela fizer o aluno subir de nível, o aviso de nível aparece.
-- Onde aparece: tela Missões e cartão da coluna da direita (os dois com o progresso de hoje, por exemplo "1 de 2 lições"), painel "Como funciona" (na parte do XP) e cartão 4 do tutorial.
-- O visual do João fica igual: só mudam o texto e os números.
-- Conserta o erro de hoje (`META_XP_MISSAO_DIARIA` usa o XP total).
-- Para a demonstração, a melhor missão em 11/11 é "Conclua 1 lição". Conferir qual cai nesse dia e, se precisar, mudar a ordem da lista.
-- Por que 20 XP e 1 por dia (simulação dos 3 alunos, Unidade 1 inteira num dia):
+- Detalhes decididos no código (Parte 3):
+  - A lição e o treino só contam quando terminam, como o XP: quem sai no meio não ganha nada, nem para a missão.
+  - "Acerte de primeira todas as questões de uma lição" é a "Lição perfeita!" da vitória: as 5 questões novas certas de primeira. O aquecimento não entra nessa conta (errar só ele ainda vale).
+  - Na calculadora, conta toda conta com resultado, nas 3 abas (pelo botão ou pelo Enter). Conta com erro de digitação não conta.
+- O progresso da missão zera no dia seguinte: campo novo `missao` no progresso, com a data do dia e os números de hoje (lições, acertos, lições perfeitas e contas). Progresso antigo ganha o campo zerado sozinho.
+- A recompensa entra quando a missão termina: no fim da lição ou do treino (a vitória mostra "Missão do dia concluída: +20 XP", com o mesmo estilo do aviso de nível; o placar continua com o XP só da lição) ou na hora da conta da calculadora (aviso embaixo, com o mesmo texto). Se ela fizer o aluno subir de nível, o aviso de nível aparece junto.
+- Onde aparece: tela Missões e cartão da coluna da direita (os dois com o progresso de hoje: "1/2" na barra, e o leitor de tela ouve "1 de 2 lições"), painel "Como funciona" (na parte do XP: "Todo dia tem uma missão nova, que vale mais 20 XP. A de hoje: conclua 1 lição.") e, na Parte 4, o cartão 4 do tutorial.
+- O visual do João ficou igual: só mudaram o texto e os números. Os 5 nomes cabem em até 2 linhas no cartão da coluna da direita, sem mudar a altura dele (medido a 1280 e a 1024px). O único elemento novo é a linha da vitória (prints em `finedu-v1/antes-depois/parte-3`).
+- Consertado o erro antigo: o `META_XP_MISSAO_DIARIA` (30, no telas.js) comparava com o XP total. A constante saiu.
+- Observação sincera (Parte 3): na prática, "Acerte 10 questões" pede quase o mesmo que "Conclua 2 lições", porque toda lição concluída dá pelo menos 5 acertos (6 com o aquecimento). Não atrapalha; se quiserem mais variedade, dá para trocar depois.
+- Por que 20 XP e 1 por dia (simulação dos 3 alunos, Unidade 1 inteira num dia). A linha de 20 XP está confirmada pelos testes, rodando no dia 11/11 ("Conclua 1 lição"): A 255, B 215 (guardando as moedas, 220) e C 200, todos no nível 3. Com a missão, o nível sobe antes: o A chega ao 3 na lição 3 (sem ela, na 4), e o C sobe para o 2 na lição 2 e para o 3 na 4 (sem ela, na 3 e no baú).
 
   | Opção | XP extra no dia | Aluno A | Aluno B | Aluno C |
   |---|---|---|---|---|
-  | Sem missão (hoje) | 0 | 235 | 195 | 180 |
-  | 1 missão de 20 XP (recomendado) | 20 | 255 | 215 | 200 |
+  | Sem missão (antes da Parte 3) | 0 | 235 | 195 | 180 |
+  | 1 missão de 20 XP (escolhida) | 20 | 255 | 215 | 200 |
   | 1 missão de 30 XP (o exemplo) | 30 | 265 | 225 | 210 |
   | 3 missões de 20 XP (estilo Duolingo) | 60 | 295 | 255 | 240 |
 
@@ -161,9 +166,9 @@ Ordem: "Como devemos te chamar?" → avatar → tutorial "Como usar o FinEdu" �
 ## Estrutura do código
 - Versão 1 sem back-end. Progresso em localStorage, sempre via js/armazenamento.js.
 - HTML, CSS e JS puro, código próprio escrito do zero na conversa 02 (Antigravity só como referência).
-- Estrutura: index.html, css/estilo.css, css/fontes/ (Fredoka, Baloo 2 e Figtree), js/dados-licoes.js, js/armazenamento.js, js/jogo.js, js/telas.js, js/app.js, img/favicon.svg, testes.html, README.md, CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, projeto/plano-gamificacao.md.
+- Estrutura: index.html, css/estilo.css, css/fontes/ (Fredoka, Baloo 2 e Figtree), js/dados-licoes.js, js/armazenamento.js, js/jogo.js, js/telas.js, js/app.js, img/favicon.svg, testes.html, README.md, CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, projeto/plano-gamificacao.md. (Nenhum arquivo novo na Parte 3.)
 - Funciona abrindo o index.html com dois cliques (sem servidor).
-- testes.html: testes das regras do jogo e da calculadora no navegador, com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação e confere os textos do painel, das boas-vindas e do feedback do erro. 68 testes, todos passando (04/11).
+- testes.html: testes das regras do jogo e da calculadora no navegador, com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação (sem e com a missão do dia) e confere os textos do painel, das boas-vindas, do feedback do erro, da tela Missões e da vitória. 84 testes, todos passando (04/11, Parte 3).
 - O arquitetura.md guarda as regras do código e o passo a passo para criar lições. A versão oficial fica em projeto/arquitetura.md.
 - O app confere o dados-licoes.js e mostra um aviso vermelho no topo se algo estiver fora do padrão.
 - Depois da apresentação, as regras do arquitetura.md viram uma skill de arquiteto.
@@ -183,7 +188,7 @@ Ordem: "Como devemos te chamar?" → avatar → tutorial "Como usar o FinEdu" �
 - Relatório de extensão: depois da apresentação, no modelo que a faculdade vai enviar.
 - Cronograma (atualizado em 03/11):
   - 04/11: Parte 1 (documentos) e Parte 2 (correções do design, com antes/depois).
-  - 05/11: Parte 3 (missão do dia).
+  - 05/11: Parte 3 (missão do dia). Feita antes, na madrugada de 04/11.
   - 05 e 06/11: Parte 4 (onboarding).
   - 06 ou 07/11: banner na gráfica.
   - 07/11: questões novas da Unidade 1 no código; modo apresentação.
@@ -197,8 +202,8 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 
 - Aquecimento: no começo de cada lição (menos a primeira da trilha), 1 questão da lição anterior, de preferência uma que o aluno errou. Quem errou 3 ou mais de primeira na lição anterior faz 2 delas (aquecimento duplo). Não tira vida, não conta na precisão e vale 5 XP cada questão certa.
 - Revisão: a errada volta no fim da lição, até o aluno acertar. Errar na revisão não tira vida. Só conclui com todas certas.
 - Precisão: só a primeira resposta de cada questão nova.
-- XP: +10 por questão nova certa de primeira; +5 por errada consertada na revisão e por questão certa no aquecimento.
-- Níveis por XP: 1 Aprendiz (0 XP), 2 Poupador (75), 3 Planejador (175), 4 Estrategista (300), 5 Investidor (450). Cada nível pede 25 XP a mais que o anterior. Quem faz a Unidade 1 sem errar vira Poupador na lição 2 e Planejador na lição 4. O nível aparece no painel e no Perfil, e um aviso na vitória (e no baú) diz quando o aluno sobe.
+- XP: +10 por questão nova certa de primeira; +5 por errada consertada na revisão e por questão certa no aquecimento; +20 pela missão do dia, uma vez por dia (Parte 3).
+- Níveis por XP: 1 Aprendiz (0 XP), 2 Poupador (75), 3 Planejador (175), 4 Estrategista (300), 5 Investidor (450). Cada nível pede 25 XP a mais que o anterior. Quem faz a Unidade 1 sem errar vira Poupador na lição 2 e Planejador na lição 4 (sem contar a missão do dia; com os 20 XP dela na lição 1, vira Planejador na lição 3). O nível aparece no painel e no Perfil, e um aviso na vitória (e no baú) diz quando o aluno sobe.
 - Moedas: +10 por lição concluída, +5 se acertar as 5 de primeira, só na primeira vez que conclui.
 - Mesada de boas-vindas: todo aluno começa com 20 moedas, o preço de 1 recarga. "Reiniciar progresso" devolve a mesada.
 - Baú: +20 XP e +20 moedas.
@@ -327,8 +332,23 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 
 - testes.html: 68 testes. O novo confere que a trilha desenha as unidades sem lições como cartão "Em breve", sem discos e sem botão do guia.
 - Ficaram para o líder decidir: os contrastes que ainda falham (etiqueta "Aquecimento", legenda "Do seu bolso", botão vermelho com texto claro e texto vermelho sobre o cartão), "Recarga de Vidas" na Loja, o menu a 360px e a limpeza de `simularRendimento()` e de `TELAS_EM_BREVE.calculadora`.
 
+### Parte 3 · Missão do dia (Claude Code, 04/11, madrugada)
+- Plano mostrado e aprovado pelo líder, com os 20 XP confirmados. O líder deixou o Claude Code codando de madrugada, com autorização para seguir sem parar; o push fica para quando ele pedir.
+- O que mudou (detalhes na seção "Missão do dia" e na seção 6 do arquitetura.md):
+  - jogo.js: `XP_DA_MISSAO`, `PRIMEIRO_DIA_DAS_MISSOES` e a lista `MISSOES` no topo; seção nova "8. Missão do dia" (`missaoDoDia`, `situacaoDaMissao`, `somarNaMissao`, `registrarContaNaCalculadora`); campo `missao` no progresso, zerado na virada do dia; `concluirLicao()` soma a lição (e o treino) na missão e devolve `missaoConcluida`.
+  - telas.js: saiu o `META_XP_MISSAO_DIARIA`; tela Missões e cartão da coluna da direita com a missão de hoje (o mesmo miolo, `desenharCorpoDaMissao()`); linha nova na vitória e no fim do treino; linha no painel; aviso da calculadora.
+  - app.js: a conta com resultado na calculadora conta para a missão.
+  - estilo.css: a linha da vitória usa as mesmas regras do aviso de nível (`.comemoracao-missao` entrou no seletor de `.comemoracao-nivel`). Nenhum valor novo.
+- Textos novos (revisados com a skill de UX copy): subtítulo de Missões e linha do painel "Todo dia tem uma missão nova, que vale mais 20 XP."; no painel, "A de hoje: …" ou "A de hoje você já concluiu."; vitória e calculadora "Missão do dia concluída: +20 XP" (com "Subiu para o nível N: Nome!" quando sobe). O "20 XP" usa um espaço que não quebra a linha, para o "XP" não ficar sozinho na linha de baixo no celular. Os 5 nomes das missões ficaram como na lista.
+- Prints de antes e depois em `finedu-v1/antes-depois/parte-3` (com `comparar.html` lado a lado), feitos com `antes-depois/ferramentas/prints-parte-3.ps1`. Para os prints, a data do app foi trocada para dias com a missão certa.
+- testes.html: 84 testes (eram 68). Os das regras passaram a rodar em 05/11, um dia de missão da calculadora, para a missão não mudar os números do plano. Grupo novo "Missão do dia" (13 testes) e 3 testes da simulação com a missão em 11/11. Conferido também que os testes novos falham quando a regra é estragada de propósito (recompensa repetida, treino sem contar, missão sem zerar, calculadora sem contar, rodízio sem data, tela olhando o XP total).
+- Conferido no navegador (celular em pé e tablet deitado): lição pelos botões, lição com erro (volta na revisão), Reiniciar progresso (as boas-vindas voltam), as 3 abas da calculadora (conta com erro de digitação não conta; pelo Enter conta), aviso com subida de nível, painel e cartões. Sem erro no console e sem rolagem para o lado.
+- Para o líder e o João: ver a linha nova da vitória nos prints (3.3 e 3.4) e dizer se fica.
+
 ## Pendências
-- Fila até 11/11 (detalhes no CLAUDE.md): Parte 1 (documentos, feita em 03/11), Parte 2 (correções do design, feita em 04/11), Parte 3 (missão do dia), Parte 4 (onboarding), questões novas da Unidade 1, modo apresentação, teste no tablet (09/11) e código congelado (10/11).
+- Fila até 11/11 (detalhes no CLAUDE.md): Parte 1 (documentos, feita em 03/11), Parte 2 (correções do design, feita em 04/11), Parte 3 (missão do dia, feita em 04/11, de madrugada), Parte 4 (onboarding), questões novas da Unidade 1, modo apresentação, teste no tablet (09/11) e código congelado (10/11).
+- Push das Partes 1, 2 e 3 (commits só no computador do líder): esperando o OK dele. Depois do push, conferir o site no GitHub Pages.
+- Missão do dia: o João vê a linha nova da vitória (prints da Parte 3). No ensaio de 09/11 a missão é a da lição perfeita; para ensaiar com a de 11/11 ("Conclua 1 lição"), mudar a data do tablet. O modo apresentação pode considerar a missão.
 - Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEdu/). Nunca foi testado no tablet.
 - Trocar o link antigo do site (com FinEduu, dá 404) onde ele foi divulgado: mensagens da equipe, favorito no tablet e QR code, se tiver.
 - Questões novas da Unidade 1 (Samuels), depois formatadas pelo planejamento.

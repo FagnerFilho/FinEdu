@@ -52,7 +52,33 @@ function focarTitulo(lugar) {
 const TITULOS_DE_ACERTO = ['Mandou bem!', 'Isso aí!', 'Certinho!', 'Boa!', 'Arrasou!'];
 const TITULOS_DE_ERRO = ['Quase!', 'Não foi dessa vez', 'Ops, essa não'];
 const LETRAS = ['A', 'B', 'C', 'D'];
-const META_XP_MISSAO_DIARIA = 30;
+
+// O que cada missão do dia conta, para o leitor de tela ("1 de 2 lições").
+// A chave é a "conta" da missão (MISSOES, no jogo.js).
+const NOMES_DOS_NUMEROS_DA_MISSAO = {
+  licoes: ['lição', 'lições'],
+  acertos: ['questão', 'questões'],
+  perfeitas: ['lição perfeita', 'lições perfeitas'],
+  contas: ['conta', 'contas']
+};
+
+// Espaço que não quebra a linha: o número fica junto do "XP" ("20 XP")
+const ESPACO_FIXO = '\u00A0';
+
+// Textos da recompensa da missão e do nível: os mesmos na vitória e no
+// aviso da calculadora
+function textoDaMissaoConcluida() {
+  return `Missão do dia concluída: +${XP_DA_MISSAO}${ESPACO_FIXO}XP`;
+}
+
+// "Todo dia tem uma missão nova, que vale mais 20 XP." (tela Missões e painel)
+function textoDaRegraDaMissao() {
+  return `Todo dia tem uma missão nova, que vale mais ${XP_DA_MISSAO}${ESPACO_FIXO}XP.`;
+}
+
+function textoDoNivelQueSubiu(nivel) {
+  return `Subiu para o nível ${nivel.numero}: ${nivel.nome}!`;
+}
 
 // Deslocamentos horizontais da curva em S dentro de cada unidade
 // (fração de --amplitude-curva, seguindo o desenho do Figma).
@@ -107,13 +133,35 @@ function atualizarContadores(progresso) {
   }
 }
 
+// Miolo do cartão "Missão do dia" (coluna da direita e tela Missões):
+// a missão de hoje e a barra com o que o aluno já fez hoje. Recebe a
+// situação da missão (situacaoDaMissao, no jogo.js).
+function desenharCorpoDaMissao(missao) {
+  const [singular, plural] = NOMES_DOS_NUMEROS_DA_MISSAO[missao.conta];
+  const feito = `${missao.feito} de ${missao.meta} ${missao.meta === 1 ? singular : plural}`;
+  const porcentagem = Math.round((missao.feito / missao.meta) * 100);
+
+  return `
+    <div class="missao-corpo">
+      ${icone('xp', 'missao-raio')}
+      <div class="missao-detalhes">
+        <p class="missao-meta">${escaparHtml(missao.texto)}</p>
+        <div class="missao-progresso-linha">
+          <div class="missao-trilho" role="progressbar" aria-label="Progresso da missão: ${feito}"
+            aria-valuemin="0" aria-valuemax="${missao.meta}" aria-valuenow="${missao.feito}">
+            <span class="missao-preenchimento" style="width: ${porcentagem}%"></span>
+            <span class="missao-contagem">${missao.feito}/${missao.meta}</span>
+          </div>
+          ${icone('missoes', 'missao-bau')}
+        </div>
+      </div>
+    </div>`;
+}
+
 // Monta os cartões "Desbloqueie as Ligas!" e "Missão do dia" na coluna da direita
-function desenharColunaDireita(progresso) {
+function desenharColunaDireita(progresso, hoje = hojeComoTexto()) {
   const lugar = document.getElementById('painel-lateral');
   if (!lugar) return;
-
-  const xpMissao = Math.min(progresso.xp, META_XP_MISSAO_DIARIA);
-  const porcentagemMissao = Math.min(100, Math.round((xpMissao / META_XP_MISSAO_DIARIA) * 100));
 
   lugar.innerHTML = `
     <a class="cartao-lateral cartao-lateral--ligas" href="#ligas" aria-label="Desbloqueie as Ligas! Complete mais lições para competir">
@@ -129,32 +177,28 @@ function desenharColunaDireita(progresso) {
         <h2 class="cartao-lateral-titulo" id="titulo-missao-lateral">Missão do dia</h2>
         <a class="cartao-lateral-ver" href="#missoes">Ver</a>
       </div>
-      <div class="missao-corpo">
-        ${icone('xp', 'missao-raio')}
-        <div class="missao-detalhes">
-          <p class="missao-meta">Ganhe ${META_XP_MISSAO_DIARIA} XP</p>
-          <div class="missao-progresso-linha">
-            <div class="missao-trilho" role="progressbar" aria-label="Progresso da missão: ${xpMissao} de ${META_XP_MISSAO_DIARIA} XP"
-              aria-valuemin="0" aria-valuemax="${META_XP_MISSAO_DIARIA}" aria-valuenow="${xpMissao}">
-              <span class="missao-preenchimento" style="width: ${porcentagemMissao}%"></span>
-              <span class="missao-contagem">${xpMissao}/${META_XP_MISSAO_DIARIA}</span>
-            </div>
-            ${icone('missoes', 'missao-bau')}
-          </div>
-        </div>
-      </div>
+      ${desenharCorpoDaMissao(situacaoDaMissao(progresso, hoje))}
     </section>`;
 }
 
-// Aviso rápido que aparece embaixo e some sozinho
+// Aviso rápido que aparece embaixo e some sozinho (texto mais longo
+// pode pedir mais tempo na tela)
 let temporizadorDoAviso = null;
 
-function mostrarAviso(texto) {
+function mostrarAviso(texto, duracao = 2600) {
   const aviso = document.getElementById('aviso');
   aviso.textContent = texto;
   aviso.classList.add('aviso--visivel');
   clearTimeout(temporizadorDoAviso);
-  temporizadorDoAviso = setTimeout(() => aviso.classList.remove('aviso--visivel'), 2600);
+  temporizadorDoAviso = setTimeout(() => aviso.classList.remove('aviso--visivel'), duracao);
+}
+
+// Aviso da calculadora quando a conta termina a missão do dia (e,
+// se for o caso, o nível que os XP da missão fizeram subir)
+function avisarMissaoConcluida(recompensa) {
+  const textos = [textoDaMissaoConcluida()];
+  if (recompensa.subiuDeNivel) textos.push(textoDoNivelQueSubiu(recompensa.nivel));
+  mostrarAviso(textos.join('. '), 4000);
 }
 
 // Texto só para leitores de tela (ex.: o feedback da resposta)
@@ -574,7 +618,14 @@ function desenharSequenciaQueSubiu(resumo) {
 
 function desenharNivelQueSubiu(resumo) {
   return resumo.subiuDeNivel ? `
-    <p class="comemoracao-nivel">${icone('nivel')} Subiu para o nível ${resumo.nivel.numero}: ${resumo.nivel.nome}!</p>` : '';
+    <p class="comemoracao-nivel">${icone('nivel')} ${textoDoNivelQueSubiu(resumo.nivel)}</p>` : '';
+}
+
+// A lição (ou o treino) terminou a missão do dia: a linha vem antes da
+// do nível, porque os XP da missão podem ser o que fez o aluno subir
+function desenharMissaoConcluida(resumo) {
+  return resumo.missaoConcluida ? `
+    <p class="comemoracao-missao">${icone('missoes')} ${textoDaMissaoConcluida()}</p>` : '';
 }
 
 function desenharResultado(lugar, resumo) {
@@ -604,6 +655,7 @@ function desenharResultado(lugar, resumo) {
         </div>
       </div>
 
+      ${desenharMissaoConcluida(resumo)}
       ${desenharNivelQueSubiu(resumo)}
       ${desenharSequenciaQueSubiu(resumo)}
 
@@ -625,6 +677,8 @@ function desenharFimDoTreino(lugar, resumo) {
         </div>
       </div>
 
+      ${desenharMissaoConcluida(resumo)}
+      ${desenharNivelQueSubiu(resumo)}
       ${desenharSequenciaQueSubiu(resumo)}
 
       <button type="button" class="botao" data-acao="voltar-trilha">Continuar</button>
@@ -739,38 +793,23 @@ function desenharLigas(lugar, progresso) {
     </div>`;
 }
 
-// Tela Missões: mostra o progresso ao vivo da Missão do dia (30 XP) e da sequência
-function desenharMissoes(lugar, progresso) {
-  const xpMissao = Math.min(progresso.xp, META_XP_MISSAO_DIARIA);
-  const porcentagemMissao = Math.min(100, Math.round((xpMissao / META_XP_MISSAO_DIARIA) * 100));
-  const concluida = xpMissao >= META_XP_MISSAO_DIARIA;
+// Tela Missões: a missão de hoje, com o que o aluno já fez hoje, e a sequência
+function desenharMissoes(lugar, progresso, hoje = hojeComoTexto()) {
+  const missao = situacaoDaMissao(progresso, hoje);
 
   lugar.innerHTML = `
     <div class="secao-pagina">
       <header class="secao-pagina-topo">
         <h1 class="perfil-titulo">Missões</h1>
-        <p class="perfil-sub">Conclua metas rápidas estudando educação financeira.</p>
+        <p class="perfil-sub">${textoDaRegraDaMissao()}</p>
       </header>
 
       <section class="cartao-lateral cartao-lateral--pagina" aria-labelledby="titulo-missao-pagina">
         <div class="cartao-lateral-cabecalho">
           <h2 class="cartao-lateral-titulo" id="titulo-missao-pagina">Missão do dia</h2>
-          <span class="selo">${concluida ? 'Concluída!' : 'Em andamento'}</span>
+          <span class="selo">${missao.concluida ? 'Concluída!' : 'Em andamento'}</span>
         </div>
-        <div class="missao-corpo">
-          ${icone('xp', 'missao-raio')}
-          <div class="missao-detalhes">
-            <p class="missao-meta">Ganhe ${META_XP_MISSAO_DIARIA} XP</p>
-            <div class="missao-progresso-linha">
-              <div class="missao-trilho" role="progressbar" aria-label="Progresso da missão: ${xpMissao} de ${META_XP_MISSAO_DIARIA} XP"
-                aria-valuemin="0" aria-valuemax="${META_XP_MISSAO_DIARIA}" aria-valuenow="${xpMissao}">
-                <span class="missao-preenchimento" style="width: ${porcentagemMissao}%"></span>
-                <span class="missao-contagem">${xpMissao}/${META_XP_MISSAO_DIARIA}</span>
-              </div>
-              ${icone('missoes', 'missao-bau')}
-            </div>
-          </div>
-        </div>
+        ${desenharCorpoDaMissao(missao)}
       </section>
 
       <section class="painel config-linha">
@@ -1287,7 +1326,7 @@ function desenharParteDoPainel(qual, nomeDoIcone, titulo, paragrafos) {
     </section>`;
 }
 
-function desenharPainel(progresso) {
+function desenharPainel(progresso, hoje = hojeComoTexto()) {
   const nivel = nivelDoXp(progresso.xp);
   let sobreONivel = `Nível ${nivel.numero}, ${nivel.nome}: o mais alto.`;
   if (nivel.proximo) {
@@ -1295,6 +1334,11 @@ function desenharPainel(progresso) {
       `Faltam ${nivel.faltam} XP para o nível ${nivel.proximo.numero}, ${nivel.proximo.nome}.`;
     if (!proximoPasso(progresso)) sobreONivel += ' As próximas lições chegam em breve.';
   }
+
+  // A missão de hoje entra no meio da frase: "A de hoje: conclua 1 lição."
+  const missao = situacaoDaMissao(progresso, hoje);
+  const missaoNaFrase = missao.texto.charAt(0).toLowerCase() + missao.texto.slice(1);
+  const missaoDeHoje = missao.concluida ? 'A de hoje você já concluiu.' : `A de hoje: ${escaparHtml(missaoNaFrase)}.`;
 
   return `
     <div class="folha-caixa folha-caixa--texto">
@@ -1316,7 +1360,8 @@ function desenharPainel(progresso) {
         sobreONivel,
         `XP são pontos de experiência: quanto mais você junta, maior o nível. Você ganha ${XP_POR_ACERTO} ` +
           `por acerto de primeira numa lição nova, ${XP_DE_REVISAO} por questão consertada na revisão ` +
-          `ou certa no aquecimento, e ${XP_DO_BAU} no baú.`
+          `ou certa no aquecimento, e ${XP_DO_BAU} no baú.`,
+        `${textoDaRegraDaMissao()} ${missaoDeHoje}`
       ])}
       ${desenharParteDoPainel('sequencia', 'sequencia', `Sequência: ${contarCom(progresso.sequencia, 'dia', 'dias')}`, [
         'Conclua pelo menos uma lição por dia (treino também vale) para ela subir. Se passar um dia sem, volta a zero.'

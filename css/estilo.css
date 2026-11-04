@@ -1451,7 +1451,9 @@ dialog.folha::backdrop {
   font-weight: 600;
 }
 
-.comemoracao-nivel {
+/* Subiu de nível e missão do dia concluída: o mesmo destaque, na cor do XP */
+.comemoracao-nivel,
+.comemoracao-missao {
   display: flex;
   align-items: center;
   gap: var(--espaco-p);

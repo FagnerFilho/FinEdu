@@ -1,6 +1,6 @@
 # arquitetura.md · FinEdu (versão 1)
 
-Atualizado em 03/11/2026 (conversa de planejamento) para o código do commit `a906e51`: calculadora do Eufy e design do João. Conferido com o código na Parte 1 (03/11, Claude Code) e atualizado na Parte 2 (04/11) com as correções do design. As Partes 3 e 4 da fila (missão do dia e onboarding) ainda não estão aqui: quem codar cada uma atualiza este arquivo junto.
+Atualizado em 03/11/2026 (conversa de planejamento) para o código do commit `a906e51`: calculadora do Eufy e design do João. Conferido com o código na Parte 1 (03/11, Claude Code), atualizado na Parte 2 (04/11) com as correções do design e na Parte 3 (04/11, madrugada) com a missão do dia (seções 5 e 6). A Parte 4 da fila (onboarding) ainda não está aqui: quem codar atualiza este arquivo junto.
 
 Regras do código do FinEdu. Todo código novo segue este arquivo. Se uma mudança precisar quebrar uma regra daqui, discuta antes e atualize este arquivo junto.
 
@@ -13,11 +13,11 @@ Regras do código do FinEdu. Todo código novo segue este arquivo. Se uma mudan�
 | `css/fontes/` | Fredoka (títulos), Figtree (texto) e Baloo 2 (reserva). Arquivos variáveis, subconjunto latino, licença SIL OFL: cada fonte com o seu `OFL-*.txt` | — |
 | `js/dados-licoes.js` | Constante `CONTEUDO`: trilhas, unidades, lições e questões | Lógica |
 | `js/armazenamento.js` | `carregarProgresso()`, `salvarProgresso(progresso)`, `reiniciarProgresso()`, `armazenamentoDisponivel()` | Saber o que tem dentro do progresso |
-| `js/jogo.js` | Regras: constantes de valores, níveis, progresso inicial, datas, liberação, sessão da lição (aquecimento, questões novas e revisão), recarga e treino, baú, `conferirConteudo()` e as contas da Calculadora de Metas (seção 6.1). (`simularRendimento()` está sem uso) | Mexer na tela ou no localStorage |
-| `js/telas.js` | Monta o HTML de cada tela (trilha, lição, vitória, baú, sem vidas, Calculadora, Ligas, Missões, Loja, Perfil e Mais), a coluna da direita, ícones (`icone()`), avisos e janelas (painel "Como funciona" e boas-vindas). (a entrada `calculadora` de `TELAS_EM_BREVE` sobrou: a calculadora tem tela própria) | Decidir regra, salvar |
+| `js/jogo.js` | Regras: constantes de valores, níveis, progresso inicial, datas, liberação, sessão da lição (aquecimento, questões novas e revisão), recarga e treino, baú, missão do dia, `conferirConteudo()` e as contas da Calculadora de Metas (seção 6.1). (`simularRendimento()` está sem uso) | Mexer na tela ou no localStorage |
+| `js/telas.js` | Monta o HTML de cada tela (trilha, lição, vitória, baú, sem vidas, Calculadora, Ligas, Missões, Loja, Perfil e Mais), a coluna da direita, ícones (`icone()`), avisos e janelas (painel "Como funciona" e boas-vindas). O cartão "Missão do dia" da tela Missões e o da coluna da direita usam o mesmo miolo (`desenharCorpoDaMissao()`). (a entrada `calculadora` de `TELAS_EM_BREVE` sobrou: a calculadora tem tela própria) | Decidir regra, salvar |
 | `js/app.js` | Estado (`estado`), navegação por `#`, cliques (`data-acao`), teclado; é quem chama `salvarProgresso()` | Montar HTML, guardar regra |
 | `img/` | `favicon.svg`. A logo (o lobo do João) não é arquivo: é o símbolo `#i-logo` no `index.html` | — |
-| `testes.html` | Testes das regras do `jogo.js` e da calculadora, no navegador (passou/falhou). 68 testes em 04/11. Abre com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação. Confere também os textos do painel, das boas-vindas e do feedback do erro, a tela das 3 abas da calculadora e o desenho da trilha (`telas.js`), montados numa caixa fora da página | Mexer no progresso salvo ou na tela do app |
+| `testes.html` | Testes das regras do `jogo.js` e da calculadora, no navegador (passou/falhou). 84 testes em 04/11 (Parte 3). Abre com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação, sem e com a missão do dia. Confere também os textos do painel, das boas-vindas, do feedback do erro, da tela Missões e da vitória, a tela das 3 abas da calculadora e o desenho da trilha (`telas.js`), montados numa caixa fora da página. Os testes das regras usam `HOJE` = 05/11, um dia de missão da calculadora, para a missão não mexer nos números deles | Mexer no progresso salvo ou na tela do app |
 | `README.md` | Como abrir, testar e publicar | — |
 | `CLAUDE.md` | Instruções para o Claude Code: como trabalhar, Git, fila de tarefas | Regra de código (fica neste arquivo) |
 | `projeto/` | `documento-mestre.md` (decisões e pendências) e este `arquitetura.md`, versão oficial dos dois. Também os planos de tarefa (ex.: `plano-gamificacao.md`) | Código |
@@ -29,7 +29,7 @@ Ordem dos scripts no `index.html`: dados-licoes → armazenamento → jogo → t
 1. **Sem servidor.** Tem que funcionar abrindo o `index.html` com dois cliques. Proibido: `type="module"`, `import`, `fetch()` de arquivo local, ferramenta de build.
 2. **HTML, CSS e JavaScript puro.** Sem framework e sem biblioteca externa. Nada carregado da internet (nem fontes).
 3. **Só o `armazenamento.js` usa `localStorage`.** Se um dia tiver servidor, só ele muda.
-4. **Texto de lição só no `dados-licoes.js`.** Textos da interface (botões, títulos, avisos) ficam no `telas.js` (ou no `app.js`, nos avisos de ação). Exceção: nomes que são dados do jogo ficam no `jogo.js`, junto dos valores (`NOME_DA_DIFICULDADE` e os nomes dos níveis em `NIVEIS`). Exceção que já está no código (Eufy, 01/11): as mensagens de erro e alguns textos de resultado da Calculadora de Metas (`erro`, `mensagem`, `subtexto` e `aviso`) vêm prontos das contas do `jogo.js`.
+4. **Texto de lição só no `dados-licoes.js`.** Textos da interface (botões, títulos, avisos) ficam no `telas.js` (ou no `app.js`, nos avisos de ação). Exceção: nomes que são dados do jogo ficam no `jogo.js`, junto dos valores (`NOME_DA_DIFICULDADE`, os nomes dos níveis em `NIVEIS` e os textos das missões em `MISSOES`, cada um junto da sua meta). Exceção que já está no código (Eufy, 01/11): as mensagens de erro e alguns textos de resultado da Calculadora de Metas (`erro`, `mensagem`, `subtexto` e `aviso`) vêm prontos das contas do `jogo.js`.
 5. **Cada arquivo no seu papel:** `jogo.js` não mexe na tela nem salva; `telas.js` não decide regra nem salva; `app.js` liga os dois.
 6. **Todo texto do conteúdo entra na página por `escaparHtml()`.**
 7. **Cor, fonte, espaço, raio e medida só por variável CSS.** Ícones e logo usam `currentColor` ou classes. Exceção: `img/favicon.svg` tem a cor escrita nele. Exceções que já estão no código desde o design do João (03/11): os 7 ícones do menu, a medalha das Ligas (`#i-ligas-prata`) e o miolo do `#i-sequencia` têm as cores do Figma escritas no `index.html`; o `estilo.css` tem 3 cores fora das variáveis (fundo do item do menu ao passar o mouse e a sombra dos ícones do baú e do troféu; outras 4 saíram na Parte 2) e várias medidas em px soltas. Código novo segue a regra.
@@ -110,20 +110,23 @@ Chave `finedu-progresso` no localStorage, em JSON:
 { versao: 1, xp, moedas, vidas, diaDasVidas: 'AAAA-MM-DD', sequencia,
   ultimoDiaDeEstudo: 'AAAA-MM-DD' | null, licoesConcluidas: [ids],
   bausAbertos: [ids de unidade], respostasCertas, respostasDadas,
-  errosPorLicao: { 'id-da-licao': [posições] }, boasVindasVistas: true | false }
+  errosPorLicao: { 'id-da-licao': [posições] }, boasVindasVistas: true | false,
+  missao: { dia: 'AAAA-MM-DD', licoes, acertos, perfeitas, contas, concluida: true | false } }
 ```
 
 `errosPorLicao` guarda, para cada lição, a posição (no `dados-licoes.js`) das questões que o aluno errou de primeira da última vez que concluiu a lição. O aquecimento usa essa lista (e conta quantas são, para o aquecimento duplo). Se o conteúdo mudar, o pior que acontece é o aquecimento trazer outra questão da mesma lição.
 
 `boasVindasVistas` diz se o aviso de boas-vindas já apareceu. Progresso novo ou reiniciado começa com `false`; um progresso salvo antes de o campo existir ganha `true`, para quem já está jogando não ver o aviso.
 
-A Calculadora não salva nada no progresso.
+`missao` (Parte 3) guarda o que o aluno fez no dia `dia` para a missão do dia: `licoes` (lições e treinos concluídos), `acertos` (questões certas em qualquer parte da lição: aquecimento, novas e revisão, no treino também), `perfeitas` (lições e treinos com as 5 questões novas certas de primeira) e `contas` (contas com resultado na Calculadora de Metas). `concluida` diz se os `XP_DA_MISSAO` de hoje já entraram. Começa zerada (`missaoZerada()`), e o `atualizarDia()` zera de novo quando o dia muda, como faz com as vidas. Uma missão estragada (`missaoEstaBoa()` falha) também volta a zerada. A seção 6 explica a regra.
+
+A Calculadora não salva nada no progresso. A única exceção é a conta para a missão do dia (`missao.contas`), que o `app.js` registra com `registrarContaNaCalculadora()`.
 
 Campo novo: acrescente em `criarProgressoInicial()`. Progressos antigos ganham o valor inicial sozinhos (`prepararProgresso()`), e dados estragados voltam ao inicial. A exceção é o `boasVindasVistas`, explicado acima.
 
-## 6. Regras do jogo (tarefa 2 e gamificação 2, 01/11)
+## 6. Regras do jogo (tarefa 2 e gamificação 2, 01/11; missão do dia, Parte 3)
 
-Decididas no `projeto/plano-gamificacao.md` (a gamificação 2 está na seção 9 dele). Constantes no topo do `jogo.js`:
+Decididas no `projeto/plano-gamificacao.md` (a gamificação 2 está na seção 9 dele) e, a missão do dia, na seção "Missão do dia" do documento-mestre. Constantes no topo do `jogo.js`:
 
 | Constante | Valor |
 |---|---|
@@ -137,6 +140,9 @@ Decididas no `projeto/plano-gamificacao.md` (a gamificação 2 está na seção 
 | `MESADA_DE_BOAS_VINDAS` | 20 (moedas com que o progresso começa: pagam 1 recarga) |
 | `ERROS_PARA_AQUECIMENTO_DUPLO` | 3 (errou 3 ou mais de primeira na lição anterior: o aquecimento traz 2 delas) |
 | `NIVEIS` | Aprendiz 0, Poupador 75, Planejador 175, Estrategista 300, Investidor 450 (o XP em que cada nível começa) |
+| `XP_DA_MISSAO` | 20 (recompensa da missão do dia, uma vez por dia, sem moedas) |
+| `PRIMEIRO_DIA_DAS_MISSOES` | '2026-11-01' (o dia da 1ª missão da lista; o rodízio conta os dias a partir dele) |
+| `MISSOES` | A lista do rodízio, cada uma com `texto`, `conta` (qual número de `progresso.missao` ela olha) e `meta`: "Conclua 1 lição" (`licoes`, 1), "Conclua 2 lições" (`licoes`, 2), "Acerte 10 questões" (`acertos`, 10), "Acerte de primeira todas as questões de uma lição" (`perfeitas`, 1), "Faça uma conta na Calculadora de Metas" (`contas`, 1) |
 
 **A lição é uma fila.** A primeira da fila é a vez atual, e cada vez tem um tipo:
 
@@ -154,15 +160,22 @@ Regra de bolso: **só perde vida quem erra questão nova; ficou sem vidas, recar
 
   Sem moedas suficientes e sem lição concluída, as vidas só voltam no dia seguinte.
 - Mesada de boas-vindas: o progresso começa com `MESADA_DE_BOAS_VINDAS` moedas. Antes de concluir a primeira lição não há o que treinar, e é ela que paga a recarga de quem erra as 5 questões da lição 1. "Reiniciar progresso" devolve a mesada; um progresso que já estava salvo não ganha.
-- Treino (refazer lição concluída): errar não tira vida; não vale XP nem moedas e não conta na precisão; no fim, as vidas voltam a 5. Dá para treinar com 0 vidas. Conta na sequência.
+- Treino (refazer lição concluída): errar não tira vida; não vale XP nem moedas e não conta na precisão; no fim, as vidas voltam a 5. Dá para treinar com 0 vidas. Conta na sequência e na missão do dia (se ele cumprir a missão, só a recompensa dela entra).
 - As vidas também voltam todas no dia seguinte.
 - Sequência: +1 por dia com pelo menos uma lição (ou treino) concluída; se passar um dia sem concluir, volta a 0.
 - Liberação: uma lição libera quando a anterior da mesma trilha está concluída. A primeira de cada trilha começa liberada. Lição concluída pode ser refeita, como treino.
 - Baú: libera quando todas as lições da unidade estão concluídas; abre uma vez só.
-- Níveis: `nivelDoXp(xp)` devolve o número, o nome, o próximo nível e quanto XP falta. `concluirLicao()` e `abrirBau()` dizem se o aluno subiu de nível (`subiuDeNivel`), para o aviso da vitória e do baú. O treino nunca sobe (não vale XP).
+- Níveis: `nivelDoXp(xp)` devolve o número, o nome, o próximo nível e quanto XP falta. `concluirLicao()` e `abrirBau()` dizem se o aluno subiu de nível (`subiuDeNivel`), para o aviso da vitória e do baú. O treino não vale XP: ele só faz subir de nível quando cumpre a missão do dia (os `XP_DA_MISSAO` entram nele).
 - Onde errar não tira vida (revisão, aquecimento e treino), o feedback do erro diz isso na hora (`textoDepoisDoErro()`, no `telas.js`).
 - Painel "Como funciona" (`desenharPainel()`, no `telas.js`): os textos usam as constantes acima, então mudam junto com elas. Ele só explica: a recarga fica na tela "sem vidas" e na Loja (`recarregarNaLoja()`, no `app.js`), e nas duas só libera com 0 vidas (`podeRecarregar()`).
-- Missão do dia: hoje, `META_XP_MISSAO_DIARIA` (30, no topo do `telas.js`) é comparada com o XP total do aluno, e não com o de hoje. Erro conhecido, consertado na Parte 3 (a regra nova está na seção "Missão do dia" do documento-mestre, e a constante passa para o `jogo.js`).
+- Missão do dia (seção 8 do `jogo.js`, Parte 3):
+  - Uma por dia, a mesma para todo mundo: `missaoDoDia(hoje)` conta os dias desde `PRIMEIRO_DIA_DAS_MISSOES` e usa o resto da divisão pelo tamanho de `MISSOES` como posição na lista. Com 5 missões, 11/11 (dia da apresentação) dá resto 0: "Conclua 1 lição". Mudou a ordem ou o tamanho da lista? Confira de novo qual cai em 11/11 (tem teste).
+  - `concluirLicao()` soma a lição (ou o treino) nos números de hoje com `somarNaMissao()`: 1 lição, as questões certas de todas as partes e 1 lição perfeita se acertou as 5 novas de primeira (o aquecimento não entra nessa conta). Só no fim: lição largada no meio não conta, como o XP.
+  - Na calculadora, cada conta com resultado (nas 3 abas, pelo botão ou pelo Enter) soma 1 em `contas`: `calcularMetaNaTela()` → `contarContaNaMissao()` (`app.js`) → `registrarContaNaCalculadora()`. Conta com erro de digitação não soma. A troca de aba, que refaz a conta sozinha, também não.
+  - Quando o número que a missão de hoje olha chega à meta, entram os `XP_DA_MISSAO` (sem moedas), uma vez só no dia (`missao.concluida`). O treino conta, mas continua sem XP próprio: só a recompensa da missão entra.
+  - O resumo da lição traz `missaoConcluida`; o `xp` do resumo continua sendo só o da lição (é o que o placar mostra), e o `subiuDeNivel` já conta os 20 XP da missão. A vitória e o fim do treino mostram "Missão do dia concluída: +20 XP" (`desenharMissaoConcluida()`, com o mesmo estilo do aviso de nível, `.comemoracao-missao`), antes do aviso de nível. Na calculadora, o aviso de baixo diz o mesmo (`avisarMissaoConcluida()`, 4 segundos na tela) e, se for o caso, o nível que subiu; os contadores e o cartão da missão mudam na hora.
+  - As telas perguntam `situacaoDaMissao(progresso, hoje)` (`{ texto, conta, meta, feito, concluida }`, só com os números de hoje) e desenham o cartão com `desenharCorpoDaMissao()`: a missão no título, "1/2" na barra (o leitor de tela ouve "Progresso da missão: 1 de 2 lições") e o selo "Em andamento" ou "Concluída!" na tela Missões. O painel "Como funciona" tem uma linha sobre a missão na parte do XP, com a de hoje.
+  - O erro antigo (o `META_XP_MISSAO_DIARIA` do `telas.js` comparava 30 com o XP total) saiu junto com a constante.
 - Boas-vindas: aparecem numa tela do menu enquanto `boasVindasVistas` for `false`, e ficam marcadas como vistas (`marcarBoasVindasVistas()`) assim que aparecem.
 - Funções que dependem da data recebem `hoje` como último parâmetro (para testar datas).
 - Regra nova ou mudada ganha teste no `testes.html`.
@@ -213,4 +226,5 @@ A troca é pela orientação porque tablet Samsung em pé tem uns 800px de largu
 5. Mais → Reiniciar progresso funciona (e as boas-vindas aparecem de novo; depois da Parte 4, o onboarding).
 6. Tocar num contador abre o painel "Como funciona", e o Esc fecha.
 7. Calculadora: uma conta em cada aba, e um erro de digitação mostra a mensagem certa.
-8. Mudou o visual? Antes/depois mostrado e aprovado (regra 19).
+8. Missões: a tela e o cartão da coluna da direita mostram a missão de hoje e o que já foi feito hoje; quando ela termina, a vitória (ou o aviso da calculadora) mostra "Missão do dia concluída: +20 XP".
+9. Mudou o visual? Antes/depois mostrado e aprovado (regra 19).

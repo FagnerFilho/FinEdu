@@ -18,7 +18,7 @@ Equipe: Fagner (líder), João (design), Eufy (calculadora), Samuel de Assunçã
 
 ## Como testar as regras
 
-Dê dois cliques no `testes.html`. Ele roda os testes das regras do jogo (XP e níveis, moedas, vidas, revisão, aquecimento, recarga, treino e a simulação de 3 alunos) e da Calculadora de Metas, confere os textos do painel "Como funciona" e das boas-vindas, e mostra cada um como "Passou" ou "Falhou". Depois de mexer no `js/jogo.js` ou no `js/telas.js`, todos têm que passar.
+Dê dois cliques no `testes.html`. Ele roda os testes das regras do jogo (XP e níveis, moedas, vidas, revisão, aquecimento, recarga, treino, missão do dia e a simulação de 3 alunos) e da Calculadora de Metas, confere os textos do painel "Como funciona", das boas-vindas e da tela Missões, e mostra cada um como "Passou" ou "Falhou". Depois de mexer no `js/jogo.js` ou no `js/telas.js`, todos têm que passar.
 
 ## Publicar no GitHub Pages
 
@@ -37,7 +37,7 @@ No plano gratuito do GitHub, o repositório precisa ser público. Depois de cada
 | `css/fontes/` | Fontes Fredoka, Figtree e Baloo 2 (licença SIL OFL) |
 | `js/dados-licoes.js` | Conteúdo: trilhas, unidades, lições e questões |
 | `js/armazenamento.js` | Único arquivo que lê e grava o progresso |
-| `js/jogo.js` | Regras: XP e níveis, moedas, vidas, sequência, liberação, aquecimento, revisão, recarga, treino, baú e as contas da Calculadora de Metas |
+| `js/jogo.js` | Regras: XP e níveis, moedas, vidas, sequência, liberação, aquecimento, revisão, recarga, treino, baú, missão do dia e as contas da Calculadora de Metas |
 | `js/telas.js` | Desenha as telas (trilha, lição, Calculadora, Ligas, Missões, Loja, Perfil, Mais...) |
 | `js/app.js` | Inicia o app, troca de tela e responde aos toques |
 | `img/` | Favicon (a logo, o lobo, é um ícone dentro do `index.html`) |

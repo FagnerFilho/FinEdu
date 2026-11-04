@@ -156,7 +156,12 @@
     // 2. AJUDANTES
     // ============================================================
 
-    const HOJE = '2026-11-04';
+    // HOJE é um dia em que a missão do dia é a da calculadora: assim, nos
+    // testes das regras das lições, a missão não entra no XP, e os números
+    // continuam os do plano. A missão tem o grupo de testes dela.
+    const HOJE = '2026-11-05';
+    const AMANHA = '2026-11-06';
+    const DIA_DA_APRESENTACAO = '2026-11-11';   // missão "Conclua 1 lição"
     const TRILHA = CONTEUDO.trilhas[0];
     const UNIDADE = TRILHA.unidades[0];
     const [LICAO_1, LICAO_2, LICAO_3, LICAO_4] = UNIDADE.licoes;
@@ -354,7 +359,7 @@
       confere([maximo.numero, maximo.proximo, maximo.faltam], [5, null, 0], 'no nível mais alto');
     });
 
-    teste('Fim da lição: avisa quando sobe de nível, e só nessa hora (o treino nunca sobe)', () => {
+    teste('Fim da lição: avisa quando sobe de nível, e só nessa hora (o treino não vale XP)', () => {
       const progresso = novoProgresso();
       const primeira = concluirAcertandoTudo(progresso, LICAO_1);   // 50 XP
       confere([primeira.nivel.numero, primeira.subiuDeNivel], [1, false], 'lição 1');
@@ -750,6 +755,194 @@
     });
 
 
+    grupo('Missão do dia');
+
+    // Um dia de cada missão (o rodízio começa em 01/11/2026 e repete a cada 5 dias)
+    const DIA_UMA_LICAO = DIA_DA_APRESENTACAO;   // 11/11 (também 06/11)
+    const DIA_DUAS_LICOES = '2026-11-07';
+    const DIA_DEZ_ACERTOS = '2026-11-08';
+    const DIA_LICAO_PERFEITA = '2026-11-09';
+    const DIA_CALCULADORA = HOJE;                // 05/11 (também 10/11)
+
+    teste('A mesma data dá sempre a mesma missão, para qualquer aluno, e os dias seguem a ordem da lista', () => {
+      confere(missaoDoDia('2026-11-08'), missaoDoDia('2026-11-08'), 'a mesma data duas vezes');
+      confere(situacaoDaMissao(novoProgresso(), '2026-11-08').texto, situacaoDaMissao(alunoNoMeio(), '2026-11-08').texto,
+        'dois alunos no mesmo dia');
+      const dias = ['2026-11-06', '2026-11-07', '2026-11-08', '2026-11-09', '2026-11-10', '2026-11-11', '2026-11-16'];
+      confere(dias.map(dia => missaoDoDia(dia).texto), [
+        'Conclua 1 lição', 'Conclua 2 lições', 'Acerte 10 questões', 'Acerte de primeira todas as questões de uma lição',
+        'Faça uma conta na Calculadora de Metas', 'Conclua 1 lição', 'Conclua 1 lição'
+      ], 'de 06/11 a 11/11, e 16/11');
+      confere(missaoDoDia('2026-10-31').texto, 'Faça uma conta na Calculadora de Metas', 'um dia antes do primeiro dia do rodízio');
+    });
+
+    teste('O dia da apresentação (11/11) tem a missão "Conclua 1 lição", que vale 20 XP', () => {
+      confere([missaoDoDia(DIA_DA_APRESENTACAO).texto, XP_DA_MISSAO], ['Conclua 1 lição', 20], 'missão e recompensa');
+    });
+
+    teste('O progresso da missão zera no dia seguinte (também numa lição que termina depois da meia-noite)', () => {
+      const progresso = criarProgressoInicial('2026-11-06');
+      concluirAcertandoTudo(progresso, LICAO_1, '2026-11-06');   // Conclua 1 lição
+      confere([progresso.missao.licoes, progresso.missao.concluida], [1, true], 'no mesmo dia');
+      confere(atualizarDia(progresso, DIA_DUAS_LICOES), true, 'o dia virou (precisa salvar)');
+      confere(progresso.missao, missaoZerada(DIA_DUAS_LICOES), 'no dia seguinte');
+      confere(situacaoDaMissao(progresso, DIA_DUAS_LICOES),
+        { texto: 'Conclua 2 lições', conta: 'licoes', meta: 2, feito: 0, concluida: false }, 'a missão do dia seguinte');
+
+      // Sem passar pelo atualizarDia (a lição começou antes da meia-noite): conta no dia novo
+      const outro = criarProgressoInicial('2026-11-06');
+      concluirAcertandoTudo(outro, LICAO_1, '2026-11-06');
+      concluirAcertandoTudo(outro, LICAO_2, DIA_DUAS_LICOES);
+      confere([outro.missao.dia, outro.missao.licoes, outro.missao.concluida], [DIA_DUAS_LICOES, 1, false], 'lição depois da meia-noite');
+    });
+
+    teste('A recompensa entra uma vez só no dia: +20 XP na 1ª lição de 11/11; na 2ª e no treino, nada (e nunca moedas)', () => {
+      const progresso = criarProgressoInicial(DIA_UMA_LICAO);
+      const primeira = concluirAcertandoTudo(progresso, LICAO_1, DIA_UMA_LICAO);
+      confere([primeira.xp, primeira.missaoConcluida, progresso.xp], [50, true, 70], 'lição 1: XP da lição, missão e XP total');
+      const segunda = concluirAcertandoTudo(progresso, LICAO_2, DIA_UMA_LICAO);
+      confere([segunda.xp, segunda.missaoConcluida, progresso.xp], [55, false, 125], 'lição 2');
+      const treino = concluirAcertandoTudo(progresso, LICAO_1, DIA_UMA_LICAO);
+      confere([treino.missaoConcluida, progresso.xp, progresso.missao.licoes], [false, 125, 3], 'treino');
+      confere(progresso.moedas, MESADA_DE_BOAS_VINDAS + 15 + 15, 'moedas (só as das lições)');
+    });
+
+    teste('O treino conta para a missão: continua sem XP próprio, e só entram os 20 da missão', () => {
+      const progresso = criarProgressoInicial('2026-11-10');
+      concluirAcertandoTudo(progresso, LICAO_1, '2026-11-10');   // dia da calculadora: a lição não cumpre a missão
+      confere([progresso.xp, progresso.missao.concluida], [50, false], 'depois da lição 1');
+      const treino = concluirAcertandoTudo(progresso, LICAO_1, DIA_UMA_LICAO);
+      confere([treino.treino, treino.xp, treino.moedas, treino.missaoConcluida], [true, 0, 0, true], 'resumo do treino');
+      confere([progresso.xp, progresso.moedas], [70, 35], 'XP (50 + 20 da missão) e moedas');
+    });
+
+    teste('"Acerte 10 questões": valem os acertos do aquecimento, das questões novas e da revisão', () => {
+      const progresso = criarProgressoInicial(DIA_DEZ_ACERTOS);
+      const sessao = abrir(progresso, LICAO_1);
+      jogar(progresso, sessao, errandoDePrimeira([4]));   // 4 de primeira e 1 na revisão
+      const primeira = concluirLicao(progresso, sessao, DIA_DEZ_ACERTOS);
+      confere([progresso.missao.acertos, primeira.missaoConcluida], [5, false], 'depois da lição 1');
+      confere(situacaoDaMissao(progresso, DIA_DEZ_ACERTOS).feito, 5, 'progresso na tela');
+      const segunda = concluirAcertandoTudo(progresso, LICAO_2, DIA_DEZ_ACERTOS);   // aquecimento e as 5
+      confere([progresso.missao.acertos, segunda.missaoConcluida], [11, true], 'depois da lição 2');
+      confere(situacaoDaMissao(progresso, DIA_DEZ_ACERTOS).feito, 10, 'o progresso na tela para na meta');
+    });
+
+    teste('"Acerte de primeira todas as questões de uma lição": vale lição ou treino sem erro de primeira (o aquecimento não entra)', () => {
+      const progresso = criarProgressoInicial(DIA_LICAO_PERFEITA);
+      const sessao = abrir(progresso, LICAO_1);
+      jogar(progresso, sessao, errandoDePrimeira([2]));
+      confere(concluirLicao(progresso, sessao, DIA_LICAO_PERFEITA).missaoConcluida, false, 'lição com 1 erro');
+      const treino = concluirAcertandoTudo(progresso, LICAO_1, DIA_LICAO_PERFEITA);
+      confere([treino.perfeita, treino.missaoConcluida], [true, true], 'treino sem erro');
+
+      const outro = criarProgressoInicial(DIA_DEZ_ACERTOS);
+      concluirAcertandoTudo(outro, LICAO_1, DIA_DEZ_ACERTOS);
+      const segunda = abrir(outro, LICAO_2);
+      jogar(outro, segunda, daVez => vezAtual(daVez).tipo !== 'aquecimento');   // erra só o aquecimento
+      const resumo = concluirLicao(outro, segunda, DIA_LICAO_PERFEITA);
+      confere([resumo.perfeita, resumo.missaoConcluida], [true, true], 'errou só o aquecimento');
+    });
+
+    teste('A calculadora conta: no dia dela, a 1ª conta dá +20 XP e a 2ª, nada; em outro dia, a conta não termina a missão', () => {
+      const progresso = criarProgressoInicial(DIA_CALCULADORA);
+      confere(registrarContaNaCalculadora(progresso, DIA_CALCULADORA), { xp: 20, nivel: nivelDoXp(20), subiuDeNivel: false }, '1ª conta');
+      confere([progresso.xp, progresso.missao.contas, progresso.missao.concluida], [20, 1, true], 'progresso depois da 1ª');
+      confere(registrarContaNaCalculadora(progresso, DIA_CALCULADORA), null, '2ª conta');
+      confere([progresso.xp, progresso.missao.contas], [20, 2], 'progresso depois da 2ª');
+
+      const outroDia = criarProgressoInicial(DIA_UMA_LICAO);
+      confere(registrarContaNaCalculadora(outroDia, DIA_UMA_LICAO), null, 'conta no dia de "Conclua 1 lição"');
+      confere([outroDia.xp, outroDia.missao.contas, outroDia.missao.concluida], [0, 1, false], 'XP, contas e missão');
+    });
+
+    teste('Se os 20 XP da missão fazem subir de nível, o aviso aparece (na lição, no treino e na calculadora)', () => {
+      const progresso = criarProgressoInicial(DIA_UMA_LICAO);
+      progresso.xp = 10;
+      const resumo = concluirAcertandoTudo(progresso, LICAO_1, DIA_UMA_LICAO);   // 10 + 50 + 20
+      confere([progresso.xp, resumo.missaoConcluida, resumo.subiuDeNivel, resumo.nivel.numero], [80, true, true, 2], 'lição');
+
+      const doTreino = criarProgressoInicial('2026-11-10');
+      concluirAcertandoTudo(doTreino, LICAO_1, '2026-11-10');
+      doTreino.xp = 60;
+      const treino = concluirAcertandoTudo(doTreino, LICAO_1, DIA_UMA_LICAO);   // só a missão dá XP: 60 + 20
+      confere([treino.treino, treino.subiuDeNivel, doTreino.xp], [true, true, 80], 'treino');
+
+      const daConta = criarProgressoInicial(DIA_CALCULADORA);
+      daConta.xp = 60;
+      const recompensa = registrarContaNaCalculadora(daConta, DIA_CALCULADORA);
+      confere([recompensa.subiuDeNivel, recompensa.nivel.numero, recompensa.nivel.nome], [true, 2, 'Poupador'], 'calculadora');
+    });
+
+    teste('Progresso antigo, sem a missão, ganha a de hoje zerada; missão estragada ou de ontem volta ao começo', () => {
+      confere(prepararProgresso({ xp: 120 }, HOJE).missao, missaoZerada(HOJE), 'sem o campo');
+      confere(prepararProgresso({ missao: 'x' }, HOJE).missao, missaoZerada(HOJE), 'campo estragado');
+      const deHoje = { dia: HOJE, licoes: 1, acertos: 5, perfeitas: 1, contas: 0, concluida: false };
+      confere(prepararProgresso({ missao: { ...deHoje, licoes: -1 } }, HOJE).missao, missaoZerada(HOJE), 'número negativo');
+      confere(prepararProgresso({ missao: deHoje }, HOJE).missao, deHoje, 'a de hoje continua');
+      confere(prepararProgresso({ missao: { ...deHoje, dia: '2026-11-04' } }, HOJE).missao, missaoZerada(HOJE), 'a de ontem zera');
+    });
+
+    teste('Tela Missões e cartão da coluna: a missão e o progresso de hoje (o XP total não conta mais)', () => {
+      // O erro antigo: com 30 XP ou mais, "Ganhe 30 XP" aparecia concluída para sempre
+      const progresso = alunoNoMeio();   // 105 XP, nada feito em 07/11
+      const tela = document.createElement('div');
+      const contagemESelo = () => [textoDe(tela.querySelector('.missao-contagem')), textoDe(tela.querySelector('.selo'))];
+      desenharMissoes(tela, progresso, DIA_DUAS_LICOES);
+      confere(textoDe(tela.querySelector('.missao-meta')), 'Conclua 2 lições', 'missão');
+      confere(contagemESelo(), ['0/2', 'Em andamento'], 'sem nada feito hoje');
+      confere(tela.querySelector('[role="progressbar"]').getAttribute('aria-label'), 'Progresso da missão: 0 de 2 lições', 'leitor de tela');
+      confere(textoDe(tela.querySelector('.perfil-sub')), 'Todo dia tem uma missão nova, que vale mais 20 XP.', 'subtítulo');
+      confere(typeof META_XP_MISSAO_DIARIA, 'undefined', 'a constante antiga saiu');
+
+      concluirAcertandoTudo(progresso, LICAO_3, DIA_DUAS_LICOES);
+      desenharMissoes(tela, progresso, DIA_DUAS_LICOES);
+      confere(contagemESelo(), ['1/2', 'Em andamento'], 'com 1 lição');
+      concluirAcertandoTudo(progresso, LICAO_1, DIA_DUAS_LICOES);   // treino
+      desenharMissoes(tela, progresso, DIA_DUAS_LICOES);
+      confere(contagemESelo(), ['2/2', 'Concluída!'], 'com a lição e o treino');
+
+      // O cartão da coluna da direita usa o mesmo miolo
+      const cartao = montar(desenharCorpoDaMissao(situacaoDaMissao(progresso, DIA_DUAS_LICOES)));
+      confere([textoDe(cartao.querySelector('.missao-meta')), cartao.querySelector('[role="progressbar"]').getAttribute('aria-valuenow')],
+        ['Conclua 2 lições', '2'], 'cartão da coluna');
+      const nomes = MISSOES.map(missao => montar(desenharCorpoDaMissao({ ...missao, feito: 0, concluida: false }))
+        .querySelector('[role="progressbar"]').getAttribute('aria-label'));
+      confere(nomes, ['Progresso da missão: 0 de 1 lição', 'Progresso da missão: 0 de 2 lições', 'Progresso da missão: 0 de 10 questões',
+        'Progresso da missão: 0 de 1 lição perfeita', 'Progresso da missão: 0 de 1 conta'], 'leitor de tela nas 5 missões');
+    });
+
+    teste('Vitória e fim do treino: "Missão do dia concluída: +20 XP" só quando ela termina, antes do aviso de nível', () => {
+      const progresso = criarProgressoInicial(DIA_UMA_LICAO);
+      progresso.xp = 10;
+      const tela = document.createElement('div');
+      desenharResultado(tela, concluirAcertandoTudo(progresso, LICAO_1, DIA_UMA_LICAO));   // 10 + 50 + 20 = 80: nível 2
+      confere([...tela.querySelectorAll('.comemoracao-missao, .comemoracao-nivel')].map(textoDe),
+        ['Missão do dia concluída: +20 XP', 'Subiu para o nível 2: Poupador!'], 'lição que termina a missão');
+      confere(textoDe(tela.querySelector('.placar-item--xp .placar-valor')), '+50', 'o placar mostra só o XP da lição');
+
+      desenharResultado(tela, concluirAcertandoTudo(progresso, LICAO_2, DIA_UMA_LICAO));
+      confere(tela.querySelector('.comemoracao-missao'), null, 'lição depois da missão concluída');
+
+      const doTreino = criarProgressoInicial('2026-11-10');
+      concluirAcertandoTudo(doTreino, LICAO_1, '2026-11-10');
+      desenharResultado(tela, concluirAcertandoTudo(doTreino, LICAO_1, DIA_UMA_LICAO));
+      confere([textoDe(tela.querySelector('h1')), textoDe(tela.querySelector('.comemoracao-missao'))],
+        ['Treino concluído!', 'Missão do dia concluída: +20 XP'], 'fim do treino');
+    });
+
+    teste('Painel "Como funciona": a parte do XP fala da missão do dia e diz qual é a de hoje', () => {
+      const progresso = criarProgressoInicial(DIA_CALCULADORA);
+      const parteDoXp = () => textoDe(montar(desenharPainel(progresso, DIA_CALCULADORA)).querySelector('.painel-parte--xp'));
+      const antes = parteDoXp();
+      const trecho = `Todo dia tem uma missão nova, que vale mais ${XP_DA_MISSAO} XP. A de hoje: faça uma conta na Calculadora de Metas.`;
+      if (!antes.includes(trecho)) throw new Error(`antes da conta: ${antes}`);
+      registrarContaNaCalculadora(progresso, DIA_CALCULADORA);
+      const depois = parteDoXp();
+      if (!depois.includes('A de hoje você já concluiu.')) throw new Error(`depois da conta: ${depois}`);
+    });
+
+
     grupo('Simulação dos 3 alunos (seção 4 do plano)');
 
     // Um aluno simulado. Na primeira vez que vê uma questão, ele erra se
@@ -757,12 +950,15 @@
     // viu explicada, ele acerta. Sem vidas: paga a recarga se puder (e se
     // "pagaSePuder"); se não, treina a lição concluída mais recente e
     // recomeça a lição. Começa com a mesada de boas-vindas (20 moedas),
-    // faz a Unidade 1 inteira e abre o baú. "respondidas" conta todas
-    // as vezes que ele apertou "Verificar" (aquecimento, novas, revisão
-    // e treino), para estimar o tempo da aula. "subidas" diz onde ele
-    // subiu de nível.
-    function simularAluno(erraDePrimeira, pagaSePuder = true) {
-      const progresso = novoProgresso();
+    // faz a Unidade 1 inteira, no mesmo "dia", e abre o baú. "respondidas"
+    // conta todas as vezes que ele apertou "Verificar" (aquecimento, novas,
+    // revisão e treino), para estimar o tempo da aula. "subidas" diz onde
+    // ele subiu de nível.
+    // No dia HOJE (missão da calculadora), as lições não cumprem a missão:
+    // são os números do plano. Em 11/11, a missão "Conclua 1 lição" dá
+    // 20 XP a mais a cada um (os últimos testes do grupo).
+    function simularAluno(erraDePrimeira, pagaSePuder = true, dia = HOJE) {
+      const progresso = criarProgressoInicial(dia);
       const vistas = new Set();
       const contagem = { compras: 0, treinos: 0, respondidas: 0 };
       const subidas = [];
@@ -788,7 +984,7 @@
           }
           contagem.respondidas += sessao.respondidas;
           if (proximo === 'fim') {
-            const resumo = concluirLicao(progresso, sessao, HOJE);
+            const resumo = concluirLicao(progresso, sessao, dia);
             if (resumo.subiuDeNivel) subidas.push(`lição ${i + 1}: nível ${resumo.nivel.numero}`);
             break;
           }
@@ -797,7 +993,7 @@
           const treino = abrir(progresso, paraTreinar);
           jogar(progresso, treino, acertar);
           contagem.respondidas += treino.respondidas;
-          concluirLicao(progresso, treino, HOJE);
+          concluirLicao(progresso, treino, dia);
           contagem.treinos += 1;
         }
       });
@@ -829,6 +1025,26 @@
     teste('Aluno C, erra 4: 4 vidas, 40 moedas, 180 XP, nível 3, 2 recargas e 1 treino, 50 questões; sobe na lição 3 e no baú', () => {
       confere(simularAluno([1, 2, 3, 4]), { vidas: 4, moedas: 40, xp: 180, nivel: 3, compras: 2, treinos: 1, respondidas: 50,
         subidas: ['lição 3: nível 2', 'baú: nível 3'] }, 'fim da unidade');
+    });
+
+    // Com a missão do dia: em 11/11 os 3 cumprem "Conclua 1 lição" na lição 1
+    // e ganham 20 XP a mais. Moedas, vidas e questões não mudam; o nível
+    // sobe antes, mas todos terminam no 3.
+    teste('Com a missão de 11/11 ("Conclua 1 lição"), aluno A: 255 XP, nível 3; sobe na lição 2 e na 3', () => {
+      confere(simularAluno([], true, DIA_DA_APRESENTACAO), { vidas: 5, moedas: 100, xp: 255, nivel: 3, compras: 0, treinos: 0, respondidas: 23,
+        subidas: ['lição 2: nível 2', 'lição 3: nível 3'] }, 'fim da unidade');
+    });
+
+    teste('Com a missão de 11/11, aluno B: 215 XP, nível 3 (guardando as moedas: 220); sobe na lição 2 e na 4', () => {
+      confere(simularAluno([3, 4], true, DIA_DA_APRESENTACAO), { vidas: 2, moedas: 60, xp: 215, nivel: 3, compras: 1, treinos: 0, respondidas: 31,
+        subidas: ['lição 2: nível 2', 'lição 4: nível 3'] }, 'pagando a recarga');
+      confere(simularAluno([3, 4], false, DIA_DA_APRESENTACAO), { vidas: 2, moedas: 80, xp: 220, nivel: 3, compras: 0, treinos: 1, respondidas: 41,
+        subidas: ['lição 2: nível 2', 'lição 4: nível 3'] }, 'guardando as moedas');
+    });
+
+    teste('Com a missão de 11/11, aluno C: 200 XP, nível 3; sobe na lição 2 e na 4', () => {
+      confere(simularAluno([1, 2, 3, 4], true, DIA_DA_APRESENTACAO), { vidas: 4, moedas: 40, xp: 200, nivel: 3, compras: 2, treinos: 1, respondidas: 50,
+        subidas: ['lição 2: nível 2', 'lição 4: nível 3'] }, 'fim da unidade');
     });
 
 
@@ -868,7 +1084,7 @@
       progresso.vidas = 0;
       atualizarDia(progresso, HOJE);
       confere(progresso.vidas, 0, 'no mesmo dia');
-      atualizarDia(progresso, '2026-11-05');
+      atualizarDia(progresso, AMANHA);
       confere(progresso.vidas, VIDAS_MAXIMAS, 'no dia seguinte');
     });
 

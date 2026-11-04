@@ -2,7 +2,8 @@
 // jogo.js — As regras do FinEdu
 // ============================================================
 // XP, níveis, moedas, vidas, sequência de dias, o que está liberado
-// na trilha, o aquecimento, a revisão, a recarga, o treino e o baú.
+// na trilha, o aquecimento, a revisão, a recarga, o treino, o baú e
+// a missão do dia.
 // Este arquivo só faz contas e decide regras: não desenha nada
 // (isso é o telas.js) e não salva nada (quem salva é o app.js,
 // usando o armazenamento.js).
@@ -47,6 +48,22 @@ const NIVEIS = [
   { nome: 'Planejador', xp: 175 },
   { nome: 'Estrategista', xp: 300 },
   { nome: 'Investidor', xp: 450 }
+];
+
+// Missão do dia (seção 8): uma por dia, a mesma para todo mundo
+const XP_DA_MISSAO = 20;   // recompensa, uma vez por dia (sem moedas)
+const PRIMEIRO_DIA_DAS_MISSOES = '2026-11-01';   // dia da 1ª missão da lista
+
+// As missões, em rodízio: um item por dia, na ordem da lista, e depois
+// ela recomeça. Com 5 missões, a 1ª volta a cada 5 dias: 01/11, 06/11,
+// 11/11 (o dia da apresentação)... "conta" diz qual número do dia a
+// missão olha (ver missaoZerada) e "meta" é quanto ele precisa chegar.
+const MISSOES = [
+  { texto: 'Conclua 1 lição', conta: 'licoes', meta: 1 },
+  { texto: 'Conclua 2 lições', conta: 'licoes', meta: 2 },
+  { texto: 'Acerte 10 questões', conta: 'acertos', meta: 10 },
+  { texto: 'Acerte de primeira todas as questões de uma lição', conta: 'perfeitas', meta: 1 },
+  { texto: 'Faça uma conta na Calculadora de Metas', conta: 'contas', meta: 1 }
 ];
 
 // Calculadora de Metas
@@ -103,7 +120,8 @@ function criarProgressoInicial(hoje = hojeComoTexto()) {
     respostasDadas: 0,
     errosPorLicao: {},         // id da lição → posições das questões que o aluno
     // errou de primeira da última vez (para o aquecimento)
-    boasVindasVistas: false    // o aviso de boas-vindas já apareceu?
+    boasVindasVistas: false,   // o aviso de boas-vindas já apareceu?
+    missao: missaoZerada(hoje) // o que o aluno fez hoje para a missão do dia (seção 8)
   };
 }
 
@@ -135,6 +153,7 @@ function prepararProgresso(salvo, hoje = hojeComoTexto()) {
   if (typeof erros !== 'object' || erros === null || Array.isArray(erros)) {
     progresso.errosPorLicao = {};
   }
+  if (!missaoEstaBoa(progresso.missao)) progresso.missao = missaoZerada(hoje);
   progresso.vidas = Math.min(progresso.vidas, VIDAS_MAXIMAS);
 
   // O aviso de boas-vindas é só para quem começa do zero (progresso
@@ -155,6 +174,12 @@ function atualizarDia(progresso, hoje = hojeComoTexto()) {
   if (progresso.diaDasVidas !== hoje) {
     progresso.vidas = VIDAS_MAXIMAS;
     progresso.diaDasVidas = hoje;
+    mudou = true;
+  }
+
+  // Dia novo: a missão do dia recomeça do zero
+  if (progresso.missao.dia !== hoje) {
+    progresso.missao = missaoZerada(hoje);
     mudou = true;
   }
 
@@ -516,8 +541,12 @@ function avancarQuestao(progresso, sessao) {
 // Fecha a lição: o XP e as moedas entram agora (quem sai no meio
 // não ganha), a lição fica concluída e o dia conta na sequência.
 // A precisão conta só as respostas de primeira.
-// No treino não entra XP nem moeda: as vidas voltam todas.
-// O resumo diz também o nível e se o aluno subiu de nível.
+// No treino não entra o XP da lição nem moeda: as vidas voltam todas.
+// A lição (e o treino) conta para a missão do dia (seção 8). Se a
+// missão terminar agora, os XP_DA_MISSAO entram e o resumo avisa
+// (missaoConcluida); o "xp" do resumo continua sendo só o da lição.
+// O resumo diz também o nível e se o aluno subiu de nível (já
+// contando a recompensa da missão).
 function concluirLicao(progresso, sessao, hoje = hojeComoTexto()) {
   const total = sessao.questoes.length;
   const perfeita = sessao.acertos === total;
@@ -541,6 +570,12 @@ function concluirLicao(progresso, sessao, hoje = hojeComoTexto()) {
 
   lembrarErros(progresso, sessao);
 
+  // Missão do dia: as questões certas valem em todas as partes
+  // (aquecimento, questão nova e revisão, no treino também)
+  const acertosDaLicao = sessao.acertos + sessao.consertadas.length + sessao.certasNoAquecimento.length;
+  const missaoConcluida = somarNaMissao(progresso,
+    { licoes: 1, acertos: acertosDaLicao, perfeitas: perfeita ? 1 : 0 }, hoje);
+
   const sequenciaAntes = progresso.sequencia;
   registrarDiaDeEstudo(progresso, hoje);
   const nivel = nivelDoXp(progresso.xp);
@@ -556,6 +591,7 @@ function concluirLicao(progresso, sessao, hoje = hojeComoTexto()) {
     vidasVoltaram: progresso.vidas > vidasAntes,
     sequencia: progresso.sequencia,
     sequenciaSubiu: progresso.sequencia > sequenciaAntes,
+    missaoConcluida,
     nivel,
     subiuDeNivel: nivel.numero > nivelAntes
   };
@@ -633,7 +669,92 @@ function abrirBau(progresso, unidade) {
 
 
 // ============================================================
-// 8. CONFERÊNCIA DO CONTEÚDO
+// 8. MISSÃO DO DIA
+// ============================================================
+// Uma missão por dia, a mesma para todo mundo no mesmo dia. O
+// rodízio conta os dias desde PRIMEIRO_DIA_DAS_MISSOES e usa o resto
+// da divisão pelo tamanho da lista MISSOES: com 5 missões, resto 0 é
+// a 1ª da lista, resto 1 é a 2ª, e assim por diante.
+//
+// O progresso guarda em "missao" os números de hoje: lições concluídas
+// (o treino conta), questões certas (em qualquer parte da lição),
+// lições com todas as questões certas de primeira e contas feitas na
+// Calculadora de Metas. A missão de hoje olha um desses números; quando
+// ele chega à meta, entram os XP_DA_MISSAO, uma vez só no dia. No dia
+// seguinte, tudo zera (atualizarDia).
+//
+// A lição e o treino só contam quando terminam, como o XP: quem sai
+// no meio não ganha nada.
+
+// Os números do dia que uma missão pode olhar
+const NUMEROS_DA_MISSAO = ['licoes', 'acertos', 'perfeitas', 'contas'];
+
+// A missão de um dia que ainda não começou: tudo zerado
+function missaoZerada(hoje = hojeComoTexto()) {
+  return { dia: hoje, licoes: 0, acertos: 0, perfeitas: 0, contas: 0, concluida: false };
+}
+
+// Confere a "missao" que veio do armazenamento (pode vir estragada)
+function missaoEstaBoa(missao) {
+  return typeof missao === 'object' && missao !== null && !Array.isArray(missao) &&
+    typeof missao.dia === 'string' && typeof missao.concluida === 'boolean' &&
+    NUMEROS_DA_MISSAO.every(numero => Number.isFinite(missao[numero]) && missao[numero] >= 0);
+}
+
+// A missão de um dia: um item de MISSOES ({ texto, conta, meta })
+function missaoDoDia(hoje = hojeComoTexto()) {
+  const total = MISSOES.length;
+  const dias = diasEntre(PRIMEIRO_DIA_DAS_MISSOES, hoje);
+  // O "+ total" deixa o resto positivo também para um dia antes do primeiro
+  return MISSOES[((dias % total) + total) % total];
+}
+
+// Como está a missão de hoje, para as telas:
+//   { texto, conta, meta, feito, concluida }
+// "feito" é quanto o aluno já fez hoje (no máximo a meta).
+function situacaoDaMissao(progresso, hoje = hojeComoTexto()) {
+  const missao = missaoDoDia(hoje);
+  const deHoje = progresso.missao.dia === hoje ? progresso.missao : missaoZerada(hoje);
+  return {
+    texto: missao.texto,
+    conta: missao.conta,
+    meta: missao.meta,
+    feito: Math.min(deHoje[missao.conta], missao.meta),
+    concluida: deHoje.concluida
+  };
+}
+
+// Soma nos números de hoje o que o aluno acabou de fazer (ex.: uma lição,
+// { licoes: 1, acertos: 6, perfeitas: 1 }, ou uma conta, { contas: 1 }).
+// Se a missão de hoje chegou à meta agora, os XP_DA_MISSAO entram e a
+// função devolve true. Depois disso, no mesmo dia, devolve sempre false.
+function somarNaMissao(progresso, feito, hoje = hojeComoTexto()) {
+  if (progresso.missao.dia !== hoje) progresso.missao = missaoZerada(hoje);
+  const deHoje = progresso.missao;
+  for (const numero of NUMEROS_DA_MISSAO) {
+    deHoje[numero] += feito[numero] || 0;
+  }
+
+  const missao = missaoDoDia(hoje);
+  if (deHoje.concluida || deHoje[missao.conta] < missao.meta) return false;
+  deHoje.concluida = true;
+  progresso.xp += XP_DA_MISSAO;
+  return true;
+}
+
+// Uma conta feita na Calculadora de Metas (com resultado, sem erro).
+// Devolve null se a missão não terminou agora. Se terminou, devolve a
+// recompensa, com o nível e se os XP_DA_MISSAO fizeram o aluno subir.
+function registrarContaNaCalculadora(progresso, hoje = hojeComoTexto()) {
+  const nivelAntes = nivelDoXp(progresso.xp).numero;
+  if (!somarNaMissao(progresso, { contas: 1 }, hoje)) return null;
+  const nivel = nivelDoXp(progresso.xp);
+  return { xp: XP_DA_MISSAO, nivel, subiuDeNivel: nivel.numero > nivelAntes };
+}
+
+
+// ============================================================
+// 9. CONFERÊNCIA DO CONTEÚDO
 // ============================================================
 // Olha o dados-licoes.js inteiro e lista o que estiver fora do
 // combinado. O app mostra a lista no topo da tela para a equipe
@@ -708,7 +829,7 @@ function conferirLicao(licao, problemas) {
 
 
 // ============================================================
-// 9. CALCULADORA DE METAS
+// 10. CALCULADORA DE METAS
 // ============================================================
 // Funções puras para ler os campos digitados, validar valores,
 // arredondar centavos sempre para cima, formatar em reais (R$) e
