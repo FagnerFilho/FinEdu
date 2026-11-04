@@ -5,13 +5,20 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 @projeto/documento-mestre.md
 @projeto/arquitetura.md
 
+Última atualização: 03/11/2026, noite (feita na conversa de planejamento, depois do design do João).
+
 ## O projeto
 
 - **FinEdu:** site estilo Duolingo que ensina educação financeira para alunos do CETI Dom Severino (ensino fundamental e médio, Teresina-PI).
-- Projeto de extensão de Engenharia de Computação da Uni-CET. Equipe: Fagner (líder), João (design), Samuel de Assunção (conteúdo), Eufy (GitHub), William e Samuel Medeiros.
+- Projeto de extensão de Engenharia de Computação da Uni-CET. Equipe: Fagner (líder), João (design, jgcosta350 no GitHub), Eufy (calculadora, eufyzn), Samuel de Assunção e Samuel Medeiros (conteúdo) e William.
 - **Apresentação: 11/11/2026, de manhã**, num tablet Samsung (Android, pelo link do GitHub Pages) e num notebook.
-- Versão 1 pronta e testada: trilha com a Unidade 1 completa (4 lições + baú), lição com feedback por alternativa, vitória, perfil, "Reiniciar progresso". Calculadora, Guia, Unidade 2 e Trilha 2 (investimentos) aparecem como "Em breve".
-- Gamificação pronta (tarefa 2 e gamificação 2): revisão das erradas, aquecimento (duplo para quem erra muito), recarga e treino, níveis por XP, painel "Como funciona" nos contadores e aviso de boas-vindas.
+- **O que já está pronto** (commit `a906e51`, 67 testes passando):
+  - trilha com a Unidade 1 completa (4 lições + baú), lição com feedback por alternativa, vitória, Perfil, "Reiniciar progresso";
+  - gamificação: revisão das erradas, aquecimento (duplo para quem erra muito), vidas, recarga e treino, níveis por XP, painel "Como funciona" e boas-vindas;
+  - Calculadora de Metas com 3 abas (Eufy, 01/11);
+  - design do João (03/11): paleta, fonte Fredoka, lobo na logo, trilha com discos, menu com 7 itens (Aprender, Calculadora, Ligas, Missões, Loja, Perfil, Mais).
+- **Em breve:** Ligas, Unidades 2 e 3 e Trilha 2 (investimentos).
+- **Não existe mais:** o mascote Estrela (`desenharEstrela`) e o "Guia da Unidade" de conteúdo (descartado). O Guia agora é o tutorial "Como usar o FinEdu" (Parte 4).
 
 ## Quem vai trabalhar com você
 
@@ -21,46 +28,59 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 - **Avalie as ideias dele com sinceridade.** Se algo for uma má ideia, diga por quê e proponha uma alternativa melhor. Não concorde só para agradar.
 - **Quando algo estiver indefinido, pergunte antes de construir.**
 - Antes de mudanças grandes, mostre o plano em poucas linhas e espere o OK.
-- Uma tarefa por sessão. Se o pedido desviar, avise.
+- Uma tarefa (ou uma parte da fila) por vez. Se o pedido desviar, avise.
+- Se a sessão ficar longa demais, o Fagner abre outra e pede para continuar a fila. Tudo o que você precisa está aqui e no documento-mestre: não dependa de memória de sessão antiga.
 
 ## Onde mora cada coisa
 
-- **Código:** esta pasta. Versionada com Git e enviada para o repositório do Fagner no GitHub, que é o oficial: github.com/Fagneraposo/FinEdu (o Eufy vai entrar como colaborador, convite pendente; até 01/11 se chamava FinEduu). Site: https://fagneraposo.github.io/FinEdu/ (o link antigo, com FinEduu, dá 404)
+- **Código:** esta pasta, versionada com Git e enviada para o repositório oficial: github.com/Fagneraposo/FinEdu (público). Site: https://fagneraposo.github.io/FinEdu/ (o link antigo, com FinEduu, dá 404).
 - **Decisões do projeto:** `projeto/documento-mestre.md`. É a versão oficial.
 - **Regras do código:** `projeto/arquitetura.md`. Todo código segue esse arquivo. Se uma mudança precisar quebrar uma regra, discuta antes e atualize o arquivo junto.
-- O planejamento e o conteúdo também são feitos num Projeto do Claude (no app). O Fagner copia o documento-mestre de lá para cá e daqui para lá. Se você notar decisões conflitantes, avise.
+- O planejamento e o conteúdo também são feitos num Projeto do Claude (no app). Quando o planejamento decide coisas novas, ele grava versões novas destes documentos direto no GitHub (com o OK do Fagner), e elas chegam aqui com `git pull`. Nesse caso: confira cada afirmação com o código, corrija o documento (não o código) onde ele estiver errado, e avise o Fagner do que corrigiu.
 
 ## Git
 
 - O Fagner está aprendendo Git. Explique cada comando na primeira vez que usar.
+- **Antes de começar qualquer tarefa: `git status` e `git pull`.** A equipe também manda código (o Eufy e o João já fizeram commits). Se tiver mudança local sem commit, pare e explique antes de puxar.
 - **Commit ao fim de cada parte que funciona**, com mensagem curta em português que diga o que mudou (ex.: "Repete as questões erradas no fim da lição").
-- **Push só com o OK do Fagner.**
+- **Push só com o OK do Fagner.** Depois do push, confira o site no GitHub Pages (leva uns minutos).
 - **A branch `main` sempre funcionando:** é ela que o GitHub Pages publica e que vai para a apresentação.
-- Experimentos (principalmente de design) numa branch separada, como `experimento-design`. Só junta com a `main` se o Fagner aprovar.
+- **Colaboradores (João, Eufy, Samuels) trabalham numa branch própria e abrem um Pull Request.** Só o Fagner junta na `main`. Se você ajudar alguém da equipe, use branch + PR.
+- Experimentos de design: branch `experimento-design`. Só junta com a `main` se o Fagner aprovar.
 - Nunca use `push --force`, nunca reescreva o histórico e nunca apague branch sem perguntar.
-- O repositório é público: nada de senha, dado pessoal ou arquivo particular aqui dentro.
+- O repositório é público: nada de senha, dado pessoal ou arquivo particular aqui dentro (nem os prints de antes/depois).
+
+## O design do João
+
+- **Não mude o visual do João sem mostrar antes/depois e ter o OK do Fagner** (ele confere com o João). Vale para cor, fonte, tamanho, ícone, texto em maiúsculas e posição de qualquer coisa.
+- Como fazer o antes/depois: prints da mesma tela, do mesmo tamanho, antes e depois da mudança (celular em pé, 390 × 844, e tablet deitado, 1280 × 800). Pode usar o Chrome ou o Edge em modo headless (`--headless --screenshot`) ou o Playwright, se estiver instalado. Salve fora do repositório (por exemplo, `Downloads\finedu-antes-depois\`), com nomes numerados (`2.1-antes.png`, `2.1-depois.png`), e diga ao Fagner onde estão.
+- Mudança que só conserta lógica, sem mexer no visual (como a missão do dia contar o XP de hoje), não precisa de antes/depois.
 
 ## Antes de entregar qualquer mudança
 
-1. Siga o checklist da seção 9 do arquitetura.md (nenhuma caixa vermelha, nenhum erro no console, uma lição inteira errando uma questão, em pé e deitado, "Reiniciar progresso", painel dos contadores).
-2. Se existir `testes.html`, rode e confira que tudo passa.
+1. Siga o checklist da seção 9 do arquitetura.md.
+2. Rode o `testes.html` e confira que tudo passa (eram 67 em 03/11; o número só cresce).
 3. Atualize `projeto/documento-mestre.md` (decisões e pendências) e, se mudou alguma regra, o `projeto/arquitetura.md`.
 4. Termine com um resumo curto: o que mudou, em quais arquivos, o que testou e o que ficou pendente.
 
 ## Fila de tarefas até 11/11
 
-1. ~~**GitHub e GitHub Pages.**~~ Feito em 01/11: repositório Fagneraposo/FinEduu (renomeado para FinEdu no mesmo dia), Pages na `main`, pasta raiz. O teste no tablet ficou nas pendências do documento-mestre.
-2. ~~**Gamificação (conversa 05).**~~ Feito em 01/11: revisão das erradas, aquecimento, recarga de vidas com moedas e treino. Plano em `projeto/plano-gamificacao.md`, regras na seção 6 do arquitetura.md, testes no `testes.html`. Push feito em 01/11; o teste no celular e no tablet ficou nas pendências do documento-mestre.
-   - Complemento em 01/11 (gamificação 2): aquecimento duplo, níveis por XP, painel "Como funciona" nos contadores e aviso de boas-vindas (seção 9 do plano-gamificacao.md). Push feito em 01/11.
-3. **Design.** Na branch `experimento-design`:
-   - Aplicar a paleta do João (está no documento-mestre) e conferir o contraste de cada combinação. O roxo sobre o preto fosco dá só 2,5: não serve para texto nem ícone no fundo escuro.
-   - Trocar as fontes e a logo quando o João mandar os arquivos (as fontes precisam ficar salvas em `css/fontes/`, para funcionar sem internet).
-   - **Tirar o mascote** (decisão da equipe): a função `desenharEstrela` e tudo que a usa; "Dica da Estrela" vira "Dica do dia". Atualizar a regra 9 do arquitetura.md.
-   - Deixar o app mais vivo **sem 3D de verdade e sem biblioteca externa**: profundidade com sombra sólida, botões que afundam, trilha com relevo e uma comemoração caprichada no fim da lição. **Sem gradiente** (com paleta roxa, gradiente é a "cara de IA").
-   - Incluir as janelas da gamificação 2 (painel "Como funciona" e boas-vindas) e decidir se os contadores, que agora são botões, ganham a sombra sólida de "tocável".
-   - Use as skills de design de front-end e de revisão de acessibilidade, se estiverem disponíveis.
-4. **09/11:** teste completo no tablet de verdade e ensaio. **10/11:** código congelado, só correção de erro.
+Feito:
+1. ~~GitHub e GitHub Pages~~ (01/11).
+2. ~~Gamificação e gamificação 2~~ (01/11). Plano em `projeto/plano-gamificacao.md`.
+3. ~~Calculadora de Metas~~ (Eufy, 01/11, direto na main).
+4. ~~Design~~ (João, 03/11, direto na main). Os ajustes estão na Parte 2.
+
+A fazer, uma parte por vez, com commit ao fim de cada uma e o OK do Fagner antes da próxima:
+
+5. **Parte 1 · Conferir os documentos (04/11).** O planejamento já gravou no GitHub os documentos novos (CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, README.md). `git pull`; conferir cada afirmação com o código; corrigir o documento onde estiver errado; commit.
+6. **Parte 2 · Correções do design, com antes/depois (04/11).** Obrigatórias: contraste do item ativo do menu; contraste dos rótulos das unidades 2 e 3; licença da Fredoka (`css/fontes/OFL-Fredoka.txt`, texto copiado do repositório oficial da fonte, sem inventar o cabeçalho); tirar o botão "Guia da Unidade" da faixa da unidade; conferir que os 7 itens do menu têm pelo menos 48px num celular de 360px. Propostas para o Fagner e o João decidirem: letra normal no lugar das MAIÚSCULAS, estrela de 5 pontas nos discos das lições, Unidades 2 e 3 como um cartão compacto "Em breve", nomes das abas da calculadora em letra normal, limpeza do código morto da Estrela. Detalhes na seção "Identidade visual" e em "Decisões por conversa (03/11)" do documento-mestre.
+7. **Parte 3 · Missão do dia (05/11).** Seção "Missão do dia" do documento-mestre: 1 missão por dia, em rodízio pela data, `XP_DA_MISSAO` = 20 (o Fagner confirma no plano), sem moedas, treino conta, zera no dia seguinte. Conserta o erro do `META_XP_MISSAO_DIARIA`.
+8. **Parte 4 · Onboarding (05 e 06/11).** Seção "Onboarding" do documento-mestre: "Como devemos te chamar?" → avatar → tutorial "Como usar o FinEdu" → trilha. Depois, o tutorial fica em Mais; o Perfil mostra apelido e avatar; "Reiniciar progresso" traz o onboarding de volta. Substitui o aviso de boas-vindas.
+9. **Questões novas da Unidade 1 (07/11).** O planejamento manda o conteúdo pronto; só o `dados-licoes.js` muda.
+10. **Modo apresentação (07/11).** Botão que deixa o app pronto para demonstrar. Considerar o onboarding.
+11. **09/11:** teste completo no tablet de verdade e ensaio. **10/11:** código congelado, só correção de erro.
 
 ## Depois da apresentação
 
-Trilha 2 (investimentos, com revisão do professor, e as "moedas que rendem" junto), Calculadora de Metas e Guia, Unidade 2, "Meta do dia" e conquistas, e transformar o arquitetura.md numa skill de arquiteto.
+Trilha 2 (investimentos, com revisão do professor, e as "moedas que rendem" junto), Unidades 2 e 3, Ligas (amigos por QR code), instalar como app, conquistas, e transformar o arquitetura.md numa skill de arquiteto.

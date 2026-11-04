@@ -1,27 +1,36 @@
 # DOCUMENTO-MESTRE · FinEdu
 
+Última atualização: 03/11/2026, noite (conversa de planejamento: varredura do repositório e decisões novas). Descreve o código do commit `a906e51` (design do João) mais o que foi decidido para os próximos dias.
+
 ## Visão
 Site estilo Duolingo de educação financeira e investimentos.
 Nome oficial: FinEdu ("Finanças em Foco" era só o nome provisório).
-Escrita do nome: sempre "FinEdu" nos textos (F e E maiúsculos). O "FIN" em maiúsculas da logo nova é só arte.
+Escrita do nome: sempre "FinEdu" nos textos (F e E maiúsculos). O "FINEdu" da logo é só arte.
 Público inicial: alunos do CETI Dom Severino (Teresina-PI).
 Projeto de extensão de Engenharia de Computação (Uni-CET).
 
 ## Equipe
 Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
-- João: design (identidade visual, no Figma).
-- Samuel de Assunção: conteúdo das lições.
-- Eufy: vai entrar como colaborador no repositório do GitHub (o repositório oficial é o do líder); o convite está nas pendências.
+- João (jgcosta350 no GitHub): design. Fez a identidade visual no Figma e aplicou no código em 03/11 (paleta, fontes, lobo, trilha nova e as telas Ligas, Missões, Loja e Mais).
+- Eufy (eufyzn no GitHub): fez a Calculadora de Metas (01/11). Proposta de papel: testes no tablet.
+- João e Eufy já mandam código para o repositório (os commits deles entraram na main).
+- Samuel de Assunção: conteúdo das lições. Os dois Samuels reescrevem as questões da Unidade 1, com supervisão da equipe.
 - O líder distribui as tarefas entre a equipe de propósito, em vez de fazer tudo com IA.
 
-## Ferramentas e onde mora cada coisa (decidido em 01/11)
-- Código: Claude Code, trabalhando direto na pasta finedu no computador do líder, com Git, e enviando para o repositório do líder no GitHub, que é o oficial: github.com/Fagneraposo/FinEdu (público; até 01/11 se chamava FinEduu). O Eufy vai entrar como colaborador (convite pendente).
-- Commits com o e-mail privado do GitHub (noreply), para o e-mail do líder não aparecer no repositório público. Já configurado no Git da pasta finedu.
+## Ferramentas e onde mora cada coisa
+- Código: Claude Code, trabalhando na pasta finedu do computador do líder, com Git, e enviando para o repositório oficial: github.com/Fagneraposo/FinEdu (público; até 01/11 se chamava FinEduu). Site: https://fagneraposo.github.io/FinEdu/
+- Commits com o e-mail privado do GitHub (noreply), para o e-mail do líder não aparecer no repositório público.
 - Planejamento, conteúdo e decisões: Projeto "FineEdu" no Claude.
-- Este documento-mestre e o arquitetura.md ficam também dentro do código, na pasta projeto/. A versão oficial é a da pasta do código: o Claude Code atualiza ao fim de cada tarefa, e o líder copia para o Contexto do Projeto.
-- O Claude Code lê as regras do arquivo CLAUDE.md, na raiz da pasta finedu.
-- Experimentos de design numa branch separada ("experimento-design"). A branch main sempre funcionando, porque é ela que vai para o GitHub Pages.
-- Não refazer a versão 1 do zero: o design novo entra por cima do código que já funciona.
+- Este documento-mestre e o arquitetura.md ficam dentro do código, na pasta projeto/. A versão oficial é a do código. Quando o planejamento decide coisas novas, ele grava versões novas dos documentos direto no GitHub, com o OK do líder (a primeira vez foi em 03/11). O Claude Code puxa com `git pull`, confere com o código, corrige o documento onde ele estiver errado e avisa o líder.
+- O Claude Code lê as regras do CLAUDE.md, na raiz da pasta finedu.
+- Não refazer a versão 1 do zero: tudo entra por cima do código que já funciona.
+
+### Combinado de Git (03/11)
+- A branch main é o que vai para o site e para a apresentação: precisa estar sempre funcionando.
+- Quem não é o líder (João, Eufy, Samuels) trabalha numa branch própria e abre um Pull Request. Só o líder junta na main. (Em 01/11 e 03/11, a calculadora e o design entraram direto na main; deu certo, mas um erro ali derruba o site da apresentação.)
+- O líder, com o Claude Code, faz commit na main ao fim de cada parte que funciona. Push só depois de testar e com o OK do líder. Nunca `--force`.
+- Antes de começar qualquer tarefa: `git pull`, porque a equipe também manda código.
+- Experimentos de design: branch `experimento-design`.
 
 ## Regras do jogo
 - Lição = 5 questões (2 fáceis, 2 médias, 1 difícil), sempre mostradas do fácil para o difícil.
@@ -29,129 +38,191 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - No erro, o feedback mostra por que a escolhida está errada e por que a certa está certa.
 - Concluir uma lição desbloqueia a próxima da mesma trilha. Lição concluída pode ser refeita, como treino.
 - Cada unidade termina com um baú, que libera quando todas as lições da unidade estão concluídas.
-- Gamificação: XP e níveis, moedas, vidas, sequência de dias, aquecimento (duplo para quem errou muito), revisão das erradas, recarga e treino, painel "Como funciona" nos contadores e aviso de boas-vindas (regras na seção Gamificação, decididas na tarefa 2 e na gamificação 2).
+- Gamificação: XP e níveis, moedas, vidas, sequência de dias, aquecimento (duplo para quem errou muito), revisão das erradas, recarga e treino, painel "Como funciona" nos contadores (seção Gamificação). A partir de 03/11: missão do dia (seção Missão do dia).
+- Primeira vez no app: onboarding com apelido, avatar e o tutorial "Como usar o FinEdu" (seção Onboarding). Ele substitui o aviso de boas-vindas.
 
-## Mascote
-- Removido (decisão da equipe em reunião, 31/10): a Estrela não foi aprovada e não há tempo de desenhar outro até a apresentação.
-- Tirar do código na conversa de design: a função desenharEstrela e tudo que a usa (balão na trilha, Dica da Estrela, vitória, fim do treino, sem vidas, confirmação de saída da lição e Perfil). As janelas da gamificação 2 (painel e boas-vindas) já não usam a Estrela. A "Dica da Estrela" vira "Dica do dia" e o campo falaDaEstrela das lições deixa de ser usado.
-- A ideia da raposa também foi descartada antes.
+## Mascote e logo
+- A Estrela foi removida (decisão da equipe em 31/10) e saiu do código no design do João (03/11): não existe mais `desenharEstrela`.
+- O lobo do João é a logo: aparece na barra de cima e no menu lateral (símbolo `#i-logo` no index.html). Por enquanto não é personagem nas telas (não fala e não tem expressões).
+- Cuidado na apresentação: a ideia original do lobo "remete ao lobo de Wall Street". O filme conta a história de um corretor condenado por fraude, o contrário do que o app ensina. Melhor apresentar o lobo como esperto, estratégico e que anda em grupo (planeja junto), sem citar o filme.
+- Sobrou código morto da Estrela: `dicaDoDia()` no jogo.js, `dicasDaEstrela` e `falaDaEstrela` no conteúdo, e `desenharDica()` vazia no telas.js. Limpeza proposta na Parte 2 da fila (só com o OK do líder).
+- A ideia da raposa foi descartada antes.
 
-## Identidade visual
-- Feita pelo João (31/10). Entra no código na conversa de design, perto do fim, junto com a parte mais interativa.
-- Paleta do designer:
-  - Roxo claro #444ADE
-  - Roxo #343BDA
-  - Preto fosco #1B1F3C
-  - Branco azulado #E4E9E7
-- Só modo escuro (prioridade). Fundo provável: preto fosco #1B1F3C (confirmar com o João).
-- Contraste medido (mínimo 4,5 para texto, 3 para ícone):
-  - Branco azulado sobre preto fosco: 13,1. Ótimo para texto.
-  - Branco azulado sobre roxo claro: 5,2; sobre roxo: 6,2. Botão roxo com texto claro funciona.
-  - Roxo claro sobre preto fosco: 2,5; roxo: 2,1. Não serve para texto nem ícone no fundo escuro.
-  - Para texto e ícone roxo no fundo escuro, falta um roxo mais claro (proposta: #8A8FF2, contraste 5,6). Precisa da aprovação do João.
-  - Ainda faltam: cor dos cartões e bordas, texto secundário, lição bloqueada, verde e vermelho, todos conferidos sobre o preto fosco.
-- Logo nova: estrela + "FINEdu" ("FIN" escuro e "Edu" claro sobre roxo). No fundo escuro, usar a versão clara (como a estrela clara sobre preto fosco). Logo não precisa seguir regra de contraste.
-- Fontes: duas fontes arredondadas escolhidas pelo João; faltam os nomes e os arquivos (.woff2), para salvar em css/fontes/ e funcionar sem internet.
-- Visual "mais vivo" sem 3D de verdade (exigiria biblioteca externa e pesa no tablet): profundidade com sombra sólida, botões que afundam, comemoração no fim da lição e trilha com relevo.
+## Identidade visual (aplicada pelo João em 03/11)
+- Só modo escuro.
+- Cores (variáveis no topo do css/estilo.css): fundo #1B1F3C (preto fosco), cartões #21264A, texto #E4E9E7 (branco azulado), texto secundário #A3AAC9, destaque #343BDA (roxo) e #4B53F5 (roxo claro), acerto #3CC977, erro #F05454, sequência #E5821A.
+- Cada unidade tem uma cor: 1 roxo #343BDA, 2 laranja #CA5726, 3 verde #21965B.
+- Fontes: Fredoka nos títulos e Figtree no texto (Baloo 2 fica de reserva). Todas salvas em css/fontes/, funcionam sem internet. Falta a licença da Fredoka (OFL-Fredoka.txt), que a licença OFL exige junto com a fonte.
+- Logo: lobo + "FINEdu".
+- Trilha: lições como discos com relevo, troféu no fim de cada unidade e faixa colorida da unidade.
+- Contraste medido em 03/11 (mínimo 4,5 para texto, 3 para ícone e texto grande):
+  - Texto #E4E9E7 sobre o fundo: 13,1. Ótimo.
+  - Texto secundário #A3AAC9 sobre o fundo: 7,0; sobre o cartão: 6,4. Bom.
+  - Texto do item ativo do menu (#4B53F5): 2,95 sobre o fundo e 2,45 sobre o fundo roxo do item ativo. Falha. Proposta: #A5A9F5 (6,1) ou #8A8FF2 (4,6, no limite). Parte 2, com antes/depois.
+  - Texto claro sobre o laranja: 3,49; sobre o verde: 3,07. Serve só para texto grande (24px, ou 18,66px em negrito). O rótulo pequeno "UNIDADE 2" e "UNIDADE 3" falha. Parte 2, com antes/depois.
 - Princípios visuais (continuam valendo):
   - A "sombra sólida" só aparece no que é tocável; informação parada usa borda.
-  - Rótulos em letra normal, sem MAIÚSCULAS.
   - Movimento só para responder ao toque, mais a comemoração do fim da lição.
-  - Sem gradiente (a paleta é roxa: gradiente roxo/azul é justamente a "cara de IA" a evitar).
-- Visual atual do código (provisório, até a conversa de design): fundo #121F25, texto #D0D5D9, destaque #5B8DEF, fontes Baloo 2 e Figtree.
+  - Sem gradiente, sem efeito de vidro, sem fontes manjadas (Inter, Nunito, Poppins), sem emoji como ícone.
+- Maiúsculas: o design usa rótulos em MAIÚSCULAS (itens do menu, "UNIDADE 1", "VER" no cartão da missão). Isso contraria a regra 13 do arquitetura.md, criada para fugir da "cara de site feito por IA". Decisão pendente com o João: a Parte 2 mostra o antes/depois em letra normal, e nada muda sem o OK.
+- Regra de 03/11: o design do João não muda sem mostrar antes/depois e ter o OK do líder (que confere com o João).
 
 ## Layout
 - Uso principal: celular e tablet em pé.
-- Menu: Aprender, Calculadora, Guia, Perfil.
+- Menu com 7 itens: Aprender, Calculadora, Ligas, Missões, Loja, Perfil e Mais. Em celular com menos de 560px de largura, só os ícones (o nome fica para o leitor de tela).
 - Em pé: barra de cima com a logo e os contadores; menu embaixo.
 - Deitado a partir de 768px: menu na lateral.
-- Deitado a partir de 1200px: também a coluna da direita, com os contadores e a Dica da Estrela (que vira "Dica do dia" na conversa de design).
-- Os contadores, na barra de cima ou na coluna da direita, são botões: abrem o painel "Como funciona".
+- Deitado a partir de 1024px: a barra de cima some, e a coluna da direita mostra os contadores e os cartões "Desbloqueie as Ligas!" e "Missão do dia". (Antes do design do João, a coluna aparecia a partir de 1200px.)
+- Os contadores são botões: abrem o painel "Como funciona".
 - A troca é pela orientação da tela, não só pela largura, porque tablet Samsung em pé tem ~800px.
-- Durante a lição, a vitória, o baú e a tela "sem vidas", os menus somem (modo foco).
+- Durante a lição, a vitória, o baú e a tela "sem vidas", os menus somem (modo foco). O onboarding também vai ser tela de foco.
 - O botão voltar do Android navega entre as telas (o endereço termina com #aprender, #perfil, #licao...).
 
-## Telas da versão 1
-- Aprender (trilha): nome da trilha, cartão da unidade, caminho curvo de bolinhas, "Começar" na lição atual, Estrela com balão, baú no fim.
-- Lição: barra com 5 partes (verde quando acerta, vermelha quando erra; a vermelha fica verde quando o aluno acerta na revisão), etiqueta Fácil/Média/Difícil (ou Aquecimento e Revisão, com uma nota dizendo que errar ali não tira vida; no aquecimento duplo, "Aquecimento 1 de 2"), botão Verificar embaixo, feedback com o porquê (na revisão, no aquecimento e no treino, o feedback do erro diz que errar ali não tira vida). No notebook: teclas 1 a 4 (ou A a D), Enter e Esc.
+## Telas
+- Aprender (trilha): nome da trilha, faixa de cada unidade com a cor dela, caminho de discos, "Começar" na lição atual, baú e troféu no fim da unidade. Unidades 2 e 3 aparecem inteiras como "Em breve". A faixa da unidade tem um botão que abre "Guia da Unidade · Em breve": vai sair (o guia de conteúdo foi descartado), Parte 2.
+- Lição: barra com 5 partes (verde quando acerta, vermelha quando erra; a vermelha fica verde quando o aluno acerta na revisão), etiqueta Fácil/Média/Difícil (ou Aquecimento e Revisão, com uma nota dizendo que errar ali não tira vida; no aquecimento duplo, "Aquecimento 1 de 2"), botão Verificar embaixo, feedback com o porquê. No notebook: teclas 1 a 4 (ou A a D), Enter e Esc.
 - Vitória: XP, moedas, precisão, sequência e, quando o aluno sobe de nível, o aviso "Subiu para o nível 2: Poupador!" (o baú aberto também mostra). Fim do treino: as vidas que voltaram.
-- Baú aberto, Sem vidas (recarregar com moedas ou treinar de graça), e confirmação ao sair no meio da lição ou do treino.
-- Perfil (sem dado pessoal): nível e quanto falta para o próximo, estatísticas, Configurações ("Reiniciar progresso" com confirmação na tela) e Sobre.
+- Baú aberto, Sem vidas (recarregar com moedas ou treinar de graça) e confirmação ao sair no meio da lição ou do treino.
+- Calculadora de Metas (Eufy, 01/11): 3 abas, "Meta (Na Gaveta)" (quanto guardar por mês), "Meta (Com Juros)" e "Simular Futuro". Taxa de exemplo de 0,8% ao mês, editável, com o aviso fixo "Simulação. O rendimento de verdade muda com o tempo. Menor de idade investe com um responsável." As abas com juros precisam da revisão do professor.
+- Ligas: "Em breve" (decisão de 03/11: fica como está). Mostra o nível e as lições concluídas. Competir de verdade precisa de outros jogadores; a ideia de amigos por QR code fica para depois (o líder conversa com o João). Resposta para a banca: "Em breve. A versão 1 não tem cadastro de propósito (LGPD, público menor de idade); comparar com a turma vem numa próxima versão."
+- Missões: hoje mostra "Missão do dia: Ganhe 30 XP", mas conta o XP total, e não o de hoje (quem tem 30 XP vê a missão concluída para sempre). Vira a missão do dia de verdade na Parte 3.
+- Loja: recarga de vidas por 20 moedas, que só libera com 0 vidas (segue a regra), e o botão "Como funciona".
+- Perfil (sem dado pessoal): nível e quanto falta para o próximo, estatísticas e o atalho "Abrir Configurações" (vai para Mais). Na Parte 4 ganha o avatar e o apelido.
+- Mais (Configurações): "Reiniciar progresso" com confirmação na tela, "Ver regras" (abre o painel) e Sobre. Na Parte 4 ganha "Como usar o FinEdu".
 - Contadores (barra de cima e coluna da direita): cada um é um botão que abre o painel "Como funciona" (vidas, moedas, XP e nível, sequência).
-- Boas-vindas: aviso na primeira vez que o aluno abre o app (e depois de "Reiniciar progresso"), com a mesada de 20 moedas e a dica de tocar nos contadores.
-- Calculadora e Guia: só a tela "Em breve" (vêm na conversa 08).
+- Boas-vindas: hoje é um aviso na primeira vez (mesada de 20 moedas e dica dos contadores). Na Parte 4, o onboarding toma o lugar dele.
+- Guia: hoje, "Guia da Unidade · Em breve". Na Parte 4, vira o tutorial "Como usar o FinEdu".
+
+## Onboarding (decidido em 03/11; Parte 4 da fila)
+Ordem: "Como devemos te chamar?" → avatar → tutorial "Como usar o FinEdu" → trilha.
+
+- Quando aparece: na primeira vez que o app abre e depois de "Reiniciar progresso". Quem já tinha progresso salvo (os aparelhos da equipe) também passa uma vez, para escolher apelido e avatar; o progresso não muda.
+- Tela de foco (sem menu), uma etapa por vez. O voltar do Android volta uma etapa. Recarregar a página no meio recomeça do apelido. Ninguém fica preso: dá para seguir sem apelido e pular o tutorial.
+- Etapa 1, apelido:
+  - Título "Como devemos te chamar?"; campo com rótulo, até 20 caracteres; texto de apoio "Pode ser um apelido. Ele fica salvo só neste aparelho."
+  - Opcional: com o campo vazio, o app segue sem nome. Não pedimos nome completo nem nenhum outro dado (LGPD, público menor de idade).
+  - O apelido fica dentro do progresso, salvo pelo armazenamento.js, e nunca sai do aparelho. Sempre aparece na tela por `escaparHtml()`.
+- Etapa 2, avatar:
+  - Título "Escolha seu avatar". 6 bichos do Brasil (proposta: arara, capivara, tatu, onça, coruja e tamanduá). Sem lobo, para não confundir com a logo.
+  - Desenhos simples no estilo dos ícones do app (`<symbol>` no index.html, cores por variável). Os primeiros são provisórios, feitos pelo Claude Code; o João pode trocar os desenhos depois sem mexer no resto do código.
+  - Um já vem marcado, então "Continuar" sempre funciona. Cada avatar é um botão com o nome do bicho para o leitor de tela.
+- Etapa 3, tutorial "Como usar o FinEdu":
+  - 5 cartões curtos, um por vez, com "Próximo", "Voltar", a contagem ("2 de 5") e "Pular" sempre à vista.
+  - Rascunho dos textos (o Claude Code revisa com a skill de UX copy, mantendo o sentido):
+    1. A trilha: "Cada lição concluída libera a próxima. No fim da unidade tem um baú com prêmio."
+    2. A lição: "São 5 questões, do fácil ao difícil. Errou? Você vê o porquê, e a questão volta no fim para você consertar."
+    3. Vidas e moedas: "Errar uma questão nova tira 1 vida. Sem vidas, use 20 moedas da sua reserva ou treine uma lição de graça. Você já começa com uma mesada de 20 moedas."
+    4. XP e missão do dia: "Cada acerto vale XP, e o XP sobe o seu nível. Todo dia tem uma missão nova que vale XP extra."
+    5. Calculadora: "Quer comprar alguma coisa? A Calculadora de Metas mostra quanto guardar por mês." Botão final "Bora começar", que leva à trilha. Uma linha lembra: "Para ver de novo: Mais → Como usar o FinEdu."
+  - Os números dos cartões vêm das constantes do jogo.js (vidas, preço da recarga, mesada, XP da missão), como no painel "Como funciona".
+- Depois do onboarding:
+  - Mais ganha "Como usar o FinEdu", que abre só o tutorial e, no fim, volta para Mais.
+  - Perfil mostra o avatar e o apelido (no lugar do ícone genérico) e um botão "Trocar apelido e avatar" (abre as etapas 1 e 2 e volta para o Perfil).
+  - Saudação com o apelido no topo da trilha: só se ficar boa no design do João (antes/depois e OK).
+- "Reiniciar progresso" apaga também o apelido e o avatar, e o onboarding volta (bom para a apresentação: cada aluno começa do zero). O texto da confirmação passa a citar apelido e avatar.
+- O aviso de boas-vindas sai: a mesada passa a ser contada no cartão 3.
+
+## Missão do dia (decidido em 03/11; Parte 3 da fila)
+- Pedido do líder: missões diferentes a cada dia (exemplo dele: "faça duas lições → 30 XP"), sem dar XP demais. O contexto é a apresentação na escola.
+- 1 missão por dia, a mesma para todo mundo no mesmo dia, em rodízio pela data, numa lista fixa no jogo.js.
+- Recompensa: +20 XP (constante `XP_DA_MISSAO`), uma vez por dia, sem moedas. (Recomendação do planejamento; o líder confirma no plano da Parte 3.)
+- Lista inicial (todas dão para fazer em uns 10 minutos):
+  1. Conclua 1 lição.
+  2. Conclua 2 lições.
+  3. Acerte 10 questões.
+  4. Acerte de primeira todas as questões de uma lição.
+  5. Faça uma conta na Calculadora de Metas.
+- O treino conta para a missão (senão, quem terminou a Unidade 1 nunca mais cumpre uma). O treino continua sem XP: só a recompensa da missão entra. Acertos contam em qualquer parte (lição nova, revisão, aquecimento e treino).
+- O progresso da missão zera no dia seguinte (campo novo no progresso, com a data do dia).
+- A recompensa entra quando a missão termina: no fim da lição ou do treino (a vitória mostra "Missão do dia concluída: +20 XP") ou na hora da conta da calculadora (aviso na tela). Se ela fizer o aluno subir de nível, o aviso de nível aparece.
+- Onde aparece: tela Missões e cartão da coluna da direita (os dois com o progresso de hoje, por exemplo "1 de 2 lições"), painel "Como funciona" (na parte do XP) e cartão 4 do tutorial.
+- O visual do João fica igual: só mudam o texto e os números.
+- Conserta o erro de hoje (`META_XP_MISSAO_DIARIA` usa o XP total).
+- Para a demonstração, a melhor missão em 11/11 é "Conclua 1 lição". Conferir qual cai nesse dia e, se precisar, mudar a ordem da lista.
+- Por que 20 XP e 1 por dia (simulação dos 3 alunos, Unidade 1 inteira num dia):
+
+  | Opção | XP extra no dia | Aluno A | Aluno B | Aluno C |
+  |---|---|---|---|---|
+  | Sem missão (hoje) | 0 | 235 | 195 | 180 |
+  | 1 missão de 20 XP (recomendado) | 20 | 255 | 215 | 200 |
+  | 1 missão de 30 XP (o exemplo) | 30 | 265 | 225 | 210 |
+  | 3 missões de 20 XP (estilo Duolingo) | 60 | 295 | 255 | 240 |
+
+  - Com 20 XP, os três continuam terminando a unidade no nível 3, e o nível 4 (300 XP) fica para quem volta em outros dias. A missão vale menos que meia lição perfeita (50 XP): é um bônus, e não a fonte principal de XP.
+  - Com 3 missões por dia, o aluno A fica a 5 XP do nível 4 no primeiro dia, e a tela de Missões dá mais trabalho para construir.
+  - Moedas não: o aluno A já termina a unidade com 100 moedas e quase nada em que gastar.
+  - Quem volta todo dia e treina ganha até 20 XP por dia: chega ao nível 4 em uns 3 dias. É o prêmio por voltar, que é o objetivo da missão.
 
 ## Estrutura do código
 - Versão 1 sem back-end. Progresso em localStorage, sempre via js/armazenamento.js.
 - HTML, CSS e JS puro, código próprio escrito do zero na conversa 02 (Antigravity só como referência).
-- Estrutura: index.html, css/estilo.css, css/fontes/, js/dados-licoes.js, js/armazenamento.js, js/jogo.js, js/telas.js, js/app.js, img/favicon.svg, testes.html, README.md, CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, projeto/plano-gamificacao.md.
+- Estrutura: index.html, css/estilo.css, css/fontes/ (Fredoka, Baloo 2 e Figtree), js/dados-licoes.js, js/armazenamento.js, js/jogo.js, js/telas.js, js/app.js, img/favicon.svg, testes.html, README.md, CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, projeto/plano-gamificacao.md.
 - Funciona abrindo o index.html com dois cliques (sem servidor).
-- testes.html (tarefa 2): testes das regras do jogo no navegador, com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação. Desde a gamificação 2, confere também os textos do painel "Como funciona", das boas-vindas e do feedback do erro (telas.js).
-- O arquitetura.md (gerado na conversa 02) guarda as regras do código e o passo a passo para criar lições. A versão oficial fica em projeto/arquitetura.md, no código; o Contexto do Projeto tem uma cópia.
+- testes.html: testes das regras do jogo e da calculadora no navegador, com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação e confere os textos do painel, das boas-vindas e do feedback do erro. 67 testes, todos passando (03/11).
+- O arquitetura.md guarda as regras do código e o passo a passo para criar lições. A versão oficial fica em projeto/arquitetura.md.
 - O app confere o dados-licoes.js e mostra um aviso vermelho no topo se algo estiver fora do padrão.
-- Depois de 2 ou 3 conversas usando o arquitetura.md, as regras viram uma skill de arquiteto.
-- A versão oficial é a finedu-v1 (conversa 02). A versão do Antigravity corrigida antes dela não é mais usada.
+- Depois da apresentação, as regras do arquitetura.md viram uma skill de arquiteto.
+- A versão oficial é a finedu-v1 (conversa 02). A versão do Antigravity não é mais usada.
 
 ## Apresentação
 - Data: 11/11/2026, de manhã.
-- Cronograma proposto (31/10):
-  - 01/11: GitHub + link do Pages + teste no tablet; conteúdo da Unidade 1 pronto.
-  - Até 04/11: Samuel e professor revisam o conteúdo.
-  - 04 e 05/11: conversa 05 (gamificação). Feita antes, em 01/11.
-  - 06 a 08/11: conversa de design (paleta, fontes, sem mascote, profundidade).
+- Roda num tablet Samsung (Android) e num notebook. Vai ter internet no local.
+- No notebook: dois cliques no index.html. No tablet: pelo link do GitHub Pages (abrir o arquivo direto no Android costuma falhar).
+- Publicado no GitHub Pages (repositório público, branch main, pasta raiz): https://fagneraposo.github.io/FinEdu/ (o link antigo, com FinEduu, dá 404 desde 01/11).
+- Para zerar entre uma apresentação e outra: Mais → Reiniciar progresso (o Perfil também tem o atalho "Abrir Configurações").
+- Entram na apresentação: Trilha 1 com a Unidade 1, gamificação, Calculadora de Metas (pronta), missão do dia e o onboarding com o tutorial "Como usar o FinEdu". Ficam "Em breve": Ligas, Unidades 2 e 3, Trilha 2.
+- Banner impresso (obrigatório), feito pelo João, com QR code para a turma abrir o FinEdu no celular e jogar junto durante a apresentação. Link do QR: https://fagneraposo.github.io/FinEdu/. Gráfica leva de 1 a 3 dias: arquivo na gráfica até 06 ou 07/11.
+- Modo apresentação (aprovado em 01/11): botão que deixa o app pronto para demonstrar (por exemplo, lições 1 e 2 concluídas, 1 vida e 20 moedas). Agora precisa considerar o onboarding (já vir com apelido e avatar, ou mostrar o onboarding na demonstração).
+- Instalar como app: se sobrar tempo; senão, depois da apresentação.
+- Questionário antes e depois: fora (sem tempo).
+- Relatório de extensão: depois da apresentação, no modelo que a faculdade vai enviar.
+- Cronograma (atualizado em 03/11):
+  - 04/11: Parte 1 (documentos) e Parte 2 (correções do design, com antes/depois).
+  - 05/11: Parte 3 (missão do dia).
+  - 05 e 06/11: Parte 4 (onboarding).
+  - 06 ou 07/11: banner na gráfica.
+  - 07/11: questões novas da Unidade 1 no código; modo apresentação.
+  - 08/11, noite: planejar a apresentação (slides, quem fala o quê, respostas para a banca).
   - 09/11: teste completo no tablet e ensaio.
   - 10/11: código congelado, só correção de erro.
-- Ficam "Em breve" na apresentação: Trilha 2, Calculadora e Guia.
-- Roda num tablet Samsung (Android) e num notebook. Vai ter internet no local.
-- No notebook: dois cliques no index.html.
-- No tablet: abrir pelo link do GitHub Pages. Abrir o arquivo direto no Android costuma falhar.
-- Publicado de graça no GitHub Pages (repositório público, branch main, pasta raiz): https://fagneraposo.github.io/FinEdu/ (o link antigo, com FinEduu, dá 404 desde a troca de nome do repositório, em 01/11)
-- Perfil → Configurações → "Reiniciar progresso", para zerar entre uma apresentação e outra.
 
 ## Gamificação (tarefa 2 e gamificação 2, 01/11)
-Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 está na seção 9). Regras do código na seção 6 do arquitetura.md.
+Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 está na seção 9). Regras do código na seção 6 do arquitetura.md. A missão do dia (03/11) tem seção própria acima.
 - Regra de bolso: só perde vida quem erra questão nova; ficou sem vidas, recarrega ou treina.
-- Aquecimento: no começo de cada lição (menos a primeira da trilha), 1 questão da lição anterior, de preferência uma que o aluno errou. Quem errou 3 ou mais de primeira na lição anterior faz 2 delas (aquecimento duplo, gamificação 2). Não tira vida, não conta na precisão e vale 5 XP cada questão certa.
+- Aquecimento: no começo de cada lição (menos a primeira da trilha), 1 questão da lição anterior, de preferência uma que o aluno errou. Quem errou 3 ou mais de primeira na lição anterior faz 2 delas (aquecimento duplo). Não tira vida, não conta na precisão e vale 5 XP cada questão certa.
 - Revisão: a errada volta no fim da lição, até o aluno acertar. Errar na revisão não tira vida. Só conclui com todas certas.
 - Precisão: só a primeira resposta de cada questão nova.
 - XP: +10 por questão nova certa de primeira; +5 por errada consertada na revisão e por questão certa no aquecimento.
-- Níveis por XP (gamificação 2): 1 Aprendiz (0 XP), 2 Poupador (75), 3 Planejador (175), 4 Estrategista (300), 5 Investidor (450). Cada nível pede 25 XP a mais que o anterior. Quem faz a Unidade 1 sem errar vira Poupador na lição 2 e Planejador na lição 4. O nível aparece no painel e no Perfil, e um aviso na vitória (e no baú) diz quando o aluno sobe.
+- Níveis por XP: 1 Aprendiz (0 XP), 2 Poupador (75), 3 Planejador (175), 4 Estrategista (300), 5 Investidor (450). Cada nível pede 25 XP a mais que o anterior. Quem faz a Unidade 1 sem errar vira Poupador na lição 2 e Planejador na lição 4. O nível aparece no painel e no Perfil, e um aviso na vitória (e no baú) diz quando o aluno sobe.
 - Moedas: +10 por lição concluída, +5 se acertar as 5 de primeira, só na primeira vez que conclui.
-- Mesada de boas-vindas: todo aluno começa com 20 moedas, o preço de 1 recarga. Assim, quem erra as 5 questões da lição 1 (e ainda não tem lição para treinar) não fica sem saída. "Reiniciar progresso" devolve a mesada.
+- Mesada de boas-vindas: todo aluno começa com 20 moedas, o preço de 1 recarga. "Reiniciar progresso" devolve a mesada.
 - Baú: +20 XP e +20 moedas.
 - XP e moedas só entram no fim da lição; quem sai no meio não ganha nada.
 - 5 vidas. Erro em questão nova tira 1 na hora. Sem vidas, duas saídas:
-  - recarregar por 20 moedas: as 5 vidas voltam e a lição continua de onde parou;
+  - recarregar por 20 moedas (na tela "sem vidas" ou na Loja): as 5 vidas voltam e a lição continua de onde parou;
   - treinar de graça a lição concluída mais recente: no fim, as 5 vidas voltam, e a lição parada recomeça.
 - Treino (refazer lição concluída): errar não tira vida, não vale XP nem moedas, e no fim as vidas voltam a 5.
 - As vidas também voltam todas no dia seguinte. Sem relógio de vidas.
 - Sequência: +1 por dia com pelo menos uma lição (ou treino) concluída; zera se passar um dia sem.
 - Os valores são constantes no topo do js/jogo.js.
-- Na tela "sem vidas", as moedas são apresentadas como a "reserva" (liga com a lição de planejamento e orçamento).
-- Painel "Como funciona" (gamificação 2): tocar num contador (barra de cima ou coluna da direita) abre a explicação de vidas, moedas (a reserva), XP e nível, e sequência, com os números do aluno. Só explica: a recarga continua só na tela "sem vidas".
-- Feedback do erro (gamificação 2): na revisão, no aquecimento e no treino, diz na hora que errar não tirou vida.
-- Boas-vindas (gamificação 2): na primeira vez (e depois de "Reiniciar progresso"), um aviso diz que o aluno ganhou uma mesada de 20 moedas, a reserva para quando as vidas acabarem, e que tocando nos contadores ele entende vidas, moedas e XP. Aparece uma vez só, numa tela do menu (nunca no meio da lição). Quem já tinha progresso salvo antes não vê.
+- As moedas são apresentadas como a "reserva" (liga com a lição de planejamento e orçamento).
+- Painel "Como funciona": tocar num contador abre a explicação de vidas, moedas, XP e nível, e sequência, com os números do aluno.
+- Feedback do erro: na revisão, no aquecimento e no treino, diz na hora que errar não tirou vida.
 
 ## Conteúdo
-- Trilha 1 · Unidade 1 "Primeiros passos" (título provisório), 4 lições completas + baú:
+- Trilha 1 · Unidade 1 "Primeiros Passos" (título provisório; no design do João ficou com P maiúsculo, e a regra de letra normal pediria "Primeiros passos"), 4 lições completas + baú:
   1. "Querer ou precisar?" (escrita na conversa 02, com exemplos de Teresina e do CETI).
   2. "Dinheiro e poupança" (Samuel de Assunção).
   3. "Planejamento e orçamento" (Samuel de Assunção).
   4. "Consumo e dívidas" (Samuel de Assunção).
-- Regra das contas (decidida em 01/11 e endurecida no mesmo dia):
+- Unidades 2 e 3 (a 3 entrou no design do João) e Trilha 2 (investimentos): "Em breve".
+- Questões novas da Unidade 1: a equipe não aprovou as atuais (01/11). Os dois Samuels reescrevem, seguindo o guia de escrita (5 questões por lição: 2 fáceis, 2 médias, 1 difícil; 4 alternativas; explicação em cada alternativa; situações de adolescente; nada de conta de cabeça; alternativas erradas tentadoras; sem infantilizar). Depois: o planejamento formata, o Claude Code coloca no código (só no dados-licoes.js), e o professor revisa.
+- Regra das contas (01/11):
   - A Unidade 1 não tem nenhuma questão de conta. O conceito fica na pergunta, e a conta vai para a explicação.
   - Contas simples só em unidades mais avançadas, e só em questão fácil ou média (número redondo, que dê para fazer de cabeça).
   - A questão difícil é sempre de decisão ("o que faz mais sentido?"), não de cálculo.
-  - Motivo: na escola o aluno não tem papel para fazer conta, e educação financeira é sobre decisão, não aritmética.
-- As 3 lições do Samuel foram adaptadas ao formato do app em 01/11:
-  - O PDF dele tinha 3 fáceis, 1 média e 1 difícil por lição. Viraram 2-2-1.
-  - Toda alternativa ganhou explicação. Exemplos infantis (brinquedo, "nasce nas árvores") viraram situações de adolescente.
-  - Pela regra das contas: a questão da bicicleta do Pedro e a da reserva da família viraram decisões; o celular parcelado foi para média; a do valor mínimo da fatura virou a difícil, como situação; entrou uma questão de "pague-se primeiro"; saiu a questão sobre necessidade (repetida da lição 1).
-  - A difícil de "Querer ou precisar?" também perdeu a conta.
-  - Com a regra nova (Unidade 1 sem conta), a da capinha da Ana, a da regra 50-30-20 e a do celular parcelado viraram perguntas de conceito; as contas ficaram só nas explicações. O dados-licoes.js novo foi conferido em 01/11: o app abre sem caixa vermelha e sem erro no console.
-  - A do celular ainda pedia 10 × 120 de cabeça. Ainda em 01/11, o total entrou na pergunta ("R$ 1.000 à vista ou R$ 1.200 em 10 parcelas de R$ 120").
-  - O líder revisa as adaptações (01/11), no lugar do Samuel. Falta o professor revisar (marcas // REVISAR no arquivo).
-- Unidade 2 e Trilha 2 (investimentos): "Em breve" na apresentação.
+  - Motivo: na escola o aluno não tem papel para fazer conta, e educação financeira é sobre decisão, não aritmética. A Calculadora de Metas faz a conta pelo aluno.
+- Investimentos: menor de idade investe por meio de um responsável (sempre dizer isso). Nada de taxa real, promessa de rendimento ou nome de banco. Trechos de investimento passam pelo professor (marcas // REVISAR).
 
 ## Decisões por conversa
 
@@ -161,80 +232,81 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 
 - Menu trocado pela orientação da tela.
 - Perfil no lugar de "Configurações", com as configurações dentro.
 - Explicação em cada alternativa.
-- Lições "Em breve" dentro da Unidade 1 (o baú fica trancado até a conversa 06) e Unidade 2 "Em breve".
 - Regras provisórias de gamificação e navegação por # (voltar do Android).
-- Rótulos sem MAIÚSCULAS. A prévia usava "PARTE 1 · UNIDADE 1"; agora o nome da trilha é título e o cartão diz "Unidade 1".
-- Fundo do item ativo do menu mais fraco que na prévia (azul a 10%, não 16%), para o texto azul em cima passar no contraste mínimo. Não aumentar sem conferir o contraste.
+- Rótulos sem MAIÚSCULAS.
 - Fora da v1: "Meta do dia", "Próxima conquista" e o botão Guia no cabeçalho da unidade.
-- Testes: 47 testes das regras e testes no navegador (celular, tablet em pé e deitado, notebook, zoom 200%). Acessibilidade revisada (WCAG 2.1 AA).
+- 47 testes das regras e testes no navegador (celular, tablet em pé e deitado, notebook, zoom 200%). Acessibilidade revisada (WCAG 2.1 AA).
 
 ### Conversa de planejamento (31/10 e 01/11)
-- Apresentação em 11/11, de manhã; cronograma proposto (ver Apresentação).
-- Mascote removido.
-- Paleta do João registrada; entra no código na conversa de design.
-- Lições do Samuel adaptadas e colocadas no dados-licoes.js: a Unidade 1 tem 4 lições completas e o baú já pode ser aberto.
-- Regra das contas: no máximo 1 por lição, só em fácil ou média. Endurecida no mesmo dia: a Unidade 1 fica sem nenhuma conta (ver Conteúdo).
+- Apresentação em 11/11, de manhã.
+- Mascote removido. Paleta do João registrada.
+- Lições do Samuel adaptadas ao formato do app (2-2-1, explicação em toda alternativa, situações de adolescente) e colocadas no dados-licoes.js.
+- Regra das contas: a Unidade 1 fica sem nenhuma conta.
 
 ### Tarefa 1 · GitHub e Pages (01/11)
-- Repositório oficial no GitHub do líder (Fagneraposo/FinEduu, público), no lugar do repositório do Eufy. O Eufy entra como colaborador.
-- GitHub Pages na branch main, pasta raiz: https://fagneraposo.github.io/FinEduu/ (link antigo: com a troca de nome do repositório, virou https://fagneraposo.github.io/FinEdu/)
-- Conferido no navegador: o site abre, sem caixa vermelha nem erro no console, e a lição 1 começa.
-- Testado no celular Android do líder pelo link do Pages (01/11): passou. O tablet continua pendente.
+- Repositório oficial no GitHub do líder (Fagneraposo/FinEduu, renomeado para FinEdu no mesmo dia). GitHub Pages na branch main, pasta raiz.
+- Testado no celular Android do líder pelo link do Pages: passou. O tablet continua pendente.
 
-### Tarefa 2 · Gamificação (01/11, adiantada: estava para 04 e 05/11)
-- 4 propostas aprovadas pelo líder: repetir as erradas no fim da lição até acertar todas (a precisão conta só a primeira tentativa); comprar vidas com moedas; suavizar a perda de vidas; aquecimento (1 questão da lição anterior no começo de cada lição, de preferência uma que o aluno errou; não tira vida e não conta na precisão; a primeira lição não tem).
-- Plano em projeto/plano-gamificacao.md: tabela de regras, simulação de 3 alunos, opinião e números. Propõe 4 ajustes para as propostas não se atrapalharem (repetição sem perder vida; refazer lição concluída devolve as 5 vidas; a compra devolve as 5 vidas por 20 moedas; XP e moedas só para lição nova).
-- O líder aprovou os ajustes e os números. Codado em três partes, um commit cada: revisão das erradas, tela "sem vidas" (recarga e treino) e aquecimento. Regras na seção Gamificação.
-- Detalhes decididos na hora de codar: na revisão, as alternativas voltam em outra ordem; acertar o aquecimento tira a questão da lista de erradas; o treino sugerido na tela "sem vidas" é o da lição concluída mais recente.
+### Tarefa 2 · Gamificação (01/11)
+- Revisão das erradas, recarga de vidas com moedas, treino que devolve as vidas e aquecimento. Plano em projeto/plano-gamificacao.md, aprovado pelo líder.
 - Sem relógio de vidas (o treino resolve o mesmo problema e faz o aluno estudar).
-- Textos novos escritos com a skill de UX copy: botão "Recarregar vidas por 20 moedas" → aviso "Vidas recarregadas."; "Treinar de graça" → "Treino concluído!"; etiquetas "Aquecimento" e "Revisão".
-- testes.html criado: 38 testes das regras, todos passando, incluindo as 3 simulações do plano (dão os mesmos números).
-- Conferido no navegador (servidor local): revisão, recarga, treino e aquecimento, celular em pé (375 px) e tablet deitado (1280 × 800), "Reiniciar progresso", sem erro no console.
-- Push em 01/11, com o OK do líder. No GitHub Pages, o app abre com o código novo, sem caixa vermelha nem erro no console, e os 38 testes do testes.html passam.
+- testes.html criado (38 testes).
 
 ### Ajustes depois da tarefa 2 (01/11)
-- Questão do celular parcelado (lição "Consumo e dívidas"): o total entrou na pergunta ("R$ 1.000 à vista ou R$ 1.200 em 10 parcelas de R$ 120"), e o aluno não precisa mais fazer 10 × 120 de cabeça. As explicações das alternativas agora falam dos juros escondidos nas parcelas e de comparar sempre o total. Aprovado pelo líder; o professor confere junto com o resto da Unidade 1.
-- Mesada de boas-vindas: todo aluno começa com 20 moedas (constante MESADA_DE_BOAS_VINDAS, no topo do js/jogo.js), para nunca ficar sem saída na lição 1.
-  - Avaliada antes de codar: não quebra nenhuma regra nem as conclusões da simulação. Os 3 alunos terminam a unidade na aula, o XP continua na ordem A > B > C, e a escolha "gastar ou guardar" continua.
-  - Os números mudaram: A termina com 100 moedas, B com 60 (80 guardando), e o C troca um treino por uma recarga na lição 2 (170 XP em vez de 175, 47 questões em vez de 54). Simulação refeita na seção 4 do plano-gamificacao.md.
-  - A tela "sem vidas" já tinha o texto do caso "só a recarga" ("Use sua reserva de moedas para continuar."). O aviso de "Reiniciar progresso" trocou "voltam a zero" por "voltam ao começo", porque as moedas voltam a 20.
-  - Quem já tem progresso salvo (como o celular do líder) só ganha a mesada depois de "Reiniciar progresso".
-  - testes.html: 40 testes, todos passando (2 novos: a mesada no começo e a lição 1 com as 5 erradas). Conferido no navegador (servidor local, celular em pé): errar as 5 da lição 1 leva à recarga, e a revisão leva ao fim da lição, sem erro no console.
-- Peso das vidas: mantido. A vida continua sendo "pare e revise", não castigo: o treino devolve as 5 vidas em uns 2 minutos. Se um dia quiserem mais peso, o ajuste é subir o PRECO_DA_RECARGA, e não diminuir o que o treino devolve. Nesse caso, a mesada sobe junto, para continuar pagando 1 recarga (o testes.html avisa se ela deixar de pagar).
-- Moedas sobrando para quem acerta tudo: aceitas até a apresentação. Com a mesada, o aluno A termina a Unidade 1 com 100 moedas e nada em que gastar.
-- "Moedas que rendem" (as moedas guardadas rendem um pouco por dia): fica para depois da apresentação. A ideia liga com a Trilha 2 (investimentos) e entra junto com ela.
-- Push em 01/11, com o OK do líder: os commits de 807aa52 a cf3bcf9. No GitHub Pages, o app abre com o código novo, sem caixa vermelha nem erro no console, e os 40 testes do testes.html passam.
-- O repositório foi renomeado de FinEduu para FinEdu (o GitHub avisou no push). O endereço do repositório antigo redireciona para o novo, mas o do site não: https://fagneraposo.github.io/FinEduu/ dá 404, e o site agora é https://fagneraposo.github.io/FinEdu/.
+- Questão do celular parcelado: o total entrou na pergunta, para o aluno não fazer 10 × 120 de cabeça.
+- Mesada de boas-vindas de 20 moedas (`MESADA_DE_BOAS_VINDAS`), para ninguém ficar sem saída na lição 1.
+- Peso das vidas mantido: a vida é "pare e revise", não castigo. Se um dia quiserem mais peso, sobe o `PRECO_DA_RECARGA` (e a mesada junto).
+- Moedas sobrando para quem acerta tudo: aceitas até a apresentação. "Moedas que rendem" fica para depois, junto com a Trilha 2.
+- Repositório renomeado de FinEduu para FinEdu: o link antigo do site dá 404.
 
-### Gamificação 2 (01/11, complemento da tarefa 2)
-- Pedido do líder, com 4 partes aprovadas: aquecimento duplo, painel "Como funciona", níveis por XP e aviso de boas-vindas. Objetivo: o aluno entender sozinho como o jogo funciona, e quem tem mais dificuldade revisar mais.
-- Motivo: o líder e o Eufy não acharam onde usar as moedas, e o Eufy achou que os corações tinham travado (ele errava na revisão, onde errar não tira vida).
-- O plano foi mostrado antes de codar (limites e nomes dos níveis, textos, simulação) e aprovado pelo líder, junto com um extra proposto pelo Claude Code: o feedback do erro diz na hora quando errar não tirou vida (revisão, aquecimento e treino), porque a confusão do Eufy aconteceu dentro da lição, onde o painel não aparece.
-- Níveis: 0/75/175/300/450 XP (cada nível pede 25 XP a mais). A alternativa 100/200/350/550 foi descartada: o aluno B terminaria a Unidade 1 a 5 XP do nível 3, sem ter como ganhar mais XP na versão 1. Os nomes do líder ficaram (seguem as lições, e o Investidor casa com a Trilha 2). Ponto conhecido: Poupador, Planejador e Investidor são masculinos; nenhum nome neutro ficou tão claro.
-- Simulação refeita (seção 4 do plano-gamificacao.md): só o C muda (180 XP em vez de 170, 50 questões em vez de 47). Os 3 alunos terminam a unidade no nível 3: o A e o B sobem na lição 2 e na lição 4; o C, na lição 3 e no baú.
-- Detalhes decididos na hora de codar:
-  - as 2 questões do aquecimento duplo vêm da mais fácil para a mais difícil, com a etiqueta "Aquecimento 1 de 2";
-  - o aviso de nível aparece também no baú aberto (os 20 XP do baú podem fazer subir, que é o caso do C);
-  - no Perfil, "Nível 2: Poupador" com dois-pontos, e não com "·" (regra 13 do arquitetura.md);
-  - o painel e as boas-vindas usam a janela pronta do navegador (`<dialog>`): o Esc fecha, o Tab não escapa e o foco volta para quem abriu;
-  - as boas-vindas ficam salvas como vistas assim que aparecem: o navegador só avisa que a janela fechou no próximo quadro de animação, e no teste esse aviso não chegou;
-  - os contadores continuam com o visual de antes (só ganham um fundo ao apertar); a sombra sólida de "tocável" fica para a tarefa de design;
-  - quem já tinha progresso salvo (os aparelhos da equipe) não vê as boas-vindas; vê depois de "Reiniciar progresso".
-- Textos escritos com a skill de UX copy (seção 9 do plano-gamificacao.md).
-- testes.html: 58 testes, todos passando (eram 40). Conferido no navegador (servidor local): celular (375 e 320 px), tablet em pé (800 × 1280) e deitado (1280 × 800), teclado, "Reiniciar progresso", sem caixa vermelha e sem erro no console.
-- 4 commits, um por parte, mais o dos documentos. Push em 01/11, com o OK do líder ("Pode fazer o push"): de d224d24 para dc37685, sem --force.
-- No GitHub Pages (publicado uns 2 minutos depois do push): os 58 testes do testes.html passam, e o app abre com o código novo (os contadores abrem o painel, e o Esc fecha), sem caixa vermelha nem erro no console. As boas-vindas não apareceram no navegador do Claude, porque ele já tinha um progresso salvo de antes; é a regra funcionando.
+### Gamificação 2 (01/11)
+- Aquecimento duplo, painel "Como funciona", níveis por XP (0/75/175/300/450) e aviso de boas-vindas. Mais o feedback do erro que avisa quando errar não tirou vida.
+- Simulação refeita: os 3 alunos terminam a Unidade 1 no nível 3 (A 235 XP, B 195, C 180).
+- Janelas com `<dialog>` (Esc fecha, foco volta para quem abriu).
+- testes.html: 58 testes. Push em 01/11.
+
+### Conversa de planejamento (01/11, madrugada e tarde)
+- Repositório antigo "FinEdu" (privado, só com README) renomeado para "FinEdu-antigo", para liberar o nome.
+- Calculadora e Guia entram na apresentação; banner com QR code; modo apresentação aprovado; instalar como app se sobrar tempo; questionário fora.
+- Equipe aprovou o app ("caminho massa, animações da hora"), mas não as questões: os dois Samuels reescrevem.
+- Relato do Eufy (corações "travados"): não era erro; ele errava na revisão. Resolvido com o painel e o feedback da gamificação 2.
+- Documento da tarefa da calculadora para o Eufy (claude/tarefa-calculadora-eufy.md, no Projeto).
+
+### Calculadora de Metas (Eufy, 01/11)
+- Commits `83cddba` e `baef84f`, direto na main.
+- 3 abas: "Meta (Na Gaveta)", "Meta (Com Juros)" e "Simular Futuro". A parte com juros era opcional e entrou.
+- Contas no jogo.js (`lerNumeroCalculadora`, `calcularMeta`, `calcularMetaComJuros`, `simularRendimento`, `simularFuturo`), com testes no grupo "Calculadora" do testes.html.
+- Taxa de exemplo de 0,8% ao mês (`TAXA_EXEMPLO_PADRAO`), editável até 20%, com o aviso de simulação e do responsável.
+- Diferença do pedido: o prazo aceita até 1.200 meses (`MESES_MAXIMOS_META`, teto de 100 anos), e não de 1 a 36. Fica assim, a não ser que o líder peça o contrário.
+- Para conferir na Parte 2: os nomes das abas têm maiúsculas no meio ("Na Gaveta", "Com Juros"); o padrão do app é letra normal.
+
+### Design (João, 03/11)
+- Commit `a906e51`, direto na main: paleta, fonte Fredoka, lobo na logo, trilha com discos e troféu, cores por unidade, Unidade 3 vazia, título "Primeiros Passos", menu com 7 itens, telas Ligas, Missões, Loja e Mais, coluna da direita a partir de 1024px. A Estrela saiu.
+- Conferido na varredura de 03/11: 67 testes passando, sem erro no console, sem rolagem para o lado no celular.
+
+### Conversa de planejamento (03/11, noite): varredura e decisões
+- Varredura do repositório (claude/varredura-03-11.md, no Projeto), com 12 achados.
+- Decisões do líder:
+  - Ligas fica como está ("Em breve"). Amigos por QR code ficam para depois; o líder conversa com o João.
+  - O guia de conteúdo foi descartado pelo João. O Guia vira o tutorial "Como usar o FinEdu", que aparece no onboarding e depois fica em Mais.
+  - Onboarding: apelido → avatar → tutorial (seção Onboarding).
+  - Missões diferentes a cada dia, sem dar XP demais (seção Missão do dia; recomendação: 1 por dia, +20 XP).
+  - O design do João fica. Qualquer mudança visual: antes/depois e OK do líder.
+  - Os documentos vêm antes do código: o planejamento atualizou o documento-mestre, o CLAUDE.md, o arquitetura.md e o README e gravou direto no GitHub, para o Claude Code não trabalhar com informação velha.
+  - Combinado de Git: colaboradores em branch + Pull Request.
+  - Depois: as questões novas dos Samuels.
+- Sem decisão ainda (a Parte 2 mostra antes/depois para o líder e o João): maiúsculas; estrela de 6 pontas nos discos das lições (numa escola pública, pode ser lida como símbolo religioso; uma de 5 pontas evita a dúvida); Unidades 2 e 3 vazias ocupando a maior parte da trilha (proposta: um cartão compacto "Em breve"); nomes das abas da calculadora; limpeza do código morto da Estrela.
 
 ## Pendências
-- Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEdu/). O celular Android do líder já passou (01/11), ainda no link antigo.
-- Trocar o link antigo do site (com FinEduu, agora dá 404) onde ele foi divulgado: Contexto e Instruções do Projeto do Claude, mensagens da equipe, favorito no tablet e QR code, se tiver.
-- Convidar o Eufy como colaborador no repositório (Settings → Collaborators). Precisa do nome de usuário dele no GitHub.
-- Líder revisar as adaptações das lições; professor revisar o conteúdo da Unidade 1.
-- João: nomes e arquivos das fontes, logo em SVG (versão clara para fundo escuro), aprovar o roxo mais claro para texto e definir o fundo.
+- Fila até 11/11 (detalhes no CLAUDE.md): Parte 1 (documentos), Parte 2 (correções do design), Parte 3 (missão do dia), Parte 4 (onboarding), questões novas da Unidade 1, modo apresentação, teste no tablet (09/11) e código congelado (10/11).
+- Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEdu/). Nunca foi testado no tablet.
+- Trocar o link antigo do site (com FinEduu, dá 404) onde ele foi divulgado: mensagens da equipe, favorito no tablet e QR code, se tiver.
+- Questões novas da Unidade 1 (Samuels), depois formatadas pelo planejamento.
+- Professor: revisar a Unidade 1 (marcas // REVISAR) e as abas com juros da calculadora.
+- João: decidir as maiúsculas, aprovar as cores propostas para o menu ativo e os rótulos das unidades 2 e 3, opinar sobre a estrela de 6 pontas e (se der tempo) desenhar os 6 avatares.
 - Título final da Unidade 1.
-- Tarefa 2 (gamificação): abrir com dois cliques no notebook (index.html e testes.html) e testar no celular e no tablet pelo link do Pages. O push já foi feito (01/11). "Meta do dia" e conquistas ficam para depois da apresentação.
-- Gamificação 2 (push feito em 01/11): testar no celular e no tablet pelo link do Pages: tocar nos contadores, o voltar do Android com o painel aberto, as boas-vindas depois de "Reiniciar progresso" e o aviso de nível na lição 2 sem erro.
-- Roteiro da demonstração (ensaio de 09/11). Com a mesada, o aluno tem 20 moedas desde o começo: a recarga aparece na primeira vez que as vidas acabam, até na lição 1. Dá para mostrar também as boas-vindas (logo depois de "Reiniciar progresso"), o painel (tocando num contador) e o nível subindo (lição 2 sem erro).
-- Conversa de design: paleta nova, fontes novas, tirar o mascote, profundidade. Incluir as janelas novas (painel e boas-vindas) e decidir se os contadores, que agora são botões, ganham a sombra sólida de "tocável".
-- Depois da apresentação: Trilha 2 (conversa 07), com as "moedas que rendem"; Calculadora e Guia (conversa 08); Unidade 2.
-- Instruções do Projeto: trocar "Menu embaixo em telas estreitas e na lateral em telas largas" pela regra da orientação (ver Layout), tirar a linha do mascote e trocar as cores da seção DESIGN pela paleta do João.
+- Banner: texto e QR code (o planejamento pode adiantar), arte do João, gráfica até 06 ou 07/11. Confirmar tamanho e modelo exigidos pela faculdade.
+- Modo apresentação: depois do onboarding, considerando o apelido e o avatar.
+- Roteiro da demonstração e da apresentação (08/11): onboarding, uma lição com erro (revisão e vida), missão do dia, nível subindo, calculadora. Respostas para a banca: por que não tem login (LGPD), Ligas "Em breve", o lobo.
+- Instruções do Projeto no Claude: trocar as cores da seção DESIGN pela paleta do João, tirar o mascote Estrela, trocar o menu pela regra da orientação e dizer que o Guia é o tutorial "Como usar o FinEdu".
+- Depois da apresentação: relatório de extensão; Trilha 2, com as "moedas que rendem"; Unidades 2 e 3; Ligas (amigos por QR code); instalar como app (se não entrar antes); aquecimento ou níveis mais finos, se o uso real pedir; skill de arquiteto.
