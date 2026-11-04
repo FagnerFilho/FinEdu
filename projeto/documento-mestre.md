@@ -1,6 +1,6 @@
 # DOCUMENTO-MESTRE · FinEdu
 
-Última atualização: 04/11/2026, tarde (Claude Code: Parte 4, onboarding). Antes: 04/11, manhã (push das Partes 1, 2 e 3), 04/11, madrugada (Parte 3: missão do dia), 04/11 (Parte 2: correções do design aprovadas pelo líder), 03/11, noite (conversa de planejamento, com a varredura e as decisões novas) e Parte 1 (conferência com o código). Descreve o código da Parte 4 (o design do João com as correções da Parte 2, a missão do dia e o onboarding) e o que foi decidido para os próximos dias.
+Última atualização: 04/11/2026, fim da tarde (Claude Code: ajustes antes da apresentação: contraste, avatar na saudação e seta da faixa da unidade). Antes: 04/11, tarde (Parte 4, onboarding), 04/11, manhã (push das Partes 1, 2 e 3), 04/11, madrugada (Parte 3: missão do dia), 04/11 (Parte 2: correções do design aprovadas pelo líder), 03/11, noite (conversa de planejamento, com a varredura e as decisões novas) e Parte 1 (conferência com o código). Descreve o código da Parte 4 (o design do João com as correções da Parte 2, a missão do dia e o onboarding) e o que foi decidido para os próximos dias.
 
 ## Visão
 Site estilo Duolingo de educação financeira e investimentos.
@@ -62,7 +62,12 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
   - Corrigido na Parte 2 com o roxo claro de texto (#A5A9F5): item ativo do menu (era 2,45, agora 6,07), aba ativa da calculadora (2,26 → 5,62), selo "Em breve" e "Em andamento" (2,4 a 2,6 → 5,90 a 6,42) e link "Ver" (2,95 → 7,34). O #8A8FF2 também foi medido, mas falhava na aba da calculadora (4,27) e no selo dentro do cartão (4,48).
   - Corrigido na Parte 2: rótulo "Unidade N" com 100% de opacidade e 19px em negrito, que já conta como texto grande: 6,15 no roxo, 3,49 no laranja e 3,07 no verde (antes, com 78% de opacidade e 16px: 4,34, 2,69 e 2,44). Hoje só a Unidade 1 tem a faixa colorida; as outras aparecem como cartão "Em breve".
   - Corrigido na Parte 2: número das vidas com o vermelho #F05454 (era #DC2E2E: 3,42 sobre o fundo; agora 4,67).
-  - Ainda falham (achados da Parte 2, sem decisão): a etiqueta "Aquecimento" na lição (#4B53F5: 2,95) e a legenda "Do seu bolso" no Simular futuro (#4B53F5 sobre o cartão: 2,68), que se resolvem com o mesmo roxo claro; o botão vermelho com texto claro ("Continuar" depois de um erro e "Reiniciar progresso" na confirmação: 2,80; com texto escuro, como no botão verde, iria a 5,23); e o texto vermelho sobre o cartão ("Sair da lição" e o "Reiniciar progresso" com contorno: 4,23; o vermelho #FF5C5C iria a 4,81).
+  - Corrigidos em 04/11 (ajustes antes da apresentação, aprovados pelo líder), medidos na tela de verdade, contra o fundo onde cada texto aparece:
+    - etiqueta "Aquecimento" na lição: roxo claro de texto #A5A9F5, como na Parte 2 (2,95 → 7,34);
+    - legenda "Do seu bolso" no Simular futuro: o mesmo roxo claro (2,95 → 7,34; ela fica sobre o fundo, não sobre o cartão, como estava anotado); a barra continua no #4B53F5;
+    - botão vermelho ("Continuar" depois de um erro e "Reiniciar progresso" na confirmação) e a letra da alternativa errada (achado novo, o mesmo problema): texto escuro #11152B, como no botão verde (2,80 → 5,23);
+    - "Sair da lição" e "Sair do treino" na janela (vermelho sobre o cartão: 4,23): nenhum vermelho do estilo.css passa de 4,5 sobre o cartão, então ficou no cinza claro dos botões discretos, #A3AAC9, como "Cancelar" e "Pular" (6,35). O "Voltar para a trilha" da tela sem vidas continua vermelho: fica sobre o fundo e passa (4,67).
+  - Correção do que estava anotado: o "Reiniciar progresso" com contorno, em Mais, fica sobre o fundo e não sobre o cartão: tem 4,67 e já passava. Os títulos vermelhos grandes ("Ops, essa não" e "Reiniciar todo o progresso?", 4,37) são texto grande: o mínimo para eles é 3.
   - O "FINEdu" da logo (2,13) é logo, e a regra de contraste não vale para logo.
   - Correção do que a Parte 1 anotou: o "Em breve" pequeno embaixo do título da unidade nunca aparecia (as Unidades 2 e 3 já têm o título "Em breve"), e o código dele saiu na Parte 2.
 - Princípios visuais (continuam valendo):
@@ -85,7 +90,7 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - O botão voltar do Android navega entre as telas (o endereço termina com #aprender, #perfil, #licao...).
 
 ## Telas
-- Aprender (trilha): faixa colorida da unidade ("Unidade N" e o título), caminho de discos com estrela de 5 pontas (a lição atual ganha um anel em volta), baú no meio do caminho (na Unidade 1, entre a 3ª e a 4ª lição; só abre com as 4 concluídas) e troféu no fim da unidade (com o baú liberado, tocar no troféu também abre o baú). O nome da Trilha 1 e o balão "Começar" saíram no design do João; o nome só aparece na Trilha 2, "Em breve". As Unidades 2 e 3, ainda sem lições, aparecem como cartões compactos "Em breve", como o da Trilha 2 (Parte 2). O botão da faixa que abria "Guia da Unidade · Em breve" saiu na Parte 2. Desde a Parte 4, quem tem apelido vê "Oi, Duda!" acima da faixa da unidade.
+- Aprender (trilha): faixa colorida da unidade ("Unidade N" e o título), caminho de discos com estrela de 5 pontas (a lição atual ganha um anel em volta), baú no meio do caminho (na Unidade 1, entre a 3ª e a 4ª lição; só abre com as 4 concluídas) e troféu no fim da unidade (com o baú liberado, tocar no troféu também abre o baú). O nome da Trilha 1 e o balão "Começar" saíram no design do João; o nome só aparece na Trilha 2, "Em breve". As Unidades 2 e 3, ainda sem lições, aparecem como cartões compactos "Em breve", como o da Trilha 2 (Parte 2). O botão da faixa que abria "Guia da Unidade · Em breve" saiu na Parte 2, e a seta "←" antes de "Unidade 1" saiu em 04/11 (era só desenho, não levava a lugar nenhum). Desde a Parte 4, quem tem apelido vê "Oi, Duda!" acima da faixa da unidade, com o avatar pequeno ao lado (04/11).
 - Lição: barra com 5 partes (verde quando acerta, vermelha quando erra; a vermelha fica verde quando o aluno acerta na revisão), etiqueta Fácil/Média/Difícil (ou Aquecimento e Revisão, com uma nota dizendo que errar ali não tira vida; no aquecimento duplo, "Aquecimento 1 de 2"), botão Verificar embaixo, feedback com o porquê. No notebook: teclas 1 a 4 (ou A a D), Enter e Esc.
 - Vitória: XP, moedas, precisão, sequência e, quando o aluno sobe de nível, o aviso "Subiu para o nível 2: Poupador!" (o baú aberto também mostra). Fim do treino: as vidas que voltaram. Quando a lição (ou o treino) termina a missão do dia, os dois mostram "Missão do dia concluída: +20 XP", antes do aviso de nível (Parte 3).
 - Baú aberto, Sem vidas (recarregar com moedas ou treinar de graça) e confirmação ao sair no meio da lição ou do treino.
@@ -122,7 +127,7 @@ Ordem: "Como a gente te chama?" → avatar → tutorial "Como usar o FinEdu" →
 - Depois do onboarding:
   - Mais tem "Como usar o FinEdu" ("Trilha, lição, vidas, XP e calculadora em 5 cartões.", botão "Ver tutorial"), que abre só o tutorial, com "Fechar" no lugar do "Pular" e "Entendi" no último cartão, e volta para Mais.
   - Perfil mostra o avatar e o apelido e o botão "Trocar apelido e avatar": abre as etapas 1 e 2, com "Cancelar" em cima e "Salvar" no fim (aviso "Apelido e avatar salvos."), e volta para o Perfil. Cancelar (ou o voltar do Android) não salva nada.
-  - Saudação "Oi, Duda!" no topo da trilha, acima da faixa da unidade, quando o aluno tem apelido: aprovada pelo líder nos prints com e sem (04/11).
+  - Saudação "Oi, Duda!" no topo da trilha, acima da faixa da unidade, quando o aluno tem apelido: aprovada pelo líder nos prints com e sem (04/11). Nos ajustes de 04/11, ganhou o avatar pequeno ao lado (círculo de 44px, como o do Perfil), alinhado com a borda do cartão da unidade. Sem apelido, nada aparece; com apelido e sem avatar, só o texto.
 - "Reiniciar progresso" apaga também o apelido e o avatar, e o onboarding volta (bom para a apresentação: cada aluno começa do zero). A confirmação diz: "XP, moedas, vidas, sequência e lições voltam ao começo, e o apelido e o avatar são apagados. Não dá para desfazer."
 - O aviso de boas-vindas saiu: a mesada é contada no cartão 3, e a dica dos contadores no cartão 4.
 
@@ -167,7 +172,7 @@ Ordem: "Como a gente te chama?" → avatar → tutorial "Como usar o FinEdu" →
 - HTML, CSS e JS puro, código próprio escrito do zero na conversa 02 (Antigravity só como referência).
 - Estrutura: index.html, css/estilo.css, css/fontes/ (Fredoka, Baloo 2 e Figtree), js/dados-licoes.js, js/armazenamento.js, js/jogo.js, js/telas.js, js/app.js, img/favicon.svg, testes.html, README.md, CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, projeto/plano-gamificacao.md. (Nenhum arquivo novo nas Partes 3 e 4.)
 - Funciona abrindo o index.html com dois cliques (sem servidor).
-- testes.html: testes das regras do jogo e da calculadora no navegador, com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação (sem e com a missão do dia) e confere os textos do painel, do feedback do erro, da tela Missões, da vitória e do onboarding. 93 testes, todos passando (04/11, Parte 4).
+- testes.html: testes das regras do jogo e da calculadora no navegador, com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação (sem e com a missão do dia) e confere os textos do painel, do feedback do erro, da tela Missões, da vitória e do onboarding, e o contraste dos textos corrigidos em 04/11 (com o estilo.css de verdade). 96 testes, todos passando (04/11, ajustes antes da apresentação).
 - O arquitetura.md guarda as regras do código e o passo a passo para criar lições. A versão oficial fica em projeto/arquitetura.md.
 - O app confere o dados-licoes.js e mostra um aviso vermelho no topo se algo estiver fora do padrão.
 - Depois da apresentação, as regras do arquitetura.md viram uma skill de arquiteto.
@@ -329,7 +334,7 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 
   - 2.14 Vidas com o vermelho #F05454.
 - Medido (2.5): no celular de 360px, cada item do menu fica com 47,4 × 52px, 0,6px abaixo dos 48px. Sem mudança.
 - testes.html: 68 testes. O novo confere que a trilha desenha as unidades sem lições como cartão "Em breve", sem discos e sem botão do guia.
-- Ficaram para o líder decidir: os contrastes que ainda falham (etiqueta "Aquecimento", legenda "Do seu bolso", botão vermelho com texto claro e texto vermelho sobre o cartão), "Recarga de Vidas" na Loja, o menu a 360px e a limpeza de `simularRendimento()` e de `TELAS_EM_BREVE.calculadora`.
+- Ficaram para o líder decidir: os contrastes que ainda falham (etiqueta "Aquecimento", legenda "Do seu bolso", botão vermelho com texto claro e texto vermelho sobre o cartão; corrigidos em 04/11, ver "Ajustes antes da apresentação"), "Recarga de Vidas" na Loja, o menu a 360px e a limpeza de `simularRendimento()` e de `TELAS_EM_BREVE.calculadora`.
 
 ### Parte 3 · Missão do dia (Claude Code, 04/11, madrugada)
 - Plano mostrado e aprovado pelo líder, com os 20 XP confirmados. O líder deixou o Claude Code codando de madrugada, com autorização para seguir sem parar; o push fica para quando ele pedir.
@@ -360,6 +365,16 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 
 - Prints de antes e depois em `finedu-v1/antes-depois/parte-4`, feitos com `antes-depois/ferramentas/prints-parte-4.ps1` (o "antes" de 320px veio de uma cópia do último commit, em `antes-depois/base-parte-4`), e juntos em 6 folhas com legenda em `parte-4/folhas` (`folhas-parte-4.ps1`).
 - Aprovado pelo líder em 04/11, pelos prints: as telas novas, o Perfil e o Mais (inclusive o círculo em cima do título abaixo de 360px) e a saudação "Oi, Duda!" na trilha. O João ainda vê os prints depois.
 
+### Ajustes antes da apresentação (Claude Code, 04/11, fim da tarde)
+- Pedido do líder: 3 ajustes pequenos, cada um com antes e depois (celular 390 × 844 e tablet deitado 1280 × 800) e só o que ele aprovasse. Ele aprovou os 3. As propostas foram montadas numa cópia fora do repositório (`antes-depois/proposta-ajustes`) e passadas para o código depois do OK, iguais.
+- 1. Contraste: os 4 textos que ainda falhavam passaram de 4,5, com cores que já existiam no estilo.css (valores em "Identidade visual"). Entrou junto a letra da alternativa errada, que tinha o mesmo problema do botão vermelho. Não mexeu no tamanho do menu nem nos discos da trilha (pedido do líder).
+- 2. Avatar do aluno pequeno ao lado de "Oi, Duda!", na fonte dos títulos, alinhado com o cartão da unidade.
+- 3. A seta "←" antes de "Unidade 1" não fazia nada: era só desenho dentro de um parágrafo, sem botão nem link (veio do Figma, imitando o Duolingo, onde ela volta para a lista de seções). Saiu, com o ícone `#i-seta-esquerda`, que ninguém mais usava.
+- Arquivos: estilo.css (cores, a saudação com o avatar e o fim do `.unidade-seta`), telas.js (saudação e faixa da unidade), index.html (o ícone da seta) e testes.html.
+- testes.html: 96 testes (eram 93). Novos: a saudação com o avatar (e sem apelido, nada), a faixa sem a seta e o contraste dos 5 textos corrigidos, medido com o estilo.css de verdade. Conferido que o teste de contraste falha com as cores antigas (2,95, 2,95, 2,80, 2,80 e 4,23).
+- Checklist da seção 9 do arquitetura.md: sem erro no console e sem caixa vermelha; lição com erro (volta na revisão); Reiniciar progresso e o onboarding pelo teclado até a trilha, com o avatar na saudação; painel; as 3 abas da calculadora e o erro de digitação; Missões; celular e tablet pelos prints (os do código de agora saíram iguais aos aprovados); 320px com apelido comprido, sem rolagem para o lado.
+- Prints de antes e depois em `finedu-v1/antes-depois/ajustes-04-11` (folhas com legenda em `ajustes-04-11/folhas`), feitos com `antes-depois/ferramentas/prints-ajustes.ps1` e `folhas-ajustes.ps1`.
+
 ## Pendências
 - Fila até 11/11 (detalhes no CLAUDE.md): Parte 1 (documentos, feita em 03/11), Parte 2 (correções do design, feita em 04/11), Parte 3 (missão do dia, feita em 04/11, de madrugada), Parte 4 (onboarding, feita em 04/11, à tarde), questões novas da Unidade 1, modo apresentação, teste no tablet (09/11) e código congelado (10/11).
 - Onboarding: o João vê os prints da Parte 4 (`finedu-v1/antes-depois/parte-4/folhas`), aprovada pelo líder em 04/11, e, se quiser, redesenha os 6 avatares (provisórios).
@@ -369,7 +384,7 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 
 - Questões novas da Unidade 1 (Samuels), depois formatadas pelo planejamento.
 - Professor: revisar a Unidade 1 (marcas // REVISAR) e as abas com juros da calculadora.
 - João: ver os prints da Parte 2 (`finedu-v1/antes-depois/parte-2`), aprovada pelo líder em 04/11, e dizer se quer ajustar algo.
-- Acessibilidade: 4 textos ainda abaixo do contraste mínimo, o menu com 47,4px a 360px (ver "Parte 2 · Correções do design") e os discos da trilha com 46px de altura (achado na Parte 4). O líder decide se entram antes da apresentação.
+- Acessibilidade: os 4 textos abaixo do contraste mínimo foram corrigidos em 04/11. Ficam o menu com 47,4px a 360px (ver "Parte 2 · Correções do design") e os discos da trilha com 46px de altura (achado na Parte 4), que não entraram nos ajustes de 04/11, a pedido do líder.
 - Título final da Unidade 1.
 - Banner: texto e QR code (o planejamento pode adiantar), arte do João, gráfica até 06 ou 07/11. Confirmar tamanho e modelo exigidos pela faculdade.
 - Modo apresentação: depois do onboarding, considerando o apelido e o avatar.

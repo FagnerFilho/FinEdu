@@ -18,7 +18,7 @@ Equipe: Fagner (líder), João (design), Eufy (calculadora), Samuel de Assunçã
 
 ## Como testar as regras
 
-Dê dois cliques no `testes.html`. Ele roda os testes das regras do jogo (XP e níveis, moedas, vidas, revisão, aquecimento, recarga, treino, missão do dia e a simulação de 3 alunos) e da Calculadora de Metas, confere os textos do painel "Como funciona", da tela Missões e do onboarding (apelido, avatar e tutorial), e mostra cada um como "Passou" ou "Falhou". Depois de mexer no `js/jogo.js` ou no `js/telas.js`, todos têm que passar.
+Dê dois cliques no `testes.html`. Ele roda os testes das regras do jogo (XP e níveis, moedas, vidas, revisão, aquecimento, recarga, treino, missão do dia e a simulação de 3 alunos) e da Calculadora de Metas, confere os textos do painel "Como funciona", da tela Missões e do onboarding (apelido, avatar e tutorial) e o contraste dos textos corrigidos, e mostra cada um como "Passou" ou "Falhou". Depois de mexer no `js/jogo.js` ou no `js/telas.js`, todos têm que passar.
 
 ## Publicar no GitHub Pages
 

@@ -1271,6 +1271,75 @@
       confere(caixa.querySelector('a[href="#guia"]'), null, 'link para o guia');
     });
 
+    teste('Faixa da unidade: só "Unidade 1" e o título, sem a seta que não levava a lugar nenhum', () => {
+      const caixa = document.createElement('div');
+      desenharTrilha(caixa, novoProgresso());
+      const faixa = caixa.querySelector('.unidade');
+      confere([textoDe(faixa.querySelector('.unidade-rotulo')), faixa.querySelectorAll('svg').length, faixa.querySelectorAll('button, a').length],
+        ['Unidade 1', 0, 0], 'rótulo, ícones e botões da faixa');
+    });
+
+    teste('Trilha: "Oi, Duda!" com o avatar pequeno ao lado; sem apelido, nada aparece', () => {
+      const progresso = novoProgresso();
+      definirApelido(progresso, 'Duda');
+      definirAvatar(progresso, 'capivara');
+      const trilha = document.createElement('div');
+      desenharTrilha(trilha, progresso);
+      const saudacao = trilha.querySelector('.trilha-saudacao');
+      confere(textoDe(saudacao), 'Oi, Duda!', 'texto');
+      confere(saudacao.querySelector('.trilha-saudacao-avatar use').getAttribute('href'), '#i-avatar-capivara', 'avatar');
+
+      progresso.avatar = null;
+      desenharTrilha(trilha, progresso);
+      confere([textoDe(trilha.querySelector('.trilha-saudacao')), trilha.querySelector('.trilha-saudacao-avatar')],
+        ['Oi, Duda!', null], 'com apelido e sem avatar, só o texto');
+
+      progresso.apelido = '';
+      definirAvatar(progresso, 'capivara');
+      desenharTrilha(trilha, progresso);
+      confere(trilha.querySelector('.trilha-saudacao'), null, 'sem apelido, nada aparece');
+    });
+
+
+    grupo('Contraste (estilo.css)');
+
+    // Contraste entre a cor do texto e o fundo atrás dele, do jeito que a regra
+    // de acessibilidade mede (WCAG): de 1 (igual) a 21 (preto no branco). O
+    // elemento precisa estar na página, para o navegador calcular as cores.
+    function contrasteDe(elemento) {
+      const rgb = cor => cor.match(/[\d.]+/g).map(Number);
+      const luz = ([r, g, b]) => [r, g, b]
+        .map(c => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; })
+        .reduce((soma, c, i) => soma + c * [0.2126, 0.7152, 0.0722][i], 0);
+      let fundo = null;
+      for (let no = elemento; no && !fundo; no = no.parentElement) {
+        const cor = rgb(getComputedStyle(no).backgroundColor);
+        if (cor.length === 3 || cor[3] === 1) fundo = cor;   // o primeiro fundo sem transparência
+      }
+      const [claro, escuro] = [luz(rgb(getComputedStyle(elemento).color)), luz(fundo)].sort((a, b) => b - a);
+      return (claro + 0.05) / (escuro + 0.05);
+    }
+
+    teste('Os textos corrigidos em 04/11 passam de 4,5 (Aquecimento, "Do seu bolso", botão vermelho, letra da errada e "Sair da lição")', () => {
+      const caixa = document.createElement('div');
+      caixa.innerHTML = `
+        <p class="etiqueta etiqueta--aquecimento">Aquecimento</p>
+        <span class="proporcao-legenda-item proporcao-legenda-item--bolso">Do seu bolso (91%)</span>
+        <button type="button" class="botao botao--erro">Continuar</button>
+        <div class="alternativa alternativa--marcada alternativa--errada"><span class="alternativa-letra">A</span></div>
+        <div class="folha-caixa"><button type="button" class="botao botao--texto">Sair da lição</button></div>`;
+      document.body.append(caixa);
+      try {
+        const medidos = [
+          ['Aquecimento', '.etiqueta--aquecimento'], ['Do seu bolso', '.proporcao-legenda-item--bolso'],
+          ['botão vermelho', '.botao--erro'], ['letra da errada', '.alternativa-letra'], ['Sair da lição', '.botao--texto']
+        ].map(([nome, seletor]) => [nome, Number(contrasteDe(caixa.querySelector(seletor)).toFixed(2))]);
+        confere(medidos.filter(([, valor]) => valor < 4.5), [], 'textos abaixo de 4,5');
+      } finally {
+        caixa.remove();
+      }
+    });
+
 
     grupo('Calculadora');
 

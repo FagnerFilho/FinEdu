@@ -511,7 +511,7 @@ h3:focus {
 .botao--erro {
   --cor-do-botao: var(--cor-erro);
   --sombra-do-botao: var(--cor-erro-sombra);
-  --texto-do-botao: var(--cor-sobre-destaque);
+  --texto-do-botao: var(--cor-texto-escuro);   /* texto escuro, como no botão verde: o claro não passava no contraste */
 }
 
 .botao--contorno {
@@ -532,6 +532,12 @@ h3:focus {
   --cor-do-botao: transparent;
   --sombra-do-botao: transparent;
   --texto-do-botao: var(--cor-erro);
+}
+
+/* Na janela (fundo do cartão), o vermelho não passa no contraste: o botão
+   de texto fica no cinza claro dos botões discretos ("Sair da lição") */
+.folha-caixa .botao--texto {
+  --texto-do-botao: var(--cor-texto-secundario);
 }
 
 .botao--compacto {
@@ -600,14 +606,34 @@ h3:focus {
   margin-top: var(--espaco-xgg);
 }
 
-/* "Oi, Duda!" acima da faixa da unidade, quando o aluno tem apelido (Parte 4) */
+/* "Oi, Duda!" acima da faixa da unidade, quando o aluno tem apelido (Parte 4),
+   com o avatar pequeno ao lado, alinhado com a borda do cartão da unidade */
 .trilha-saudacao {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-m);
   margin-bottom: var(--espaco-m);
   color: var(--cor-titulo);
   font-family: var(--fonte-titulo);
   font-weight: 600;
   font-size: var(--tamanho-titulo-p);
   overflow-wrap: anywhere;
+}
+
+.trilha-saudacao-avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: var(--borda) solid var(--cor-borda-cartao);
+  border-radius: 50%;
+  background: var(--cor-cartao);
+}
+
+.trilha-saudacao-avatar .icone {
+  width: 34px;
+  height: 34px;
 }
 
 /* Temas de cor alternados por unidade (roxo, laranja, verde) */
@@ -720,11 +746,6 @@ h3:focus {
   font-size: var(--tamanho-texto-grande);
   letter-spacing: 0.02em;
   color: var(--cor-sobre-destaque);
-}
-
-.unidade-seta {
-  width: 15px;
-  height: 15px;
 }
 
 .unidade-titulo {
@@ -1085,7 +1106,7 @@ a.cartao-lateral:hover {
 .etiqueta--media   { color: var(--cor-media); }
 .etiqueta--dificil { color: var(--cor-dificil); }
 .etiqueta--revisao { color: var(--cor-erro); }
-.etiqueta--aquecimento { color: var(--cor-destaque-claro); }
+.etiqueta--aquecimento { color: var(--cor-destaque-texto); }
 
 .licao-pergunta {
   margin: var(--espaco-m) 0 var(--espaco-gg);
@@ -1175,7 +1196,7 @@ a.cartao-lateral:hover {
 
 .alternativa--errada .alternativa-letra {
   background: var(--cor-erro);
-  color: var(--cor-sobre-destaque);
+  color: var(--cor-texto-escuro);
 }
 
 .alternativa--apagada {
@@ -1828,7 +1849,7 @@ dialog.folha::backdrop {
 }
 
 .proporcao-legenda-item--bolso {
-  color: var(--cor-destaque-claro);
+  color: var(--cor-destaque-texto);
   font-weight: 700;
 }
 

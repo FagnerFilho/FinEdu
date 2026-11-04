@@ -239,8 +239,13 @@ function esconderProblemasDoConteudo() {
 
 function desenharTrilha(lugar, progresso) {
   let html = '<h1 class="visualmente-oculto">Sua trilha</h1>';
-  // Saudação com o apelido (aprovada pelo Fagner nos prints com e sem, Parte 4)
-  if (progresso.apelido) html += `<p class="trilha-saudacao">Oi, ${escaparHtml(progresso.apelido)}!</p>`;
+  // Saudação com o apelido (Parte 4), com o avatar pequeno ao lado.
+  // Sem apelido, nada aparece.
+  if (progresso.apelido) {
+    const avatar = avatarPeloId(progresso.avatar);
+    const desenho = avatar ? `<span class="trilha-saudacao-avatar">${icone(`avatar-${avatar.id}`)}</span>` : '';
+    html += `<p class="trilha-saudacao">${desenho}<span>Oi, ${escaparHtml(progresso.apelido)}!</span></p>`;
+  }
   let numeroGlobalDaUnidade = 0;
 
   for (const trilha of CONTEUDO.trilhas) {
@@ -323,10 +328,7 @@ function desenharCabecalhoDaUnidade(unidade, numero) {
   return `
     <header class="unidade">
       <div class="unidade-info">
-        <p class="unidade-rotulo">
-          ${icone('seta-esquerda', 'unidade-seta')}
-          <span>Unidade ${numero}</span>
-        </p>
+        <p class="unidade-rotulo">Unidade ${numero}</p>
         <h2 class="unidade-titulo">${escaparHtml(unidade.titulo)}</h2>
       </div>
     </header>`;
