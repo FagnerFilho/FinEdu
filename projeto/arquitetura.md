@@ -1,6 +1,6 @@
 # arquitetura.md · FinEdu (versão 1)
 
-Atualizado em 03/11/2026 (conversa de planejamento) para o código do commit `a906e51`: calculadora do Eufy e design do João. As Partes 3 e 4 da fila (missão do dia e onboarding) ainda não estão aqui: quem codar cada uma atualiza este arquivo junto.
+Atualizado em 03/11/2026 (conversa de planejamento) para o código do commit `a906e51`: calculadora do Eufy e design do João. Conferido com o código na Parte 1 (03/11, Claude Code). As Partes 3 e 4 da fila (missão do dia e onboarding) ainda não estão aqui: quem codar cada uma atualiza este arquivo junto.
 
 Regras do código do FinEdu. Todo código novo segue este arquivo. Se uma mudança precisar quebrar uma regra daqui, discuta antes e atualize este arquivo junto.
 
@@ -13,11 +13,11 @@ Regras do código do FinEdu. Todo código novo segue este arquivo. Se uma mudan�
 | `css/fontes/` | Fredoka (títulos), Figtree (texto) e Baloo 2 (reserva). Arquivos variáveis, subconjunto latino, licença SIL OFL: cada fonte com o seu `OFL-*.txt` (falta o da Fredoka, Parte 2) | — |
 | `js/dados-licoes.js` | Constante `CONTEUDO`: trilhas, unidades, lições e questões. (`dicasDaEstrela` e `falaDaEstrela` sobraram da Estrela e não aparecem mais na tela) | Lógica |
 | `js/armazenamento.js` | `carregarProgresso()`, `salvarProgresso(progresso)`, `reiniciarProgresso()`, `armazenamentoDisponivel()` | Saber o que tem dentro do progresso |
-| `js/jogo.js` | Regras: constantes de valores, níveis, progresso inicial, datas, liberação, sessão da lição (aquecimento, questões novas e revisão), recarga e treino, baú, `conferirConteudo()` e as contas da Calculadora de Metas (seção 6.1). (`dicaDoDia()` sobrou da Estrela, sem uso) | Mexer na tela ou no localStorage |
-| `js/telas.js` | Monta o HTML de cada tela (trilha, lição, vitória, baú, sem vidas, Calculadora, Ligas, Missões, Loja, Perfil e Mais), a coluna da direita, ícones (`icone()`), avisos e janelas (painel "Como funciona" e boas-vindas). (`desenharDica()` ficou vazia, sobra da Estrela) | Decidir regra, salvar |
+| `js/jogo.js` | Regras: constantes de valores, níveis, progresso inicial, datas, liberação, sessão da lição (aquecimento, questões novas e revisão), recarga e treino, baú, `conferirConteudo()` e as contas da Calculadora de Metas (seção 6.1). (`dicaDoDia()` sobrou da Estrela, sem uso; `simularRendimento()` também está sem uso) | Mexer na tela ou no localStorage |
+| `js/telas.js` | Monta o HTML de cada tela (trilha, lição, vitória, baú, sem vidas, Calculadora, Ligas, Missões, Loja, Perfil e Mais), a coluna da direita, ícones (`icone()`), avisos e janelas (painel "Como funciona" e boas-vindas). (`desenharDica()` ficou vazia, sobra da Estrela; a entrada `calculadora` de `TELAS_EM_BREVE` também sobrou, porque a calculadora tem tela própria) | Decidir regra, salvar |
 | `js/app.js` | Estado (`estado`), navegação por `#`, cliques (`data-acao`), teclado; é quem chama `salvarProgresso()` | Montar HTML, guardar regra |
 | `img/` | `favicon.svg`. A logo (o lobo do João) não é arquivo: é o símbolo `#i-logo` no `index.html` | — |
-| `testes.html` | Testes das regras do `jogo.js` e da calculadora, no navegador (passou/falhou). 67 testes em 03/11. Abre com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação. Confere também os textos do painel, das boas-vindas e do feedback do erro (`telas.js`), montados numa caixa fora da página | Mexer no progresso salvo ou na tela do app |
+| `testes.html` | Testes das regras do `jogo.js` e da calculadora, no navegador (passou/falhou). 67 testes em 03/11. Abre com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação. Confere também os textos do painel, das boas-vindas e do feedback do erro e a tela das 3 abas da calculadora (`telas.js`), montados numa caixa fora da página | Mexer no progresso salvo ou na tela do app |
 | `README.md` | Como abrir, testar e publicar | — |
 | `CLAUDE.md` | Instruções para o Claude Code: como trabalhar, Git, fila de tarefas | Regra de código (fica neste arquivo) |
 | `projeto/` | `documento-mestre.md` (decisões e pendências) e este `arquitetura.md`, versão oficial dos dois. Também os planos de tarefa (ex.: `plano-gamificacao.md`) | Código |
@@ -29,14 +29,14 @@ Ordem dos scripts no `index.html`: dados-licoes → armazenamento → jogo → t
 1. **Sem servidor.** Tem que funcionar abrindo o `index.html` com dois cliques. Proibido: `type="module"`, `import`, `fetch()` de arquivo local, ferramenta de build.
 2. **HTML, CSS e JavaScript puro.** Sem framework e sem biblioteca externa. Nada carregado da internet (nem fontes).
 3. **Só o `armazenamento.js` usa `localStorage`.** Se um dia tiver servidor, só ele muda.
-4. **Texto de lição só no `dados-licoes.js`.** Textos da interface (botões, títulos, avisos) ficam no `telas.js` (ou no `app.js`, nos avisos de ação). Exceção: nomes que são dados do jogo ficam no `jogo.js`, junto dos valores (`NOME_DA_DIFICULDADE` e os nomes dos níveis em `NIVEIS`).
+4. **Texto de lição só no `dados-licoes.js`.** Textos da interface (botões, títulos, avisos) ficam no `telas.js` (ou no `app.js`, nos avisos de ação). Exceção: nomes que são dados do jogo ficam no `jogo.js`, junto dos valores (`NOME_DA_DIFICULDADE` e os nomes dos níveis em `NIVEIS`). Exceção que já está no código (Eufy, 01/11): as mensagens de erro e alguns textos de resultado da Calculadora de Metas (`erro`, `mensagem`, `subtexto` e `aviso`) vêm prontos das contas do `jogo.js`.
 5. **Cada arquivo no seu papel:** `jogo.js` não mexe na tela nem salva; `telas.js` não decide regra nem salva; `app.js` liga os dois.
 6. **Todo texto do conteúdo entra na página por `escaparHtml()`.**
-7. **Cor, fonte, espaço, raio e medida só por variável CSS.** Ícones e logo usam `currentColor` ou classes. Única exceção: `img/favicon.svg` tem a cor escrita nele.
+7. **Cor, fonte, espaço, raio e medida só por variável CSS.** Ícones e logo usam `currentColor` ou classes. Exceção: `img/favicon.svg` tem a cor escrita nele. Exceções que já estão no código desde o design do João (03/11): os 7 ícones do menu, a medalha das Ligas (`#i-ligas-prata`) e o miolo do `#i-sequencia` têm as cores do Figma escritas no `index.html`; o `estilo.css` tem 7 cores fora das variáveis (rótulo, "Em breve" e botão do guia na faixa da unidade, fundo do item do menu e do botão do guia ao passar o mouse, e a sombra dos ícones do baú e do troféu) e várias medidas em px soltas. Código novo segue a regra.
 8. **Ícones** são `<symbol id="i-nome">` no `index.html`, usados com `icone('nome')`. Nunca emoji como ícone.
 9. **Logo e personagens.** A logo é o lobo do João, símbolo `#i-logo` no `index.html`, usado na barra de cima e no menu lateral. Não existe mascote: a Estrela saiu em 03/11 (não há mais `desenharEstrela`). Os avatares do onboarding (Parte 4) seguem a regra 8: `<symbol id="i-avatar-nome">`, cores por variável, trocáveis sem mexer no resto do código. Personagem novo só com decisão da equipe.
 10. **Botões não têm código de clique próprio.** Cada um tem `data-acao="..."`, e o `switch` de `tratarClique()` no `app.js` lista todas as ações. Navegação entre telas do menu usa link `<a href="#tela">`.
-11. **Toque:** tudo que é tocável tem pelo menos 48px (`--alvo-minimo`). A "sombra sólida" embaixo de um elemento significa "dá para tocar"; informação parada usa borda de 2px, nunca sombra difusa. Os contadores (barra de cima e coluna da direita) são botões que abrem o painel "Como funciona"; no design do João, só ganham um fundo ao apertar.
+11. **Toque:** tudo que é tocável tem pelo menos 48px (`--alvo-minimo`). A "sombra sólida" embaixo de um elemento significa "dá para tocar"; informação parada usa borda de 2px, nunca sombra difusa. Os contadores (barra de cima e coluna da direita) são botões que abrem o painel "Como funciona"; no design do João, só ganham um fundo ao apertar (e ao passar o mouse). Exceções que já estão no código desde o design do João: os cartões usam borda de 3px (`--borda-cartao`); a faixa da unidade tem sombra sólida sem ser tocável (só o botão do guia, dentro dela, é); e abaixo de 360px de largura os contadores ficam com 40px de largura. A Parte 2 mede o menu num celular de 360px.
 12. **Só modo escuro.** Sem gradiente roxo, sem efeito de vidro, sem fontes manjadas (Inter, Nunito, Poppins).
 13. **Texto da interface em letra normal**, sem rótulos em MAIÚSCULAS e sem "A · B · C". Ação tem o mesmo nome do começo ao fim (botão "Reiniciar progresso" → aviso "Progresso reiniciado"). (Em 03/11, o design do João usa MAIÚSCULAS nos itens do menu, em "UNIDADE N" e em "VER". Decisão pendente com o João: não mude sem antes/depois e OK. Texto novo segue esta regra.)
 14. **Nomes em português**, sem acento nos nomes de variáveis, funções e classes. Comentários em português.
@@ -102,7 +102,7 @@ const CONTEUDO = {
 6. Salve e abra o `index.html`. Se aparecer a caixa vermelha no topo, ela diz o que corrigir.
 7. Jogue a lição inteira uma vez, errando pelo menos uma questão, para ler as explicações.
 
-Nenhum outro arquivo muda. Unidade nova: novo objeto em `unidades` (`id`, `titulo`, `licoes`); o baú aparece sozinho no fim. Trilha nova: novo objeto em `trilhas`.
+Nenhum outro arquivo muda. Unidade nova: novo objeto em `unidades` (`id`, `titulo`, `licoes`); o baú e o troféu aparecem sozinhos (o `telas.js` põe o baú no meio do caminho e o troféu no fim), e a cor da unidade segue o rodízio roxo, laranja e verde. Trilha nova: novo objeto em `trilhas`.
 
 ## 5. Progresso salvo
 
@@ -176,10 +176,11 @@ Contas no `jogo.js`, como funções puras com teste no grupo "Calculadora" do `t
 | Aba | Função | O que faz |
 |---|---|---|
 | Meta (Na Gaveta) | `calcularMeta(custo, meses, guardado)` | Quanto guardar por mês (e por semana), sem juros |
-| Meta (Com Juros) | `calcularMetaComJuros(custo, meses, guardado, taxa)` e `simularRendimento(...)` | Quanto guardar por mês com juros compostos de exemplo, comparando a gaveta com o dinheiro rendendo |
+| Meta (Com Juros) | `calcularMetaComJuros(custo, meses, guardado, taxa)` | Quanto guardar por mês com juros compostos de exemplo, comparando a gaveta com o dinheiro rendendo |
 | Simular Futuro | `simularFuturo(aporte, anos, guardado, taxa)` | Quanto junta guardando um valor fixo por mês durante N anos, com juros compostos de exemplo |
 
-- Entrada: `lerNumeroCalculadora()` aceita "300" e "12,50" e devolve erro em linguagem simples. Valores em reais com `formatarMoeda()` (R$ 1.234,56) e centavos arredondados para cima (`arredondarParaCima()`).
+- `simularRendimento(...)` está no `jogo.js` desde a primeira versão da calculadora, mas nenhuma tela usa e não tem teste.
+- Entrada: `lerNumeroCalculadora()` aceita "300", "12,50", "12.50" e "1.234,56" e devolve o número, `'vazio'` ou `'invalido'`; as contas transformam isso num erro em linguagem simples ("Use só números, como 300 ou 12,50."). A taxa precisa ser maior que 0 (até 20) na aba com juros; no Simular Futuro, vai de 0 a 20. Valores em reais com `formatarMoeda()` (R$ 1.234,56) e centavos arredondados para cima (`arredondarParaCima()`).
 - Constantes: `MESES_MINIMOS_META` 1, `MESES_MAXIMOS_META` 1200 (teto técnico de 100 anos), `ANOS_MINIMOS_FUTURO` 1, `ANOS_MAXIMOS_FUTURO` 100, `SEMANAS_POR_MES` 30/7, `TAXA_EXEMPLO_PADRAO` 0,8 (% ao mês), `TAXA_EXEMPLO_MAXIMA` 20.
 - A taxa é sempre "de exemplo", editável, com o aviso fixo: "Simulação. O rendimento de verdade muda com o tempo. Menor de idade investe com um responsável." Nunca apresente uma taxa como real ou atual. As abas com juros passam pela revisão do professor.
 - A calculadora não salva nada.
@@ -197,12 +198,13 @@ Contas no `jogo.js`, como funções puras com teste no grupo "Calculadora" do `t
 
 | Situação | Regra CSS | Resultado |
 |---|---|---|
-| Em pé (padrão) | — | Barra de cima com logo e contadores; menu embaixo |
+| Em pé (padrão) | — | Barra de cima com logo e contadores; menu embaixo (o "FINEdu" ao lado do lobo aparece a partir de 560px) |
 | Deitado e com 768px ou mais | `@media (orientation: landscape) and (min-width: 768px)` | Menu vira coluna à esquerda |
 | Deitado e com 1024px ou mais | `@media (orientation: landscape) and (min-width: 1024px)` | A barra de cima some; coluna da direita com os contadores e os cartões "Desbloqueie as Ligas!" e "Missão do dia" |
 | Menos de 560px de largura | `@media (max-width: 559px)` | O menu de baixo mostra só os 7 ícones (o nome fica escondido, para o leitor de tela) |
+| Menos de 360px de largura | `@media (max-width: 359px)` | Contadores mais estreitos (40px de largura) e curva da trilha menor |
 
-A troca é pela orientação porque tablet Samsung em pé tem uns 800px de largura e precisa manter o menu embaixo. Conteúdo com no máximo 600px (lição: 680px), centralizado. As janelas (`.folha`) sobem de baixo no celular e ficam no centro a partir de 720px.
+A troca é pela orientação porque tablet Samsung em pé tem uns 800px de largura e precisa manter o menu embaixo. Conteúdo com no máximo 660px (`--largura-conteudo`; lição: 680px, `--largura-licao`), centralizado. As janelas (`.folha`) sobem de baixo no celular e ficam no centro a partir de 720px.
 
 ## 9. Antes de entregar uma mudança
 

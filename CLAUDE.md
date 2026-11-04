@@ -5,7 +5,7 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 @projeto/documento-mestre.md
 @projeto/arquitetura.md
 
-Última atualização: 03/11/2026, noite (feita na conversa de planejamento, depois do design do João).
+Última atualização: 03/11/2026, noite (feita na conversa de planejamento, depois do design do João; conferida com o código pelo Claude Code na Parte 1).
 
 ## O projeto
 
@@ -18,7 +18,7 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
   - Calculadora de Metas com 3 abas (Eufy, 01/11);
   - design do João (03/11): paleta, fonte Fredoka, lobo na logo, trilha com discos, menu com 7 itens (Aprender, Calculadora, Ligas, Missões, Loja, Perfil, Mais).
 - **Em breve:** Ligas, Unidades 2 e 3 e Trilha 2 (investimentos).
-- **Não existe mais:** o mascote Estrela (`desenharEstrela`) e o "Guia da Unidade" de conteúdo (descartado). O Guia agora é o tutorial "Como usar o FinEdu" (Parte 4).
+- **Não existe mais:** o mascote Estrela (`desenharEstrela`). O "Guia da Unidade" de conteúdo foi descartado: o botão da faixa da unidade que abre "Guia da Unidade · Em breve" ainda está no código e sai na Parte 2. O Guia agora é o tutorial "Como usar o FinEdu" (Parte 4).
 
 ## Quem vai trabalhar com você
 
@@ -73,7 +73,7 @@ Feito:
 
 A fazer, uma parte por vez, com commit ao fim de cada uma e o OK do Fagner antes da próxima:
 
-5. **Parte 1 · Conferir os documentos (04/11).** O planejamento já gravou no GitHub os documentos novos (CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, README.md). `git pull`; conferir cada afirmação com o código; corrigir o documento onde estiver errado; commit.
+5. ~~**Parte 1 · Conferir os documentos**~~ (feita em 03/11; o que mudou está em "Parte 1 · Conferência dos documentos", no documento-mestre). O planejamento já gravou no GitHub os documentos novos (CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, README.md). `git pull`; conferir cada afirmação com o código; corrigir o documento onde estiver errado; commit.
 6. **Parte 2 · Correções do design, com antes/depois (04/11).** Obrigatórias: contraste do item ativo do menu; contraste dos rótulos das unidades 2 e 3; licença da Fredoka (`css/fontes/OFL-Fredoka.txt`, texto copiado do repositório oficial da fonte, sem inventar o cabeçalho); tirar o botão "Guia da Unidade" da faixa da unidade; conferir que os 7 itens do menu têm pelo menos 48px num celular de 360px. Propostas para o Fagner e o João decidirem: letra normal no lugar das MAIÚSCULAS, estrela de 5 pontas nos discos das lições, Unidades 2 e 3 como um cartão compacto "Em breve", nomes das abas da calculadora em letra normal, limpeza do código morto da Estrela. Detalhes na seção "Identidade visual" e em "Decisões por conversa (03/11)" do documento-mestre.
 7. **Parte 3 · Missão do dia (05/11).** Seção "Missão do dia" do documento-mestre: 1 missão por dia, em rodízio pela data, `XP_DA_MISSAO` = 20 (o Fagner confirma no plano), sem moedas, treino conta, zera no dia seguinte. Conserta o erro do `META_XP_MISSAO_DIARIA`.
 8. **Parte 4 · Onboarding (05 e 06/11).** Seção "Onboarding" do documento-mestre: "Como devemos te chamar?" → avatar → tutorial "Como usar o FinEdu" → trilha. Depois, o tutorial fica em Mais; o Perfil mostra apelido e avatar; "Reiniciar progresso" traz o onboarding de volta. Substitui o aviso de boas-vindas.
