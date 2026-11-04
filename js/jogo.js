@@ -633,21 +633,7 @@ function abrirBau(progresso, unidade) {
 
 
 // ============================================================
-// 8. DICA DO DIA
-// ============================================================
-
-// Uma dica da Estrela por dia, em rodízio
-function dicaDoDia(hoje = hojeComoTexto()) {
-  const dicas = CONTEUDO.dicasDaEstrela || [];
-  if (dicas.length === 0) return '';
-  const numeroDoDia = diasEntre('2026-01-01', hoje);
-  const posicao = ((numeroDoDia % dicas.length) + dicas.length) % dicas.length;
-  return dicas[posicao];
-}
-
-
-// ============================================================
-// 9. CONFERÊNCIA DO CONTEÚDO
+// 8. CONFERÊNCIA DO CONTEÚDO
 // ============================================================
 // Olha o dados-licoes.js inteiro e lista o que estiver fora do
 // combinado. O app mostra a lista no topo da tela para a equipe
@@ -722,7 +708,7 @@ function conferirLicao(licao, problemas) {
 
 
 // ============================================================
-// 10. CALCULADORA DE METAS
+// 9. CALCULADORA DE METAS
 // ============================================================
 // Funções puras para ler os campos digitados, validar valores,
 // arredondar centavos sempre para cima, formatar em reais (R$) e

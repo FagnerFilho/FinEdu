@@ -58,6 +58,7 @@
   /* ---------- Marca e Destaque Principal (Roxo do Figma) ---------- */
   --cor-destaque: #343BDA;
   --cor-destaque-claro: #4B53F5;
+  --cor-destaque-texto: #A5A9F5;   /* roxo claro só para texto: passa no contraste mínimo (4,5) */
   --cor-destaque-sombra: #252A9E;
   --cor-destaque-suave: rgba(52, 59, 218, 0.22);
   --cor-destaque-anel: rgba(75, 83, 245, 0.38);
@@ -90,7 +91,7 @@
   --cor-texto-menu: #FFFFFF;
   --cor-titulo: #E4E9E7;
   --cor-menu-ativo-fundo: rgba(52, 59, 218, 0.30);
-  --cor-menu-ativo-texto: #4B53F5;
+  --cor-menu-ativo-texto: var(--cor-destaque-texto);
 
   /* ---------- Nós bloqueados e barras da trilha ---------- */
   --cor-bloqueado: #2A2C53;
@@ -113,7 +114,7 @@
   --cor-sequencia: #E5821A;
   --cor-xp: #E2D324;
   --cor-moeda: #E0C00A;
-  --cor-vida: #DC2E2E;
+  --cor-vida: #F05454;             /* o vermelho mais escuro (#DC2E2E) não passava no contraste */
   --cor-bau: #E8B923;
   --cor-bau-sombra: #9E7910;
   --cor-facil: var(--cor-acerto);
@@ -133,6 +134,7 @@
   --tamanho-pequeno: 0.875rem;     /* 14px */
   --tamanho-base: 1rem;            /* 16px */
   --tamanho-medio: 1.0625rem;      /* 17px */
+  --tamanho-texto-grande: 1.1875rem; /* 19px: em negrito, já conta como texto grande no contraste */
   --tamanho-titulo-p: 1.3125rem;   /* 21px */
   --tamanho-titulo-m: 1.625rem;    /* 26px */
   --tamanho-titulo-g: 2.25rem;     /* 36px */
@@ -595,7 +597,9 @@ h3:focus {
   --cor-anel-unidade: var(--cor-unidade-3-anel);
 }
 
-.trilha-futura {
+/* Trilha ou unidade ainda sem lições: cartão compacto com o selo "Em breve" */
+.trilha-futura,
+.unidade-futura {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -607,9 +611,32 @@ h3:focus {
   border-radius: var(--raio-g);
 }
 
-.trilha-futura .trilha-nome {
+.trilha-futura .trilha-nome,
+.unidade-futura-nome {
   color: var(--cor-texto-secundario);
   font-size: var(--tamanho-titulo-p);
+}
+
+.unidade-futura-nome {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-m);
+}
+
+/* Bolinha na cor da unidade (roxo, laranja ou verde) */
+.unidade-futura-nome::before {
+  content: '';
+  flex-shrink: 0;
+  width: var(--espaco-g);
+  height: var(--espaco-g);
+  border-radius: 50%;
+  background: var(--cor-unidade);
+}
+
+.unidade-futura-titulo {
+  margin-top: var(--espaco-pp);
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-pequeno);
 }
 
 .selo {
@@ -618,7 +645,7 @@ h3:focus {
   padding: 3px var(--espaco-m);
   border-radius: var(--raio-total);
   background: var(--cor-destaque-suave);
-  color: var(--cor-destaque-claro);
+  color: var(--cor-destaque-texto);
   font-family: var(--fonte-titulo);
   font-weight: 600;
   font-size: var(--tamanho-pequeno);
@@ -650,9 +677,9 @@ h3:focus {
   gap: 6px;
   font-family: var(--fonte-titulo);
   font-weight: 700;
-  font-size: var(--tamanho-base);
+  font-size: var(--tamanho-texto-grande);
   letter-spacing: 0.02em;
-  color: rgba(228, 233, 231, 0.78);
+  color: var(--cor-sobre-destaque);
 }
 
 .unidade-seta {
@@ -666,38 +693,6 @@ h3:focus {
   font-weight: 700;
   font-size: clamp(1.65rem, 3.2vw, 2.375rem);
   line-height: 1.12;
-}
-
-.unidade-texto {
-  margin-top: 2px;
-  font-size: var(--tamanho-pequeno);
-  color: rgba(228, 233, 231, 0.85);
-}
-
-.unidade-menu {
-  display: grid;
-  place-items: center;
-  width: var(--alvo-minimo);
-  height: var(--alvo-minimo);
-  flex-shrink: 0;
-  border-radius: var(--raio-m);
-  color: rgba(228, 233, 231, 0.88);
-  transition: background-color var(--tempo-rapido), transform var(--tempo-rapido);
-}
-
-.unidade-menu .icone {
-  width: 37px;
-  height: 27px;
-}
-
-@media (hover: hover) {
-  .unidade-menu:hover {
-    background: rgba(0, 0, 0, 0.14);
-  }
-}
-
-.unidade-menu:active {
-  transform: scale(0.95);
 }
 
 /* ----- O caminho de bolinhas ovais 3D ----- */
@@ -866,7 +861,7 @@ a.cartao-lateral:hover {
   font-weight: 700;
   font-size: 0.8125rem;
   letter-spacing: 0.03em;
-  color: var(--cor-destaque-claro);
+  color: var(--cor-destaque-texto);
 }
 
 .cartao-lateral-ver:hover {

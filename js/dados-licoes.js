@@ -51,7 +51,6 @@ const CONTEUDO = {
             {
               id: 'querer-ou-precisar',
               titulo: 'Querer ou precisar?',
-              falaDaEstrela: 'Bora? Hoje é querer × precisar!',
               questoes: [
 
                 // Fácil 1
@@ -626,18 +625,5 @@ const CONTEUDO = {
       titulo: 'Investimentos',
       unidades: []
     }
-  ],
-
-  // ============================================================
-  // DICAS DA ESTRELA
-  // ============================================================
-  // Aparecem na coluna da direita (tablet deitado e notebook).
-  // Uma por dia, em rodízio.
-  dicasDaEstrela: [
-    'Antes de comprar algo que você só quer, espere um dia. Se a vontade continuar, aí você decide com calma.',
-    'Promoção só é economia se você já ia comprar aquilo de qualquer jeito.',
-    'Recebeu dinheiro? Separe primeiro a parte que vai guardar, antes de gastar o resto.',
-    'Anote o que gastar durante uma semana. É o jeito mais rápido de descobrir para onde o dinheiro vai.',
-    'Dizer "eu preciso" não transforma vontade em necessidade. Pergunte: dá para viver sem isso ou esperar?'
   ]
 };

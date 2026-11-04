@@ -881,6 +881,17 @@
       confere(prepararProgresso(null, HOJE).errosPorLicao, {}, 'progresso novo');
     });
 
+    teste('Trilha: unidade sem lições vira um cartão "Em breve", sem discos, e a faixa não tem botão do guia', () => {
+      const caixa = document.createElement('div');
+      desenharTrilha(caixa, novoProgresso());
+      confere(caixa.querySelectorAll('.bloco-unidade').length, 1, 'unidades com caminho de discos');
+      confere(caixa.querySelectorAll('.no').length, 6, 'discos da Unidade 1 (4 lições, baú e troféu)');
+      confere(textoDe(caixa.querySelector('.unidade-rotulo')), 'Unidade 1', 'rótulo da faixa');
+      confere([...caixa.querySelectorAll('.unidade-futura')].map(textoDe),
+        ['Unidade 2 Em breve', 'Unidade 3 Em breve'], 'cartões das unidades em breve');
+      confere(caixa.querySelector('a[href="#guia"]'), null, 'link para o guia');
+    });
+
 
     grupo('Calculadora');
 
@@ -951,7 +962,7 @@
       confere(comVirgula.mensagem, 'Guardando R$ 12,50 por mês, você chega lá em 1 mês.', 'singular para 1 mês');
     });
 
-    teste('Aba Meta (Com Juros): calcula montante inicial, aporte mensal menor e rendimento positivo', () => {
+    teste('Aba Meta com juros: calcula montante inicial, aporte mensal menor e rendimento positivo', () => {
       const resultado = calcularMetaComJuros(300, 6, 60, '0,8');
       confere(resultado.valido, true, 'cálculo válido');
       confere(resultado.montanteInicial, 62.94, 'montante inicial de R$ 60 rendendo 6 meses a 0,8%');
@@ -968,7 +979,7 @@
       confere(calcularMetaComJuros(300, 6, 0, 'abc').valido, false, 'taxa com letras');
     });
 
-    teste('Aba Simular Futuro (simularFuturo): R$ 100/mês por 2 anos com 0% e com 1% ao mês', () => {
+    teste('Aba Simular futuro (simularFuturo): R$ 100/mês por 2 anos com 0% e com 1% ao mês', () => {
       const semJuros = simularFuturo(100, 2, 0, 0);
       confere(semJuros.valido, true, 'simulação com 0% válida');
       confere([semJuros.anos, semJuros.meses], [2, 24], '2 anos = 24 meses');
@@ -993,7 +1004,7 @@
     });
 
     teste('Interface das 3 abas da calculadora: alternância, acessibilidade e barra de proporção', () => {
-      // Aba 1: Meta (Na Gaveta)
+      // Aba 1: Meta na gaveta
       const resultadoSemJuros = calcularMeta(300, 6, 60);
       const telaAba1 = montar(desenharCalculadora(null, { aba: 'sem-juros', custo: '300', meses: '6', guardado: '60', resultado: resultadoSemJuros }));
       const abas = [...telaAba1.querySelectorAll('[role="tab"]')];
@@ -1004,7 +1015,7 @@
       ], '3 abas na Aba 1');
       confere(telaAba1.querySelector('[role="progressbar"]').getAttribute('aria-valuenow'), '20', 'barra de progresso na Aba 1');
 
-      // Aba 2: Meta (Com Juros) com mais de 12 meses mostrando equivalente em anos
+      // Aba 2: Meta com juros, com mais de 12 meses mostrando equivalente em anos
       const resultadoComJuros = calcularMetaComJuros(2400, 24, 0, '0,8');
       const telaAba2 = montar(desenharCalculadora(null, {
         aba: 'com-juros', custo: '2400', meses: '24', guardado: '0', taxa: '0,8', resultado: resultadoComJuros
@@ -1014,7 +1025,7 @@
         throw new Error('faltou equivalente em anos "24 meses (2 anos)" na Aba 2');
       }
 
-      // Aba 3: Simular Futuro
+      // Aba 3: Simular futuro
       const resultadoFuturo = simularFuturo(200, 5, 0, '0,8');
       const telaAba3 = montar(desenharCalculadora(null, {
         aba: 'simular-futuro', aporte: '200', anos: '5', guardado: '0', taxa: '0,8', resultado: resultadoFuturo
@@ -1031,7 +1042,7 @@
       const trechosAba3 = [
         'Guardando R$ 200,00 por mês durante 5 anos (60 meses), você vai acumular',
         'Total que você depositou',
-        'Com Juros Compostos',
+        'Com juros compostos',
         'só de juros trabalhando pra você',
         '% do seu dinheiro final veio só dos rendimentos!',
         'Simulação. O rendimento de verdade muda com o tempo. Menor de idade investe com um responsável.'

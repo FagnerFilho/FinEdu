@@ -127,7 +127,7 @@ function desenharColunaDireita(progresso) {
     <section class="cartao-lateral cartao-lateral--missao" aria-labelledby="titulo-missao-lateral">
       <div class="cartao-lateral-cabecalho">
         <h2 class="cartao-lateral-titulo" id="titulo-missao-lateral">Missão do dia</h2>
-        <a class="cartao-lateral-ver" href="#missoes">VER</a>
+        <a class="cartao-lateral-ver" href="#missoes">Ver</a>
       </div>
       <div class="missao-corpo">
         ${icone('xp', 'missao-raio')}
@@ -145,9 +145,6 @@ function desenharColunaDireita(progresso) {
       </div>
     </section>`;
 }
-
-// Mantida por compatibilidade caso algum trecho chame desenharDica
-function desenharDica() {}
 
 // Aviso rápido que aparece embaixo e some sozinho
 let temporizadorDoAviso = null;
@@ -215,6 +212,13 @@ function desenharTrilha(lugar, progresso) {
       numeroGlobalDaUnidade += 1;
       // Alterna a cor de cada unidade: 1 = roxo, 2 = laranja, 3 = verde
       const tema = ((numeroGlobalDaUnidade - 1) % 3) + 1;
+
+      // Unidade sem nenhuma lição pronta: só um cartão compacto "Em breve"
+      if (unidadeEmBreve(unidade)) {
+        html += desenharUnidadeEmBreve(unidade, numeroGlobalDaUnidade, tema);
+        return;
+      }
+
       const curvas = curvasDaUnidade(unidade.licoes.length + 1);
       const indiceDoBau = unidade.licoes.length >= 4
         ? Math.ceil((unidade.licoes.length + 1) / 2)
@@ -267,29 +271,38 @@ function desenharTrilha(lugar, progresso) {
   lugar.innerHTML = html;
 }
 
+// Faixa colorida da unidade: "Unidade N" e o título
 function desenharCabecalhoDaUnidade(unidade, numero) {
-  const emBreve = unidadeEmBreve(unidade);
-  const subtitulo = emBreve && unidade.titulo.toLowerCase() !== 'em breve'
-    ? '<p class="unidade-texto">Em breve</p>'
-    : '';
-
   return `
-    <header class="unidade${emBreve ? ' unidade--em-breve' : ''}">
+    <header class="unidade">
       <div class="unidade-info">
         <p class="unidade-rotulo">
           ${icone('seta-esquerda', 'unidade-seta')}
-          <span>UNIDADE ${numero}</span>
+          <span>Unidade ${numero}</span>
         </p>
         <h2 class="unidade-titulo">${escaparHtml(unidade.titulo)}</h2>
-        ${subtitulo}
       </div>
-      <a class="unidade-menu" href="#guia" aria-label="Abrir guia da Unidade ${numero}: ${escaparHtml(unidade.titulo)}">
-        ${icone('menu-unidade')}
-      </a>
     </header>`;
 }
 
-// Bolinha de lição: disco oval 3D com estrela de 6 pontas (ou check quando concluída)
+// Unidade ainda sem lições: cartão compacto "Em breve", sem o caminho de
+// discos. A bolinha do cartão tem a cor da unidade (classe do tema).
+function desenharUnidadeEmBreve(unidade, numero, tema) {
+  const titulo = unidade.titulo.toLowerCase() === 'em breve'
+    ? ''
+    : `<p class="unidade-futura-titulo">${escaparHtml(unidade.titulo)}</p>`;
+
+  return `
+    <section class="unidade-futura bloco-unidade--tema-${tema}">
+      <div>
+        <h2 class="unidade-futura-nome">Unidade ${numero}</h2>
+        ${titulo}
+      </div>
+      <span class="selo">Em breve</span>
+    </section>`;
+}
+
+// Bolinha de lição: disco oval 3D com estrela de 5 pontas (ou check quando concluída)
 function desenharNoDaLicao(progresso, trilha, licao, nome, curva) {
   const situacao = situacaoDaLicao(progresso, trilha, licao.id);
 
@@ -868,7 +881,7 @@ function desenharResultadoCalculadora(resultado) {
             <p class="rendimento-detalhe">Saído do seu bolso (na gaveta)</p>
           </div>
           <div class="rendimento-item rendimento-item--juros">
-            <p class="rendimento-rotulo">Com Juros Compostos</p>
+            <p class="rendimento-rotulo">Com juros compostos</p>
             <p class="rendimento-valor">${escaparHtml(resultado.montanteFinalComJurosFormatado)}</p>
             <p class="rendimento-detalhe">+ ${escaparHtml(resultado.rendimentoTotalFormatado)} só de juros trabalhando pra você</p>
           </div>
@@ -931,7 +944,7 @@ function desenharResultadoCalculadora(resultado) {
             <p class="rendimento-detalhe">Na gaveta seria ${escaparHtml(resultado.totalSemJurosFormatado)} (${escaparHtml(resultado.mensalSemJurosFormatado)}/mês)</p>
           </div>
           <div class="rendimento-item rendimento-item--juros">
-            <p class="rendimento-rotulo">Com Juros Compostos</p>
+            <p class="rendimento-rotulo">Com juros compostos</p>
             <p class="rendimento-valor">${escaparHtml(resultado.totalComJurosFormatado)}</p>
             <p class="rendimento-detalhe">+ ${escaparHtml(resultado.rendimentoFormatado)} só de rendimento</p>
           </div>
@@ -1009,7 +1022,7 @@ function desenharCalculadora(lugar, dados = {}) {
           <input class="campo-entrada" id="campo-taxa" name="taxa" type="text" inputmode="decimal"
             autocomplete="off" placeholder="Ex.: 0,8" value="${escaparHtml(taxa)}">
         </div>`;
-    botaoPrincipal = '<button type="button" class="botao" data-acao="calcular-futuro">Simular Futuro</button>';
+    botaoPrincipal = '<button type="button" class="botao" data-acao="calcular-futuro">Simular futuro</button>';
   } else {
     const rotuloCusto = 'Qual valor você quer atingir?';
     const rotuloMeses = comJuros
@@ -1051,7 +1064,7 @@ function desenharCalculadora(lugar, dados = {}) {
         ${campoTaxa}`;
 
     botaoPrincipal = comJuros
-      ? '<button type="button" class="botao" data-acao="calcular-meta-juros">Calcular com Juros</button>'
+      ? '<button type="button" class="botao" data-acao="calcular-meta-juros">Calcular com juros</button>'
       : '<button type="button" class="botao" data-acao="calcular-meta">Calcular</button>';
   }
 
@@ -1065,13 +1078,13 @@ function desenharCalculadora(lugar, dados = {}) {
       <div class="calculadora-abas" role="tablist" aria-label="Modo da calculadora">
         <button type="button" class="calculadora-aba${aba === 'sem-juros' ? ' calculadora-aba--ativa' : ''}"
           role="tab" id="aba-sem-juros" aria-selected="${aba === 'sem-juros'}" aria-controls="painel-calculadora"
-          data-acao="aba-sem-juros">Meta (Na Gaveta)</button>
+          data-acao="aba-sem-juros">Meta na gaveta</button>
         <button type="button" class="calculadora-aba${aba === 'com-juros' ? ' calculadora-aba--ativa' : ''}"
           role="tab" id="aba-com-juros" aria-selected="${aba === 'com-juros'}" aria-controls="painel-calculadora"
-          data-acao="aba-com-juros">Meta (Com Juros)</button>
+          data-acao="aba-com-juros">Meta com juros</button>
         <button type="button" class="calculadora-aba${aba === 'simular-futuro' ? ' calculadora-aba--ativa' : ''}"
           role="tab" id="aba-simular-futuro" aria-selected="${aba === 'simular-futuro'}" aria-controls="painel-calculadora"
-          data-acao="aba-simular-futuro">Simular Futuro</button>
+          data-acao="aba-simular-futuro">Simular futuro</button>
       </div>
 
       <div class="painel calculadora-formulario" id="painel-calculadora" role="tabpanel"

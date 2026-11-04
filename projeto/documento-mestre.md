@@ -1,6 +1,6 @@
 # DOCUMENTO-MESTRE · FinEdu
 
-Última atualização: 03/11/2026, noite (conversa de planejamento: varredura do repositório e decisões novas; conferido com o código pelo Claude Code na Parte 1, ver "Parte 1 · Conferência dos documentos"). Descreve o código do commit `a906e51` (design do João) mais o que foi decidido para os próximos dias.
+Última atualização: 04/11/2026 (Claude Code, Parte 2: correções do design aprovadas pelo líder). Antes: 03/11, noite (conversa de planejamento, com a varredura e as decisões novas) e Parte 1 (conferência com o código). Descreve o código da Parte 2 (o design do João com as correções) mais o que foi decidido para os próximos dias.
 
 ## Visão
 Site estilo Duolingo de educação financeira e investimentos.
@@ -45,33 +45,36 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - A Estrela foi removida (decisão da equipe em 31/10) e saiu do código no design do João (03/11): não existe mais `desenharEstrela`.
 - O lobo do João é a logo: aparece na barra de cima e no menu lateral (símbolo `#i-logo` no index.html). Por enquanto não é personagem nas telas (não fala e não tem expressões).
 - Cuidado na apresentação: a ideia original do lobo "remete ao lobo de Wall Street". O filme conta a história de um corretor condenado por fraude, o contrário do que o app ensina. Melhor apresentar o lobo como esperto, estratégico e que anda em grupo (planeja junto), sem citar o filme.
-- Sobrou código morto da Estrela: `dicaDoDia()` no jogo.js, `dicasDaEstrela` e `falaDaEstrela` no conteúdo, e `desenharDica()` vazia no telas.js. Limpeza proposta na Parte 2 da fila (só com o OK do líder).
-- Outras sobras, sem relação com a Estrela (achadas na Parte 1): `simularRendimento()` no jogo.js (nenhuma tela usa) e a entrada `calculadora` de `TELAS_EM_BREVE` no telas.js (a calculadora tem tela própria).
+- O código morto da Estrela (`dicaDoDia()`, `dicasDaEstrela`, `falaDaEstrela` e `desenharDica()`) saiu na Parte 2 (04/11).
+- Outras sobras, sem relação com a Estrela (achadas na Parte 1, ainda no código): `simularRendimento()` no jogo.js (nenhuma tela usa) e a entrada `calculadora` de `TELAS_EM_BREVE` no telas.js (a calculadora tem tela própria).
 - A ideia da raposa foi descartada antes.
 
-## Identidade visual (aplicada pelo João em 03/11)
+## Identidade visual (aplicada pelo João em 03/11, com as correções da Parte 2 em 04/11)
 - Só modo escuro.
-- Cores (variáveis no topo do css/estilo.css): fundo #1B1F3C (preto fosco), cartões #21264A, texto #E4E9E7 (branco azulado), texto secundário #A3AAC9, destaque #343BDA (roxo) e #4B53F5 (roxo claro), acerto #3CC977, erro #F05454, sequência #E5821A.
+- Cores (variáveis no topo do css/estilo.css): fundo #1B1F3C (preto fosco), cartões #21264A, texto #E4E9E7 (branco azulado), texto secundário #A3AAC9, destaque #343BDA (roxo) e #4B53F5 (roxo claro), acerto #3CC977, erro #F05454, sequência #E5821A. Desde a Parte 2: roxo claro de texto #A5A9F5 (`--cor-destaque-texto`, só em texto: item ativo do menu, aba ativa da calculadora, selos e o link "Ver"; o #4B53F5 continua em borda, barra e ícone) e vidas #F05454 (era #DC2E2E).
 - Cada unidade tem uma cor: 1 roxo #343BDA, 2 laranja #CA5726, 3 verde #21965B.
-- Fontes: Fredoka nos títulos e Figtree no texto (Baloo 2 fica de reserva). Todas salvas em css/fontes/, funcionam sem internet. Falta a licença da Fredoka (OFL-Fredoka.txt), que a licença OFL exige junto com a fonte.
+- Fontes: Fredoka nos títulos e Figtree no texto (Baloo 2 fica de reserva). Todas salvas em css/fontes/, funcionam sem internet, cada uma com a sua licença OFL. A da Fredoka (css/fontes/OFL-Fredoka.txt) entrou na Parte 2, copiada do repositório oficial (google/fonts).
 - Logo: lobo + "FINEdu".
-- Trilha: lições como discos com relevo, troféu no fim de cada unidade e faixa colorida da unidade.
-- Contraste medido em 03/11 (mínimo 4,5 para texto, 3 para ícone e texto grande):
+- Trilha: lições como discos com relevo e estrela de 5 pontas (era de 6 até a Parte 2), troféu no fim de cada unidade e faixa colorida da unidade. Unidade sem lições aparece como um cartão compacto "Em breve", com uma bolinha na cor dela.
+- Contraste (mínimo 4,5 para texto, 3 para ícone e texto grande), medido em 03/11 e refeito na Parte 2 (04/11):
   - Texto #E4E9E7 sobre o fundo: 13,1. Ótimo.
   - Texto secundário #A3AAC9 sobre o fundo: 7,0; sobre o cartão: 6,4. Bom.
-  - Texto do item ativo do menu (#4B53F5): 2,95 sobre o fundo e 2,45 sobre o fundo roxo do item ativo. Falha. Proposta: #A5A9F5 (6,1) ou #8A8FF2 (4,6, no limite). Parte 2, com antes/depois.
-  - Texto claro (#E4E9E7) sobre o laranja: 3,49; sobre o verde: 3,07. Serve só para texto grande (24px, ou 18,66px em negrito), como o título da unidade. O rótulo "UNIDADE N" (16px, com 78% de opacidade) fica mais fraco: 4,34 no roxo, 2,69 no laranja e 2,44 no verde (os três falham; a Unidade 1 por pouco). O "Em breve" embaixo do título das Unidades 2 e 3 (14px, 85% de opacidade): 2,93 e 2,63, também falha. Parte 2, com antes/depois.
-  - Achados na conferência da Parte 1 (03/11), fora da lista acima: o selo "Em breve" e "Em andamento" (#4B53F5 sobre o roxo transparente: 2,4 a 2,6), o link "VER" do cartão da missão (2,95), a aba ativa da calculadora (2,26) e o número das vidas na barra de cima (#DC2E2E sobre o fundo: 3,42, em 17px). O "FINEdu" da logo (2,13) é logo, e a regra de contraste não vale para logo.
+  - Corrigido na Parte 2 com o roxo claro de texto (#A5A9F5): item ativo do menu (era 2,45, agora 6,07), aba ativa da calculadora (2,26 → 5,62), selo "Em breve" e "Em andamento" (2,4 a 2,6 → 5,90 a 6,42) e link "Ver" (2,95 → 7,34). O #8A8FF2 também foi medido, mas falhava na aba da calculadora (4,27) e no selo dentro do cartão (4,48).
+  - Corrigido na Parte 2: rótulo "Unidade N" com 100% de opacidade e 19px em negrito, que já conta como texto grande: 6,15 no roxo, 3,49 no laranja e 3,07 no verde (antes, com 78% de opacidade e 16px: 4,34, 2,69 e 2,44). Hoje só a Unidade 1 tem a faixa colorida; as outras aparecem como cartão "Em breve".
+  - Corrigido na Parte 2: número das vidas com o vermelho #F05454 (era #DC2E2E: 3,42 sobre o fundo; agora 4,67).
+  - Ainda falham (achados da Parte 2, sem decisão): a etiqueta "Aquecimento" na lição (#4B53F5: 2,95) e a legenda "Do seu bolso" no Simular futuro (#4B53F5 sobre o cartão: 2,68), que se resolvem com o mesmo roxo claro; o botão vermelho com texto claro ("Continuar" depois de um erro e "Reiniciar progresso" na confirmação: 2,80; com texto escuro, como no botão verde, iria a 5,23); e o texto vermelho sobre o cartão ("Sair da lição" e o "Reiniciar progresso" com contorno: 4,23; o vermelho #FF5C5C iria a 4,81).
+  - O "FINEdu" da logo (2,13) é logo, e a regra de contraste não vale para logo.
+  - Correção do que a Parte 1 anotou: o "Em breve" pequeno embaixo do título da unidade nunca aparecia (as Unidades 2 e 3 já têm o título "Em breve"), e o código dele saiu na Parte 2.
 - Princípios visuais (continuam valendo):
   - A "sombra sólida" só aparece no que é tocável; informação parada usa borda.
   - Movimento só para responder ao toque, mais a comemoração do fim da lição.
   - Sem gradiente, sem efeito de vidro, sem fontes manjadas (Inter, Nunito, Poppins), sem emoji como ícone.
-- Maiúsculas: o design usa rótulos em MAIÚSCULAS (itens do menu, "UNIDADE 1", "VER" no cartão da missão). Isso contraria a regra 13 do arquitetura.md, criada para fugir da "cara de site feito por IA". Decisão pendente com o João: a Parte 2 mostra o antes/depois em letra normal, e nada muda sem o OK.
+- Maiúsculas: o design usava rótulos em MAIÚSCULAS (itens do menu, "UNIDADE 1", "VER" no cartão da missão). Na Parte 2 (04/11) viraram letra normal ("Aprender", "Unidade 1", "Ver"), como pede a regra 13 do arquitetura.md, criada para fugir da "cara de site feito por IA". O "FINEdu" da logo continua: é arte.
 - Regra de 03/11: o design do João não muda sem mostrar antes/depois e ter o OK do líder (que confere com o João).
 
 ## Layout
 - Uso principal: celular e tablet em pé.
-- Menu com 7 itens: Aprender, Calculadora, Ligas, Missões, Loja, Perfil e Mais. Em celular com menos de 560px de largura, só os ícones (o nome fica para o leitor de tela).
+- Menu com 7 itens: Aprender, Calculadora, Ligas, Missões, Loja, Perfil e Mais. Em celular com menos de 560px de largura, só os ícones (o nome fica para o leitor de tela). Num celular de 360px, cada item fica com 47,4 × 52px, 0,6px abaixo dos 48px da regra (medido na Parte 2, sem mudança; diminuir de 8px para 6px o espaço nas laterais do menu resolveria). Em 320px, seriam 41,7px.
 - Em pé: barra de cima com a logo e os contadores; menu embaixo.
 - Deitado a partir de 768px: menu na lateral.
 - Deitado a partir de 1024px: a barra de cima some, e a coluna da direita mostra os contadores e os cartões "Desbloqueie as Ligas!" e "Missão do dia". (Antes do design do João, a coluna aparecia a partir de 1200px.)
@@ -81,11 +84,11 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - O botão voltar do Android navega entre as telas (o endereço termina com #aprender, #perfil, #licao...).
 
 ## Telas
-- Aprender (trilha): faixa de cada unidade com a cor dela ("UNIDADE N" e o título), caminho de discos (a lição atual ganha um anel em volta), baú no meio do caminho (na Unidade 1, entre a 3ª e a 4ª lição; só abre com as 4 concluídas) e troféu no fim da unidade (com o baú liberado, tocar no troféu também abre o baú). O nome da Trilha 1 e o balão "Começar" saíram no design do João; o nome só aparece na Trilha 2, "Em breve". Unidades 2 e 3 aparecem inteiras como "Em breve". A faixa da unidade tem um botão que abre "Guia da Unidade · Em breve": vai sair (o guia de conteúdo foi descartado), Parte 2.
+- Aprender (trilha): faixa colorida da unidade ("Unidade N" e o título), caminho de discos com estrela de 5 pontas (a lição atual ganha um anel em volta), baú no meio do caminho (na Unidade 1, entre a 3ª e a 4ª lição; só abre com as 4 concluídas) e troféu no fim da unidade (com o baú liberado, tocar no troféu também abre o baú). O nome da Trilha 1 e o balão "Começar" saíram no design do João; o nome só aparece na Trilha 2, "Em breve". As Unidades 2 e 3, ainda sem lições, aparecem como cartões compactos "Em breve", como o da Trilha 2 (Parte 2). O botão da faixa que abria "Guia da Unidade · Em breve" saiu na Parte 2.
 - Lição: barra com 5 partes (verde quando acerta, vermelha quando erra; a vermelha fica verde quando o aluno acerta na revisão), etiqueta Fácil/Média/Difícil (ou Aquecimento e Revisão, com uma nota dizendo que errar ali não tira vida; no aquecimento duplo, "Aquecimento 1 de 2"), botão Verificar embaixo, feedback com o porquê. No notebook: teclas 1 a 4 (ou A a D), Enter e Esc.
 - Vitória: XP, moedas, precisão, sequência e, quando o aluno sobe de nível, o aviso "Subiu para o nível 2: Poupador!" (o baú aberto também mostra). Fim do treino: as vidas que voltaram.
 - Baú aberto, Sem vidas (recarregar com moedas ou treinar de graça) e confirmação ao sair no meio da lição ou do treino.
-- Calculadora de Metas (Eufy, 01/11): 3 abas, "Meta (Na Gaveta)" (quanto guardar por mês), "Meta (Com Juros)" e "Simular Futuro". Taxa de exemplo de 0,8% ao mês, editável, com o aviso fixo "Simulação. O rendimento de verdade muda com o tempo. Menor de idade investe com um responsável." As abas com juros precisam da revisão do professor.
+- Calculadora de Metas (Eufy, 01/11): 3 abas, "Meta na gaveta" (quanto guardar por mês), "Meta com juros" e "Simular futuro" (nomes em letra normal desde a Parte 2). Taxa de exemplo de 0,8% ao mês, editável, com o aviso fixo "Simulação. O rendimento de verdade muda com o tempo. Menor de idade investe com um responsável." As abas com juros precisam da revisão do professor.
 - Ligas: "Em breve" (decisão de 03/11: fica como está). Mostra o nível e as lições concluídas. Competir de verdade precisa de outros jogadores; a ideia de amigos por QR code fica para depois (o líder conversa com o João). Resposta para a banca: "Em breve. A versão 1 não tem cadastro de propósito (LGPD, público menor de idade); comparar com a turma vem numa próxima versão."
 - Missões: hoje mostra "Missão do dia: Ganhe 30 XP", mas conta o XP total, e não o de hoje (quem tem 30 XP vê a missão concluída para sempre). Vira a missão do dia de verdade na Parte 3.
 - Loja: recarga de vidas por 20 moedas, que só libera com 0 vidas (segue a regra), e o botão "Como funciona".
@@ -93,7 +96,7 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - Mais (Configurações): "Reiniciar progresso" com confirmação na tela, "Ver regras" (abre o painel) e Sobre. Na Parte 4 ganha "Como usar o FinEdu".
 - Contadores (barra de cima e coluna da direita): cada um é um botão que abre o painel "Como funciona" (vidas, moedas, XP e nível, sequência).
 - Boas-vindas: hoje é um aviso na primeira vez (mesada de 20 moedas e dica dos contadores). Na Parte 4, o onboarding toma o lugar dele.
-- Guia: hoje, "Guia da Unidade · Em breve". Na Parte 4, vira o tutorial "Como usar o FinEdu".
+- Guia: a rota #guia ainda mostra "Guia da Unidade · Em breve", mas nenhum botão leva até ela desde a Parte 2. Na Parte 4, vira o tutorial "Como usar o FinEdu".
 
 ## Onboarding (decidido em 03/11; Parte 4 da fila)
 Ordem: "Como devemos te chamar?" → avatar → tutorial "Como usar o FinEdu" → trilha.
@@ -160,7 +163,7 @@ Ordem: "Como devemos te chamar?" → avatar → tutorial "Como usar o FinEdu" �
 - HTML, CSS e JS puro, código próprio escrito do zero na conversa 02 (Antigravity só como referência).
 - Estrutura: index.html, css/estilo.css, css/fontes/ (Fredoka, Baloo 2 e Figtree), js/dados-licoes.js, js/armazenamento.js, js/jogo.js, js/telas.js, js/app.js, img/favicon.svg, testes.html, README.md, CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, projeto/plano-gamificacao.md.
 - Funciona abrindo o index.html com dois cliques (sem servidor).
-- testes.html: testes das regras do jogo e da calculadora no navegador, com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação e confere os textos do painel, das boas-vindas e do feedback do erro. 67 testes, todos passando (03/11).
+- testes.html: testes das regras do jogo e da calculadora no navegador, com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação e confere os textos do painel, das boas-vindas e do feedback do erro. 68 testes, todos passando (04/11).
 - O arquitetura.md guarda as regras do código e o passo a passo para criar lições. A versão oficial fica em projeto/arquitetura.md.
 - O app confere o dados-licoes.js e mostra um aviso vermelho no topo se algo estiver fora do padrão.
 - Depois da apresentação, as regras do arquitetura.md viram uma skill de arquiteto.
@@ -280,7 +283,7 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 
 - Contas no jogo.js (`lerNumeroCalculadora`, `calcularMeta`, `calcularMetaComJuros`, `simularFuturo`), com 9 testes no grupo "Calculadora" do testes.html. `simularRendimento` também está no jogo.js desde a primeira versão, mas nenhuma tela usa e não tem teste.
 - Taxa de exemplo de 0,8% ao mês (`TAXA_EXEMPLO_PADRAO`), editável até 20%, com o aviso de simulação e do responsável.
 - Diferença do pedido: o prazo aceita até 1.200 meses (`MESES_MAXIMOS_META`, teto de 100 anos), e não de 1 a 36. Fica assim, a não ser que o líder peça o contrário.
-- Para conferir na Parte 2: os nomes das abas têm maiúsculas no meio ("Na Gaveta", "Com Juros", "Simular Futuro"), e alguns botões e rótulos também ("Calcular com Juros", "Simular Futuro", "Com Juros Compostos"); o padrão do app é letra normal. Fora da calculadora, o mesmo acontece em "Recarga de Vidas", na Loja.
+- Na Parte 2 (04/11), os nomes das abas viraram letra normal ("Meta na gaveta", "Meta com juros", "Simular futuro"), e os botões e o rótulo do resultado acompanharam ("Calcular com juros", "Simular futuro", "Com juros compostos"). Fora da calculadora, "Recarga de Vidas", na Loja, ainda tem maiúscula no meio.
 
 ### Design (João, 03/11)
 - Commit `a906e51`, direto na main: paleta, fonte Fredoka, lobo na logo, trilha com discos e troféu, cores por unidade, Unidade 3 vazia, título "Primeiros Passos", menu com 7 itens, telas Ligas, Missões, Loja e Mais, coluna da direita a partir de 1024px. A Estrela saiu.
@@ -297,7 +300,7 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 
   - Os documentos vêm antes do código: o planejamento atualizou o documento-mestre, o CLAUDE.md, o arquitetura.md e o README e gravou direto no GitHub, para o Claude Code não trabalhar com informação velha.
   - Combinado de Git: colaboradores em branch + Pull Request.
   - Depois: as questões novas dos Samuels.
-- Sem decisão ainda (a Parte 2 mostra antes/depois para o líder e o João): maiúsculas; estrela de 6 pontas nos discos das lições (numa escola pública, pode ser lida como símbolo religioso; uma de 5 pontas evita a dúvida); Unidades 2 e 3 vazias ocupando a maior parte da trilha (proposta: um cartão compacto "Em breve"); nomes das abas da calculadora; limpeza do código morto da Estrela.
+- Ficaram para a Parte 2 (decididas em 04/11, ver "Parte 2 · Correções do design"): maiúsculas; estrela de 6 pontas nos discos das lições (numa escola pública, pode ser lida como símbolo religioso; uma de 5 pontas evita a dúvida); Unidades 2 e 3 vazias ocupando a maior parte da trilha (proposta: um cartão compacto "Em breve"); nomes das abas da calculadora; limpeza do código morto da Estrela.
 
 ### Parte 1 · Conferência dos documentos (Claude Code, 03/11)
 - `git pull` trouxe os 4 commits esperados (`83cddba`, `baef84f`, `a906e51` e `8966d2d`). 67 testes passando, nenhum erro no console, nenhuma caixa vermelha.
@@ -307,13 +310,31 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 
   - Calculadora: `simularRendimento()` não é usada nem testada; mais nomes com maiúsculas no meio.
   - arquitetura.md: conteúdo com até 660px (era 600px antes do design); regras que o código do João e do Eufy não seguem anotadas como exceção (cores escritas nos ícones do menu, borda de 3px, sombra sólida na faixa da unidade, contadores de 40px abaixo de 360px, textos da calculadora no jogo.js); como o `telas.js` posiciona o baú; detalhes da entrada da calculadora.
 
+### Parte 2 · Correções do design (Claude Code, 04/11)
+- Aprovadas pelo líder em 04/11, sem o João: ele vê os prints depois. Prints de antes e depois, no celular em pé (390 × 844) e no tablet deitado (1280 × 800), na pasta `finedu-v1/antes-depois/parte-2`, fora do repositório.
+- Aplicadas:
+  - 2.1 Roxo claro #A5A9F5, só na cor de texto: item ativo do menu e, pela mesma cor, aba ativa da calculadora (2.13), selo "Em breve" e "Em andamento" (2.11) e link "Ver" (2.12).
+  - 2.2 Rótulo "Unidade N" com 100% de opacidade e 19px em negrito (texto grande).
+  - 2.3 Licença da Fredoka (`css/fontes/OFL-Fredoka.txt`), copiada do repositório oficial (google/fonts, pasta ofl/fredoka).
+  - 2.4 Saiu o botão da faixa da unidade que abria o guia. A rota `#guia` fica para a Parte 4.
+  - 2.6 Letra normal no menu, em "Unidade N" e em "Ver".
+  - 2.7 Estrela de 5 pontas nos discos das lições (e na estatística de lições do Perfil).
+  - 2.8 Unidade sem lições vira um cartão compacto "Em breve", no lugar do caminho de discos vazio.
+  - 2.9 Nomes da calculadora em letra normal (abas, botões e o rótulo do resultado).
+  - 2.10 Saiu o código morto da Estrela.
+  - 2.14 Vidas com o vermelho #F05454.
+- Medido (2.5): no celular de 360px, cada item do menu fica com 47,4 × 52px, 0,6px abaixo dos 48px. Sem mudança.
+- testes.html: 68 testes. O novo confere que a trilha desenha as unidades sem lições como cartão "Em breve", sem discos e sem botão do guia.
+- Ficaram para o líder decidir: os contrastes que ainda falham (etiqueta "Aquecimento", legenda "Do seu bolso", botão vermelho com texto claro e texto vermelho sobre o cartão), "Recarga de Vidas" na Loja, o menu a 360px e a limpeza de `simularRendimento()` e de `TELAS_EM_BREVE.calculadora`.
+
 ## Pendências
-- Fila até 11/11 (detalhes no CLAUDE.md): Parte 1 (documentos, feita em 03/11), Parte 2 (correções do design), Parte 3 (missão do dia), Parte 4 (onboarding), questões novas da Unidade 1, modo apresentação, teste no tablet (09/11) e código congelado (10/11).
+- Fila até 11/11 (detalhes no CLAUDE.md): Parte 1 (documentos, feita em 03/11), Parte 2 (correções do design, feita em 04/11), Parte 3 (missão do dia), Parte 4 (onboarding), questões novas da Unidade 1, modo apresentação, teste no tablet (09/11) e código congelado (10/11).
 - Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEdu/). Nunca foi testado no tablet.
 - Trocar o link antigo do site (com FinEduu, dá 404) onde ele foi divulgado: mensagens da equipe, favorito no tablet e QR code, se tiver.
 - Questões novas da Unidade 1 (Samuels), depois formatadas pelo planejamento.
 - Professor: revisar a Unidade 1 (marcas // REVISAR) e as abas com juros da calculadora.
-- João: decidir as maiúsculas, aprovar as cores propostas para o menu ativo e os rótulos das unidades 2 e 3, opinar sobre a estrela de 6 pontas e (se der tempo) desenhar os 6 avatares.
+- João: ver os prints da Parte 2 (`finedu-v1/antes-depois/parte-2`), aprovada pelo líder em 04/11, e dizer se quer ajustar algo; (se der tempo) desenhar os 6 avatares.
+- Acessibilidade: 4 textos ainda abaixo do contraste mínimo e o menu com 47,4px a 360px (ver "Parte 2 · Correções do design"). O líder decide se entram antes da apresentação.
 - Título final da Unidade 1.
 - Banner: texto e QR code (o planejamento pode adiantar), arte do João, gráfica até 06 ou 07/11. Confirmar tamanho e modelo exigidos pela faculdade.
 - Modo apresentação: depois do onboarding, considerando o apelido e o avatar.

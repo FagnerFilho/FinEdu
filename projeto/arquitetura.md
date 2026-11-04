@@ -1,6 +1,6 @@
 # arquitetura.md · FinEdu (versão 1)
 
-Atualizado em 03/11/2026 (conversa de planejamento) para o código do commit `a906e51`: calculadora do Eufy e design do João. Conferido com o código na Parte 1 (03/11, Claude Code). As Partes 3 e 4 da fila (missão do dia e onboarding) ainda não estão aqui: quem codar cada uma atualiza este arquivo junto.
+Atualizado em 03/11/2026 (conversa de planejamento) para o código do commit `a906e51`: calculadora do Eufy e design do João. Conferido com o código na Parte 1 (03/11, Claude Code) e atualizado na Parte 2 (04/11) com as correções do design. As Partes 3 e 4 da fila (missão do dia e onboarding) ainda não estão aqui: quem codar cada uma atualiza este arquivo junto.
 
 Regras do código do FinEdu. Todo código novo segue este arquivo. Se uma mudança precisar quebrar uma regra daqui, discuta antes e atualize este arquivo junto.
 
@@ -10,14 +10,14 @@ Regras do código do FinEdu. Todo código novo segue este arquivo. Se uma mudan�
 |---|---|---|
 | `index.html` | Esqueleto: menu (7 itens), barra de cima, uma `<section class="tela">` por tela, coluna da direita, janelas (`<dialog>` do painel e das boas-vindas), estojo de ícones (`<symbol id="i-nome">`, inclusive a logo `#i-logo`), ordem dos scripts | Conteúdo, lógica |
 | `css/estilo.css` | Todo o visual. Variáveis no `:root`, no topo | Valores soltos fora das variáveis |
-| `css/fontes/` | Fredoka (títulos), Figtree (texto) e Baloo 2 (reserva). Arquivos variáveis, subconjunto latino, licença SIL OFL: cada fonte com o seu `OFL-*.txt` (falta o da Fredoka, Parte 2) | — |
-| `js/dados-licoes.js` | Constante `CONTEUDO`: trilhas, unidades, lições e questões. (`dicasDaEstrela` e `falaDaEstrela` sobraram da Estrela e não aparecem mais na tela) | Lógica |
+| `css/fontes/` | Fredoka (títulos), Figtree (texto) e Baloo 2 (reserva). Arquivos variáveis, subconjunto latino, licença SIL OFL: cada fonte com o seu `OFL-*.txt` | — |
+| `js/dados-licoes.js` | Constante `CONTEUDO`: trilhas, unidades, lições e questões | Lógica |
 | `js/armazenamento.js` | `carregarProgresso()`, `salvarProgresso(progresso)`, `reiniciarProgresso()`, `armazenamentoDisponivel()` | Saber o que tem dentro do progresso |
-| `js/jogo.js` | Regras: constantes de valores, níveis, progresso inicial, datas, liberação, sessão da lição (aquecimento, questões novas e revisão), recarga e treino, baú, `conferirConteudo()` e as contas da Calculadora de Metas (seção 6.1). (`dicaDoDia()` sobrou da Estrela, sem uso; `simularRendimento()` também está sem uso) | Mexer na tela ou no localStorage |
-| `js/telas.js` | Monta o HTML de cada tela (trilha, lição, vitória, baú, sem vidas, Calculadora, Ligas, Missões, Loja, Perfil e Mais), a coluna da direita, ícones (`icone()`), avisos e janelas (painel "Como funciona" e boas-vindas). (`desenharDica()` ficou vazia, sobra da Estrela; a entrada `calculadora` de `TELAS_EM_BREVE` também sobrou, porque a calculadora tem tela própria) | Decidir regra, salvar |
+| `js/jogo.js` | Regras: constantes de valores, níveis, progresso inicial, datas, liberação, sessão da lição (aquecimento, questões novas e revisão), recarga e treino, baú, `conferirConteudo()` e as contas da Calculadora de Metas (seção 6.1). (`simularRendimento()` está sem uso) | Mexer na tela ou no localStorage |
+| `js/telas.js` | Monta o HTML de cada tela (trilha, lição, vitória, baú, sem vidas, Calculadora, Ligas, Missões, Loja, Perfil e Mais), a coluna da direita, ícones (`icone()`), avisos e janelas (painel "Como funciona" e boas-vindas). (a entrada `calculadora` de `TELAS_EM_BREVE` sobrou: a calculadora tem tela própria) | Decidir regra, salvar |
 | `js/app.js` | Estado (`estado`), navegação por `#`, cliques (`data-acao`), teclado; é quem chama `salvarProgresso()` | Montar HTML, guardar regra |
 | `img/` | `favicon.svg`. A logo (o lobo do João) não é arquivo: é o símbolo `#i-logo` no `index.html` | — |
-| `testes.html` | Testes das regras do `jogo.js` e da calculadora, no navegador (passou/falhou). 67 testes em 03/11. Abre com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação. Confere também os textos do painel, das boas-vindas e do feedback do erro e a tela das 3 abas da calculadora (`telas.js`), montados numa caixa fora da página | Mexer no progresso salvo ou na tela do app |
+| `testes.html` | Testes das regras do `jogo.js` e da calculadora, no navegador (passou/falhou). 68 testes em 04/11. Abre com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação. Confere também os textos do painel, das boas-vindas e do feedback do erro, a tela das 3 abas da calculadora e o desenho da trilha (`telas.js`), montados numa caixa fora da página | Mexer no progresso salvo ou na tela do app |
 | `README.md` | Como abrir, testar e publicar | — |
 | `CLAUDE.md` | Instruções para o Claude Code: como trabalhar, Git, fila de tarefas | Regra de código (fica neste arquivo) |
 | `projeto/` | `documento-mestre.md` (decisões e pendências) e este `arquitetura.md`, versão oficial dos dois. Também os planos de tarefa (ex.: `plano-gamificacao.md`) | Código |
@@ -32,16 +32,16 @@ Ordem dos scripts no `index.html`: dados-licoes → armazenamento → jogo → t
 4. **Texto de lição só no `dados-licoes.js`.** Textos da interface (botões, títulos, avisos) ficam no `telas.js` (ou no `app.js`, nos avisos de ação). Exceção: nomes que são dados do jogo ficam no `jogo.js`, junto dos valores (`NOME_DA_DIFICULDADE` e os nomes dos níveis em `NIVEIS`). Exceção que já está no código (Eufy, 01/11): as mensagens de erro e alguns textos de resultado da Calculadora de Metas (`erro`, `mensagem`, `subtexto` e `aviso`) vêm prontos das contas do `jogo.js`.
 5. **Cada arquivo no seu papel:** `jogo.js` não mexe na tela nem salva; `telas.js` não decide regra nem salva; `app.js` liga os dois.
 6. **Todo texto do conteúdo entra na página por `escaparHtml()`.**
-7. **Cor, fonte, espaço, raio e medida só por variável CSS.** Ícones e logo usam `currentColor` ou classes. Exceção: `img/favicon.svg` tem a cor escrita nele. Exceções que já estão no código desde o design do João (03/11): os 7 ícones do menu, a medalha das Ligas (`#i-ligas-prata`) e o miolo do `#i-sequencia` têm as cores do Figma escritas no `index.html`; o `estilo.css` tem 7 cores fora das variáveis (rótulo, "Em breve" e botão do guia na faixa da unidade, fundo do item do menu e do botão do guia ao passar o mouse, e a sombra dos ícones do baú e do troféu) e várias medidas em px soltas. Código novo segue a regra.
+7. **Cor, fonte, espaço, raio e medida só por variável CSS.** Ícones e logo usam `currentColor` ou classes. Exceção: `img/favicon.svg` tem a cor escrita nele. Exceções que já estão no código desde o design do João (03/11): os 7 ícones do menu, a medalha das Ligas (`#i-ligas-prata`) e o miolo do `#i-sequencia` têm as cores do Figma escritas no `index.html`; o `estilo.css` tem 3 cores fora das variáveis (fundo do item do menu ao passar o mouse e a sombra dos ícones do baú e do troféu; outras 4 saíram na Parte 2) e várias medidas em px soltas. Código novo segue a regra.
 8. **Ícones** são `<symbol id="i-nome">` no `index.html`, usados com `icone('nome')`. Nunca emoji como ícone.
 9. **Logo e personagens.** A logo é o lobo do João, símbolo `#i-logo` no `index.html`, usado na barra de cima e no menu lateral. Não existe mascote: a Estrela saiu em 03/11 (não há mais `desenharEstrela`). Os avatares do onboarding (Parte 4) seguem a regra 8: `<symbol id="i-avatar-nome">`, cores por variável, trocáveis sem mexer no resto do código. Personagem novo só com decisão da equipe.
 10. **Botões não têm código de clique próprio.** Cada um tem `data-acao="..."`, e o `switch` de `tratarClique()` no `app.js` lista todas as ações. Navegação entre telas do menu usa link `<a href="#tela">`.
-11. **Toque:** tudo que é tocável tem pelo menos 48px (`--alvo-minimo`). A "sombra sólida" embaixo de um elemento significa "dá para tocar"; informação parada usa borda de 2px, nunca sombra difusa. Os contadores (barra de cima e coluna da direita) são botões que abrem o painel "Como funciona"; no design do João, só ganham um fundo ao apertar (e ao passar o mouse). Exceções que já estão no código desde o design do João: os cartões usam borda de 3px (`--borda-cartao`); a faixa da unidade tem sombra sólida sem ser tocável (só o botão do guia, dentro dela, é); e abaixo de 360px de largura os contadores ficam com 40px de largura. A Parte 2 mede o menu num celular de 360px.
+11. **Toque:** tudo que é tocável tem pelo menos 48px (`--alvo-minimo`). A "sombra sólida" embaixo de um elemento significa "dá para tocar"; informação parada usa borda de 2px, nunca sombra difusa. Os contadores (barra de cima e coluna da direita) são botões que abrem o painel "Como funciona"; no design do João, só ganham um fundo ao apertar (e ao passar o mouse). Exceções que já estão no código desde o design do João: os cartões usam borda de 3px (`--borda-cartao`); a faixa da unidade tem sombra sólida e não é tocável (o botão do guia saiu na Parte 2); abaixo de 360px de largura, os contadores ficam com 40px de largura; e num celular de 360px cada item do menu fica com 47,4px de largura (medido na Parte 2, ainda sem mudança).
 12. **Só modo escuro.** Sem gradiente roxo, sem efeito de vidro, sem fontes manjadas (Inter, Nunito, Poppins).
-13. **Texto da interface em letra normal**, sem rótulos em MAIÚSCULAS e sem "A · B · C". Ação tem o mesmo nome do começo ao fim (botão "Reiniciar progresso" → aviso "Progresso reiniciado"). (Em 03/11, o design do João usa MAIÚSCULAS nos itens do menu, em "UNIDADE N" e em "VER". Decisão pendente com o João: não mude sem antes/depois e OK. Texto novo segue esta regra.)
+13. **Texto da interface em letra normal**, sem rótulos em MAIÚSCULAS e sem "A · B · C". Ação tem o mesmo nome do começo ao fim (botão "Reiniciar progresso" → aviso "Progresso reiniciado"). (As MAIÚSCULAS do design do João, no menu, em "Unidade N" e em "Ver", viraram letra normal na Parte 2. O "FINEdu" da logo é arte e fica.)
 14. **Nomes em português**, sem acento nos nomes de variáveis, funções e classes. Comentários em português.
 15. **Sem cadastro e sem dado pessoal** (LGPD). O progresso não sai do aparelho.
-16. **Acessibilidade:** contraste mínimo 4,5:1 em texto e 3:1 em ícone; foco visível; `aria-label` em botão que só tem ícone; `prefers-reduced-motion` respeitado.
+16. **Acessibilidade:** contraste mínimo 4,5:1 em texto e 3:1 em ícone; foco visível; `aria-label` em botão que só tem ícone; `prefers-reduced-motion` respeitado. Texto roxo usa `--cor-destaque-texto` (#A5A9F5); o `--cor-destaque-claro` (#4B53F5) fica para borda, barra e ícone, porque como texto não passa no contraste.
 17. **Movimento** só para responder ao toque, mais a comemoração do fim da lição. Nada de animação de entrada em cada seção.
 18. **Janelas** por cima da tela (painel "Como funciona" e boas-vindas) são `<dialog class="folha">` no `index.html`, com o conteúdo montado pelo `telas.js` e abertas com `abrirJanela()`, que usa `showModal()`: o Esc fecha sozinho, o Tab não sai da janela e, ao fechar, o foco volta para quem abriu. Tocar no fundo escuro fecha (`app.js`). Não use o evento `close` para salvar nada: o navegador só o dispara no próximo quadro de animação. (A confirmação de saída da lição continua sendo um `<div>` dentro da lição.)
 19. **Visual do João:** mudança de cor, fonte, tamanho, ícone ou posição só com antes/depois e o OK do Fagner (como fazer está no CLAUDE.md). Conserto de lógica que não muda o visual não precisa.
@@ -62,7 +62,6 @@ const CONTEUDO = {
             {
               id: 'querer-ou-precisar',            // único; NUNCA muda depois de ir ao ar
               titulo: 'Querer ou precisar?',
-              falaDaEstrela: 'Bora? Hoje é querer × precisar!',   // opcional; sobra da Estrela, não aparece mais
               questoes: [
                 {
                   dificuldade: 'facil',            // 'facil' | 'media' | 'dificil'
@@ -80,12 +79,11 @@ const CONTEUDO = {
       ]
     },
     { id: 'investimentos', titulo: 'Investimentos', unidades: [] }      // trilha em breve
-  ],
-  dicasDaEstrela: ['...']   // sobra da Estrela, não aparece mais
+  ]
 };
 ```
 
-- A Unidade 3 (`ef-unidade-3`) entrou no design do João, vazia como a 2: lições com `emBreve: true`.
+- A Unidade 3 (`ef-unidade-3`) entrou no design do João, vazia como a 2: lições com `emBreve: true`. Unidade em que todas as lições são `emBreve` aparece na trilha como um cartão compacto "Em breve" (sem discos, baú nem troféu).
 
 - Toda lição: 5 questões, 2 `facil`, 2 `media`, 1 `dificil`. O app mostra do fácil para o difícil e embaralha as alternativas; a ordem escrita não importa. Por convenção, a certa vem primeiro (facilita a revisão).
 - Toda alternativa tem `explicacao`. No erro, o app mostra o porquê da escolhida e depois a certa com o porquê dela.
@@ -96,13 +94,13 @@ const CONTEUDO = {
 
 1. Abra `js/dados-licoes.js` e ache a unidade.
 2. Copie o bloco inteiro de uma lição pronta (do `{` antes de `id:` até o `},` que fecha) e cole na posição em que ela deve aparecer na trilha.
-3. Troque `id` (minúsculo, com hífen, único) e `titulo`. (Se o bloco copiado tiver `falaDaEstrela`, pode apagar: não aparece mais.)
+3. Troque `id` (minúsculo, com hífen, único) e `titulo`.
 4. Escreva as 5 questões: 2 `facil`, 2 `media`, 1 `dificil`. Em cada uma, de 2 a 4 alternativas, só uma com `correta: true`, todas com `explicacao`. Siga a regra das contas (seção 3).
 5. Se ela entra no lugar de uma lição "Em breve", apague a linha da "Em breve".
 6. Salve e abra o `index.html`. Se aparecer a caixa vermelha no topo, ela diz o que corrigir.
 7. Jogue a lição inteira uma vez, errando pelo menos uma questão, para ler as explicações.
 
-Nenhum outro arquivo muda. Unidade nova: novo objeto em `unidades` (`id`, `titulo`, `licoes`); o baú e o troféu aparecem sozinhos (o `telas.js` põe o baú no meio do caminho e o troféu no fim), e a cor da unidade segue o rodízio roxo, laranja e verde. Trilha nova: novo objeto em `trilhas`.
+Nenhum outro arquivo muda. Unidade nova: novo objeto em `unidades` (`id`, `titulo`, `licoes`); o baú e o troféu aparecem sozinhos (o `telas.js` põe o baú no meio do caminho e o troféu no fim), e a cor da unidade segue o rodízio roxo, laranja e verde. Enquanto todas as lições dela forem `emBreve`, a unidade aparece só como um cartão "Em breve". Trilha nova: novo objeto em `trilhas`.
 
 ## 5. Progresso salvo
 
@@ -188,7 +186,7 @@ Contas no `jogo.js`, como funções puras com teste no grupo "Calculadora" do `t
 ## 7. Navegação
 
 - A tela atual fica no endereço: `#aprender`, `#calculadora`, `#ligas`, `#missoes`, `#loja`, `#perfil`, `#mais` e `#guia` (telas do menu, lista `TELAS_DO_MENU` no `app.js`) e `#licao`, `#resultado`, `#bau`, `#sem-vidas` (telas de foco, sem menu).
-- `#guia` hoje mostra "Guia da Unidade · Em breve" (aberto pelo botão da faixa da unidade). Na Parte 4, vira o tutorial "Como usar o FinEdu", aberto pelo onboarding e por Mais.
+- `#guia` mostra "Guia da Unidade · Em breve", mas desde a Parte 2 nenhum botão leva até ela (o botão da faixa da unidade saiu). Na Parte 4, vira o tutorial "Como usar o FinEdu", aberto pelo onboarding e por Mais.
 - `irPara(tela)`, `abrirTelaDeFoco(tela)` e `voltarParaTrilha()` no `app.js`. O botão voltar do Android navega entre as telas; voltar durante a lição abandona a lição.
 - Tela de foco aberta sem os dados dela (ex.: página recarregada em `#licao`) volta para `#aprender`.
 - A tela `#sem-vidas` guarda a lição parada, para ela continuar depois da recarga. "Treinar de graça" e a lição depois da recarga entram no lugar dela no histórico (`irPara(tela, true)`). Sair por "Voltar para a trilha" ou pelo voltar do Android abandona a lição.

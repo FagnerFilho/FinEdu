@@ -5,20 +5,20 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 @projeto/documento-mestre.md
 @projeto/arquitetura.md
 
-Última atualização: 03/11/2026, noite (feita na conversa de planejamento, depois do design do João; conferida com o código pelo Claude Code na Parte 1).
+Última atualização: 04/11/2026 (Claude Code, Parte 2). Antes: 03/11, noite (conversa de planejamento, depois do design do João) e Parte 1 (conferência com o código).
 
 ## O projeto
 
 - **FinEdu:** site estilo Duolingo que ensina educação financeira para alunos do CETI Dom Severino (ensino fundamental e médio, Teresina-PI).
 - Projeto de extensão de Engenharia de Computação da Uni-CET. Equipe: Fagner (líder), João (design, jgcosta350 no GitHub), Eufy (calculadora, eufyzn), Samuel de Assunção e Samuel Medeiros (conteúdo) e William.
 - **Apresentação: 11/11/2026, de manhã**, num tablet Samsung (Android, pelo link do GitHub Pages) e num notebook.
-- **O que já está pronto** (commit `a906e51`, 67 testes passando):
+- **O que já está pronto** (Parte 2, 04/11, 68 testes passando):
   - trilha com a Unidade 1 completa (4 lições + baú), lição com feedback por alternativa, vitória, Perfil, "Reiniciar progresso";
   - gamificação: revisão das erradas, aquecimento (duplo para quem erra muito), vidas, recarga e treino, níveis por XP, painel "Como funciona" e boas-vindas;
   - Calculadora de Metas com 3 abas (Eufy, 01/11);
-  - design do João (03/11): paleta, fonte Fredoka, lobo na logo, trilha com discos, menu com 7 itens (Aprender, Calculadora, Ligas, Missões, Loja, Perfil, Mais).
+  - design do João (03/11) com as correções da Parte 2 (04/11): paleta, fonte Fredoka, lobo na logo, trilha com discos (estrela de 5 pontas), menu com 7 itens em letra normal (Aprender, Calculadora, Ligas, Missões, Loja, Perfil, Mais), Unidades 2 e 3 como cartão "Em breve".
 - **Em breve:** Ligas, Unidades 2 e 3 e Trilha 2 (investimentos).
-- **Não existe mais:** o mascote Estrela (`desenharEstrela`). O "Guia da Unidade" de conteúdo foi descartado: o botão da faixa da unidade que abre "Guia da Unidade · Em breve" ainda está no código e sai na Parte 2. O Guia agora é o tutorial "Como usar o FinEdu" (Parte 4).
+- **Não existe mais:** o mascote Estrela (nem o código morto dele) e o botão da faixa da unidade que abria "Guia da Unidade · Em breve" (os dois saíram na Parte 2; a rota `#guia` continua, sem botão, até a Parte 4). O "Guia da Unidade" de conteúdo foi descartado: o Guia agora é o tutorial "Como usar o FinEdu" (Parte 4).
 
 ## Quem vai trabalhar com você
 
@@ -53,13 +53,13 @@ Este arquivo é lido no começo de toda sessão. Ele resume o projeto e diz como
 ## O design do João
 
 - **Não mude o visual do João sem mostrar antes/depois e ter o OK do Fagner** (ele confere com o João). Vale para cor, fonte, tamanho, ícone, texto em maiúsculas e posição de qualquer coisa.
-- Como fazer o antes/depois: prints da mesma tela, do mesmo tamanho, antes e depois da mudança (celular em pé, 390 × 844, e tablet deitado, 1280 × 800). Pode usar o Chrome ou o Edge em modo headless (`--headless --screenshot`) ou o Playwright, se estiver instalado. Salve fora do repositório (por exemplo, `Downloads\finedu-antes-depois\`), com nomes numerados (`2.1-antes.png`, `2.1-depois.png`), e diga ao Fagner onde estão.
+- Como fazer o antes/depois: prints da mesma tela, do mesmo tamanho, antes e depois da mudança (celular em pé, 390 × 844, e tablet deitado, 1280 × 800). Pode usar o Chrome ou o Edge em modo headless (`--headless --screenshot`) ou o Playwright, se estiver instalado. Salve fora do repositório (a pasta usada é `finedu-v1\antes-depois\`, ao lado da pasta do repositório), com nomes numerados (`2.1-antes.png`, `2.1-depois.png`), e diga ao Fagner onde estão. Os scripts que tiram esses prints com o Edge sem janela ficam em `finedu-v1\antes-depois\ferramentas\` (como usar: `LEIA-ME.txt` dentro da pasta).
 - Mudança que só conserta lógica, sem mexer no visual (como a missão do dia contar o XP de hoje), não precisa de antes/depois.
 
 ## Antes de entregar qualquer mudança
 
 1. Siga o checklist da seção 9 do arquitetura.md.
-2. Rode o `testes.html` e confira que tudo passa (eram 67 em 03/11; o número só cresce).
+2. Rode o `testes.html` e confira que tudo passa (eram 68 em 04/11; o número só cresce).
 3. Atualize `projeto/documento-mestre.md` (decisões e pendências) e, se mudou alguma regra, o `projeto/arquitetura.md`.
 4. Termine com um resumo curto: o que mudou, em quais arquivos, o que testou e o que ficou pendente.
 
@@ -74,7 +74,7 @@ Feito:
 A fazer, uma parte por vez, com commit ao fim de cada uma e o OK do Fagner antes da próxima:
 
 5. ~~**Parte 1 · Conferir os documentos**~~ (feita em 03/11; o que mudou está em "Parte 1 · Conferência dos documentos", no documento-mestre). O planejamento já gravou no GitHub os documentos novos (CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, README.md). `git pull`; conferir cada afirmação com o código; corrigir o documento onde estiver errado; commit.
-6. **Parte 2 · Correções do design, com antes/depois (04/11).** Obrigatórias: contraste do item ativo do menu; contraste dos rótulos das unidades 2 e 3; licença da Fredoka (`css/fontes/OFL-Fredoka.txt`, texto copiado do repositório oficial da fonte, sem inventar o cabeçalho); tirar o botão "Guia da Unidade" da faixa da unidade; conferir que os 7 itens do menu têm pelo menos 48px num celular de 360px. Propostas para o Fagner e o João decidirem: letra normal no lugar das MAIÚSCULAS, estrela de 5 pontas nos discos das lições, Unidades 2 e 3 como um cartão compacto "Em breve", nomes das abas da calculadora em letra normal, limpeza do código morto da Estrela. Detalhes na seção "Identidade visual" e em "Decisões por conversa (03/11)" do documento-mestre.
+6. ~~**Parte 2 · Correções do design, com antes/depois**~~ (feita em 04/11, aprovada pelo Fagner sem o João, que vê os prints depois; o que mudou e o que ficou para decidir estão em "Parte 2 · Correções do design", no documento-mestre). Obrigatórias: contraste do item ativo do menu; contraste dos rótulos das unidades 2 e 3; licença da Fredoka (`css/fontes/OFL-Fredoka.txt`, texto copiado do repositório oficial da fonte, sem inventar o cabeçalho); tirar o botão "Guia da Unidade" da faixa da unidade; conferir que os 7 itens do menu têm pelo menos 48px num celular de 360px. Propostas para o Fagner e o João decidirem: letra normal no lugar das MAIÚSCULAS, estrela de 5 pontas nos discos das lições, Unidades 2 e 3 como um cartão compacto "Em breve", nomes das abas da calculadora em letra normal, limpeza do código morto da Estrela. Detalhes na seção "Identidade visual" e em "Decisões por conversa (03/11)" do documento-mestre.
 7. **Parte 3 · Missão do dia (05/11).** Seção "Missão do dia" do documento-mestre: 1 missão por dia, em rodízio pela data, `XP_DA_MISSAO` = 20 (o Fagner confirma no plano), sem moedas, treino conta, zera no dia seguinte. Conserta o erro do `META_XP_MISSAO_DIARIA`.
 8. **Parte 4 · Onboarding (05 e 06/11).** Seção "Onboarding" do documento-mestre: "Como devemos te chamar?" → avatar → tutorial "Como usar o FinEdu" → trilha. Depois, o tutorial fica em Mais; o Perfil mostra apelido e avatar; "Reiniciar progresso" traz o onboarding de volta. Substitui o aviso de boas-vindas.
 9. **Questões novas da Unidade 1 (07/11).** O planejamento manda o conteúdo pronto; só o `dados-licoes.js` muda.
