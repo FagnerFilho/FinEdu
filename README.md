@@ -4,7 +4,7 @@ Site no estilo Duolingo que ensina educação financeira para os alunos do CETI 
 
 Versão 1: HTML, CSS e JavaScript puro, sem servidor e sem cadastro. O progresso fica salvo só no aparelho de quem usa.
 
-Site: https://fagneraposo.github.io/FinEdu/
+Site: https://fagnerfilho.github.io/FinEdu/#apelido
 
 Equipe: Fagner (líder), João (design), Eufy (calculadora), Samuel de Assunção e Samuel Medeiros (conteúdo) e William.
 
