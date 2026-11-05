@@ -20,7 +20,8 @@ const estado = {
   recompensaDoBau: null,      // o que veio no último baú aberto
   podeSalvar: true,           // o navegador deixa salvar?
   telaDeFocoEmpilhada: false, // ver voltarParaTrilha()
-  onboarding: null            // apelido, avatar e tutorial em andamento (seção 7)
+  onboarding: null,           // apelido, avatar e tutorial em andamento (seção 7)
+  modoApresentacao: false     // Mais → Apresentação: todas as lições liberadas (seção 6)
 };
 
 // Telas do menu ("mais" abre as configurações do app) e telas de foco (sem
@@ -38,6 +39,7 @@ const TELAS_DE_FOCO = ['licao', 'resultado', 'bau', 'sem-vidas', ...TELAS_DO_ONB
 function iniciar() {
   estado.podeSalvar = armazenamentoDisponivel();
   estado.progresso = prepararProgresso(carregarProgresso());
+  estado.modoApresentacao = carregarModoApresentacao();
   salvar();
 
   mostrarProblemasDoConteudo(conferirConteudo());
@@ -138,13 +140,13 @@ function mostrarTela(tela) {
 
   const lugar = document.getElementById(`tela-${tela}`);
   switch (tela) {
-    case 'aprender':    desenharTrilha(lugar, estado.progresso); break;
+    case 'aprender':    desenharTrilha(lugar, estado.progresso, estado.modoApresentacao); break;
     case 'calculadora': desenharCalculadora(lugar); break;
     case 'ligas':       desenharLigas(lugar, estado.progresso); break;
     case 'missoes':     desenharMissoes(lugar, estado.progresso); break;
     case 'loja':        desenharLoja(lugar, estado.progresso); break;
     case 'perfil':      desenharPerfil(lugar, estado.progresso, estado.podeSalvar); break;
-    case 'mais':        desenharConfiguracoes(lugar, estado.progresso, estado.podeSalvar); break;
+    case 'mais':        desenharConfiguracoes(lugar, estado.progresso, estado.podeSalvar, estado.modoApresentacao); break;
     case 'licao':       desenharLicao(lugar, estado.sessao, estado.progresso); break;
     case 'resultado':   desenharResultado(lugar, estado.resumo); break;
     case 'bau':         desenharBauAberto(lugar, estado.recompensaDoBau); break;
@@ -173,7 +175,7 @@ function abrirLicao(idLicao, substituir = false) {
   const achada = encontrarLicao(idLicao);
   if (!achada) return;
 
-  const situacao = situacaoDaLicao(estado.progresso, achada.trilha, idLicao);
+  const situacao = situacaoDaLicao(estado.progresso, achada.trilha, idLicao, estado.modoApresentacao);
   if (situacao === 'em-breve') {
     mostrarAviso('Essa lição chega em breve.');
     return;
@@ -437,8 +439,19 @@ function limparCalculadoraNaTela() {
   if (primeiroCampo) primeiroCampo.focus();
 }
 
+// Mais → Apresentação: liga ou desliga o modo apresentação, que libera
+// todas as lições para a equipe mostrar o app. Ele fica salvo no aparelho,
+// fora do progresso do aluno: continua ligado depois de fechar o site e
+// depois de "Reiniciar progresso", e só desliga por este interruptor.
+function alternarModoApresentacao() {
+  estado.modoApresentacao = !estado.modoApresentacao;
+  salvarModoApresentacao(estado.modoApresentacao);
+  mostrarModoApresentacao(estado.modoApresentacao);
+  mostrarAviso(estado.modoApresentacao ? 'Modo apresentação ligado.' : 'Modo apresentação desligado.');
+}
+
 // Apaga tudo, inclusive o apelido e o avatar: o onboarding volta
-// (ver podeAbrirPorCausaDoOnboarding)
+// (ver podeAbrirPorCausaDoOnboarding). O modo apresentação não muda.
 function apagarProgresso() {
   reiniciarProgresso();
   estado.progresso = prepararProgresso(null);
@@ -677,6 +690,7 @@ function tratarClique(evento) {
     case 'reiniciar':            mostrarConfirmacaoDeReinicio(true); break;
     case 'cancelar-reinicio':    mostrarConfirmacaoDeReinicio(false); break;
     case 'confirmar-reinicio':   apagarProgresso(); break;
+    case 'modo-apresentacao':    alternarModoApresentacao(); break;
     case 'fechar-problemas':     esconderProblemasDoConteudo(); break;
     case 'trocar-apelido-e-avatar': trocarApelidoEAvatar(); break;
     case 'ver-tutorial':         verTutorial(); break;

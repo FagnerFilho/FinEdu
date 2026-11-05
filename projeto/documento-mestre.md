@@ -1,12 +1,12 @@
 # DOCUMENTO-MESTRE · FinEdu
 
-Última atualização: 04/11/2026, fim da tarde (Claude Code: ajustes antes da apresentação: contraste, avatar na saudação e seta da faixa da unidade). Antes: 04/11, tarde (Parte 4, onboarding), 04/11, manhã (push das Partes 1, 2 e 3), 04/11, madrugada (Parte 3: missão do dia), 04/11 (Parte 2: correções do design aprovadas pelo líder), 03/11, noite (conversa de planejamento, com a varredura e as decisões novas) e Parte 1 (conferência com o código). Descreve o código da Parte 4 (o design do João com as correções da Parte 2, a missão do dia e o onboarding) e o que foi decidido para os próximos dias.
+Última atualização: 04/11/2026, noite (Claude Code: modo apresentação, com as decisões do líder da mesma noite: público, conteúdo novo e o endereço novo do site). Antes: 04/11, fim da tarde (ajustes antes da apresentação: contraste, avatar na saudação e seta da faixa da unidade), 04/11, tarde (Parte 4, onboarding), 04/11, manhã (push das Partes 1, 2 e 3), 04/11, madrugada (Parte 3: missão do dia), 04/11 (Parte 2: correções do design aprovadas pelo líder), 03/11, noite (conversa de planejamento, com a varredura e as decisões novas) e Parte 1 (conferência com o código). Descreve o código depois do modo apresentação (o design do João com as correções da Parte 2, a missão do dia, o onboarding e o modo apresentação) e o que foi decidido para os próximos dias.
 
 ## Visão
 Site estilo Duolingo de educação financeira e investimentos.
 Nome oficial: FinEdu ("Finanças em Foco" era só o nome provisório).
 Escrita do nome: sempre "FinEdu" nos textos (F e E maiúsculos). O "FINEdu" da logo é só arte.
-Público inicial: alunos do CETI Dom Severino (Teresina-PI).
+Público: alunos do CETI Dom Severino (Teresina-PI), principalmente do ensino médio (decisão do líder em 04/11, à noite; antes, ensino fundamental e médio).
 Projeto de extensão de Engenharia de Computação (Uni-CET).
 
 ## Equipe
@@ -18,7 +18,8 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - O líder distribui as tarefas entre a equipe de propósito, em vez de fazer tudo com IA.
 
 ## Ferramentas e onde mora cada coisa
-- Código: Claude Code, trabalhando na pasta finedu do computador do líder, com Git, e enviando para o repositório oficial: github.com/Fagneraposo/FinEdu (público; até 01/11 se chamava FinEduu). Site: https://fagneraposo.github.io/FinEdu/
+- Código: Claude Code, trabalhando na pasta finedu do computador do líder, com Git, e enviando para o repositório oficial: github.com/FagnerFilho/FinEdu (público; até 01/11 se chamava FinEduu). Site: https://fagnerfilho.github.io/FinEdu/
+- Em 04/11 o líder trocou o nome da conta do GitHub, de Fagneraposo para FagnerFilho. O endereço antigo do repositório (github.com/Fagneraposo/FinEdu) ainda redireciona para o novo, mas o site antigo (https://fagneraposo.github.io/FinEdu/) dá 404.
 - Commits com o e-mail privado do GitHub (noreply), para o e-mail do líder não aparecer no repositório público.
 - Planejamento, conteúdo e decisões: Projeto "FineEdu" no Claude.
 - Este documento-mestre e o arquitetura.md ficam dentro do código, na pasta projeto/. A versão oficial é a do código. Quando o planejamento decide coisas novas, ele grava versões novas dos documentos direto no GitHub, com o OK do líder (a primeira vez foi em 03/11). O Claude Code puxa com `git pull`, confere com o código, corrige o documento onde ele estiver errado e avisa o líder.
@@ -40,6 +41,7 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - Cada unidade tem um baú, que libera quando todas as lições da unidade estão concluídas. (No design do João, o baú fica no meio do caminho, antes da última lição, e o troféu fecha a unidade.)
 - Gamificação: XP e níveis, moedas, vidas, sequência de dias, aquecimento (duplo para quem errou muito), revisão das erradas, recarga e treino, painel "Como funciona" nos contadores (seção Gamificação). Desde a Parte 3 (04/11): missão do dia (seção Missão do dia).
 - Primeira vez no app: onboarding com apelido, avatar e o tutorial "Como usar o FinEdu" (seção Onboarding, feito na Parte 4). O aviso de boas-vindas saiu.
+- Modo apresentação (04/11, noite): um interruptor em Mais libera todas as lições, para a equipe mostrar o app sem refazer as lições. Só muda a liberação; o resto do jogo continua igual (seção Modo apresentação).
 
 ## Mascote e logo
 - A Estrela foi removida (decisão da equipe em 31/10) e saiu do código no design do João (03/11): não existe mais `desenharEstrela`.
@@ -69,6 +71,7 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
     - "Sair da lição" e "Sair do treino" na janela (vermelho sobre o cartão: 4,23): nenhum vermelho do estilo.css passa de 4,5 sobre o cartão, então ficou no cinza claro dos botões discretos, #A3AAC9, como "Cancelar" e "Pular" (6,35). O "Voltar para a trilha" da tela sem vidas continua vermelho: fica sobre o fundo e passa (4,67).
   - Correção do que estava anotado: o "Reiniciar progresso" com contorno, em Mais, fica sobre o fundo e não sobre o cartão: tem 4,67 e já passava. Os títulos vermelhos grandes ("Ops, essa não" e "Reiniciar todo o progresso?", 4,37) são texto grande: o mínimo para eles é 3.
   - O "FINEdu" da logo (2,13) é logo, e a regra de contraste não vale para logo.
+  - Interruptor do modo apresentação (04/11, noite; mínimo 3, como ícone): desligado, contorno e bolinha com 7,0 contra o fundo; ligado, contorno com 7,34 contra o fundo e bolinha com 4,44 sobre o trilho (13,08 contra o fundo). O contorno do ligado usa o roxo claro de texto (#A5A9F5), porque o trilho roxo #4B53F5 sozinho tem 2,95 contra o fundo. O selo "Modo apresentação" é igual ao "Em breve" (6,42). Tem teste no grupo "Contraste".
   - Correção do que a Parte 1 anotou: o "Em breve" pequeno embaixo do título da unidade nunca aparecia (as Unidades 2 e 3 já têm o título "Em breve"), e o código dele saiu na Parte 2.
 - Princípios visuais (continuam valendo):
   - A "sombra sólida" só aparece no que é tocável; informação parada usa borda.
@@ -90,7 +93,7 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - O botão voltar do Android navega entre as telas (o endereço termina com #aprender, #perfil, #licao...).
 
 ## Telas
-- Aprender (trilha): faixa colorida da unidade ("Unidade N" e o título), caminho de discos com estrela de 5 pontas (a lição atual ganha um anel em volta), baú no meio do caminho (na Unidade 1, entre a 3ª e a 4ª lição; só abre com as 4 concluídas) e troféu no fim da unidade (com o baú liberado, tocar no troféu também abre o baú). O nome da Trilha 1 e o balão "Começar" saíram no design do João; o nome só aparece na Trilha 2, "Em breve". As Unidades 2 e 3, ainda sem lições, aparecem como cartões compactos "Em breve", como o da Trilha 2 (Parte 2). O botão da faixa que abria "Guia da Unidade · Em breve" saiu na Parte 2, e a seta "←" antes de "Unidade 1" saiu em 04/11 (era só desenho, não levava a lugar nenhum). Desde a Parte 4, quem tem apelido vê "Oi, Duda!" acima da faixa da unidade, com o avatar pequeno ao lado (04/11).
+- Aprender (trilha): faixa colorida da unidade ("Unidade N" e o título), caminho de discos com estrela de 5 pontas (a lição atual ganha um anel em volta), baú no meio do caminho (na Unidade 1, entre a 3ª e a 4ª lição; só abre com as 4 concluídas) e troféu no fim da unidade (com o baú liberado, tocar no troféu também abre o baú). O nome da Trilha 1 e o balão "Começar" saíram no design do João; o nome só aparece na Trilha 2, "Em breve". As Unidades 2 e 3, ainda sem lições, aparecem como cartões compactos "Em breve", como o da Trilha 2 (Parte 2). O botão da faixa que abria "Guia da Unidade · Em breve" saiu na Parte 2, e a seta "←" antes de "Unidade 1" saiu em 04/11 (era só desenho, não levava a lugar nenhum). Desde a Parte 4, quem tem apelido vê "Oi, Duda!" acima da faixa da unidade, com o avatar pequeno ao lado (04/11). Com o modo apresentação ligado (04/11, noite), as lições fora da ordem ficam coloridas, com a estrela e sem o anel (o anel continua só na próxima lição da ordem normal), e o selo "Modo apresentação" aparece à direita do "Oi, Duda!" (sem apelido, sozinho à direita; com um apelido comprido, desce para a linha de baixo).
 - Lição: barra com 5 partes (verde quando acerta, vermelha quando erra; a vermelha fica verde quando o aluno acerta na revisão), etiqueta Fácil/Média/Difícil (ou Aquecimento e Revisão, com uma nota dizendo que errar ali não tira vida; no aquecimento duplo, "Aquecimento 1 de 2"), botão Verificar embaixo, feedback com o porquê. No notebook: teclas 1 a 4 (ou A a D), Enter e Esc.
 - Vitória: XP, moedas, precisão, sequência e, quando o aluno sobe de nível, o aviso "Subiu para o nível 2: Poupador!" (o baú aberto também mostra). Fim do treino: as vidas que voltaram. Quando a lição (ou o treino) termina a missão do dia, os dois mostram "Missão do dia concluída: +20 XP", antes do aviso de nível (Parte 3).
 - Baú aberto, Sem vidas (recarregar com moedas ou treinar de graça) e confirmação ao sair no meio da lição ou do treino.
@@ -99,7 +102,7 @@ Fagner (líder), João, Eufy, William, Samuel de Assunção, Samuel Medeiros.
 - Missões (desde a Parte 3): o cartão "Missão do dia" com a missão de hoje e o que o aluno já fez hoje (ex.: "Conclua 2 lições" e "1/2" na barra), o selo "Em andamento" ou "Concluída!" e o subtítulo "Todo dia tem uma missão nova, que vale mais 20 XP.". O cartão da coluna da direita mostra o mesmo. Até a Parte 2 mostrava "Ganhe 30 XP" e contava o XP total, não o de hoje (quem tinha 30 XP via a missão concluída para sempre).
 - Loja: recarga de vidas por 20 moedas, que só libera com 0 vidas (segue a regra), e o botão "Como funciona".
 - Perfil (sem dado pessoal além do apelido opcional): o avatar no círculo (sem avatar, o chapéu do menu), o apelido como título (sem apelido, "Perfil"; o leitor de tela ouve "Perfil de Duda"), o botão "Trocar apelido e avatar" (Parte 4), nível e quanto falta para o próximo, estatísticas e o atalho "Abrir Configurações" (vai para Mais).
-- Mais (Configurações): "Reiniciar progresso" com confirmação na tela (que avisa que o apelido e o avatar são apagados), "Como usar o FinEdu" com o botão "Ver tutorial" (Parte 4), "Ver regras" (abre o painel) e Sobre.
+- Mais (Configurações): "Reiniciar progresso" com confirmação na tela (que avisa que o apelido e o avatar são apagados), a seção "Apresentação" com o interruptor "Modo apresentação" (04/11, noite), "Como usar o FinEdu" com o botão "Ver tutorial" (Parte 4), "Ver regras" (abre o painel) e Sobre.
 - Contadores (barra de cima e coluna da direita): cada um é um botão que abre o painel "Como funciona" (vidas, moedas, XP e nível, sequência). Na parte do XP, uma linha sobre a missão do dia, com a de hoje (Parte 3).
 - Onboarding (Parte 4): apelido, avatar e o tutorial "Como usar o FinEdu" (#apelido, #avatar e #guia), na primeira vez e depois de "Reiniciar progresso". O aviso de boas-vindas saiu.
 
@@ -167,12 +170,28 @@ Ordem: "Como a gente te chama?" → avatar → tutorial "Como usar o FinEdu" →
   - Moedas não: o aluno A já termina a unidade com 100 moedas e quase nada em que gastar.
   - Quem volta todo dia e treina ganha até 20 XP por dia: chega ao nível 4 em uns 3 dias. É o prêmio por voltar, que é o objetivo da missão.
 
+## Modo apresentação (decidido em 04/11, noite; feito na mesma noite)
+Decisões do líder (04/11, noite). Elas trocam a ideia de 01/11, que era deixar o app já com as lições 1 e 2 concluídas, 1 vida e 20 moedas.
+- O que é: um interruptor para a equipe apresentar o FinEdu sem precisar refazer as lições. Ligado, todas as lições de todas as unidades ficam liberadas: dá para tocar em qualquer uma e fazer quantas vezes quiser.
+- Onde fica: visível em Mais, numa seção própria, "Apresentação" (entre "Progresso" e "Como funciona", com a estrela das lições como ícone), com o interruptor "Modo apresentação" e o texto de apoio "Libera todas as lições para mostrar o app.".
+  - Como ele fica visível, um aluno também pode ligar. Ele só pula a ordem das lições (não ganha XP nem moedas de graça), e o selo na trilha mostra que está ligado. Aceito para a apresentação.
+- Fica salvo no aparelho: continua ligado depois de fechar o site e depois de "Reiniciar progresso" (é uma configuração do aparelho, não do aluno). Só desliga pelo próprio interruptor. Quem salva é o armazenamento.js (regra 3), numa gaveta separada da do progresso.
+- Só muda a liberação das lições. Vidas, XP, moedas, missão do dia, revisão e onboarding continuam iguais, e a lição já concluída continua sendo treino. Na prática:
+  - a lição feita fora da ordem é lição nova: o erro tira vida, ela dá XP e moedas e conta para a missão;
+  - o aquecimento continua vindo da lição anterior da trilha, mesmo que o aluno não tenha feito essa lição;
+  - o baú continua pedindo todas as lições da unidade concluídas;
+  - desligar o modo não desfaz nada: as lições feitas com ele continuam concluídas, e a regra de sempre volta. Por ela, a lição depois de uma concluída fica liberada: quem fez só a lição 3 vê o anel na lição 1 e na lição 4.
+- Unidades e trilhas novas (Unidades 2, 3 e 4 e a Trilha 2) já entram liberadas pelo modo, sem mudar código: a regra olha cada lição. Unidade ainda sem conteúdo continua como o cartão "Em breve".
+- Selo na trilha: "Modo apresentação", discreto, no estilo do "Em breve", à direita do "Oi, Duda!", para a equipe saber que o modo está ligado. Visual do João: prints de antes e depois em `finedu-v1/antes-depois/modo-apresentacao/folhas`.
+- Interruptor: desligado, só o contorno cinza e a bolinha cinza à esquerda; ligado, o trilho roxo e a bolinha clara à direita (a posição da bolinha mostra o estado sem depender da cor). Ao tocar, aparece o aviso "Modo apresentação ligado." ou "Modo apresentação desligado.". Funciona pelo toque e pelo teclado (Tab até ele, Enter ou espaço), e o leitor de tela ouve o nome, o texto de apoio e se está ligado ou desligado. O disco liberado diz, para o leitor de tela, "Unidade 1, lição 3, Planejamento e orçamento: liberada pelo modo apresentação.".
+- Para 11/11: ligar o modo uma vez no tablet e no notebook. Ele fica guardado no navegador e no endereço em que foi ligado: no notebook, abrir pelo arquivo (dois cliques) e pelo link do site são dois lugares diferentes, e cada navegador também guarda o seu. Entre uma apresentação e outra, "Reiniciar progresso" zera o aluno (o onboarding volta) e o modo continua ligado.
+
 ## Estrutura do código
-- Versão 1 sem back-end. Progresso em localStorage, sempre via js/armazenamento.js.
+- Versão 1 sem back-end. Progresso em localStorage, sempre via js/armazenamento.js. O modo apresentação também fica lá, numa gaveta separada (`finedu-modo-apresentacao`), que o "Reiniciar progresso" não apaga.
 - HTML, CSS e JS puro, código próprio escrito do zero na conversa 02 (Antigravity só como referência).
-- Estrutura: index.html, css/estilo.css, css/fontes/ (Fredoka, Baloo 2 e Figtree), js/dados-licoes.js, js/armazenamento.js, js/jogo.js, js/telas.js, js/app.js, img/favicon.svg, testes.html, README.md, CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, projeto/plano-gamificacao.md. (Nenhum arquivo novo nas Partes 3 e 4.)
+- Estrutura: index.html, css/estilo.css, css/fontes/ (Fredoka, Baloo 2 e Figtree), js/dados-licoes.js, js/armazenamento.js, js/jogo.js, js/telas.js, js/app.js, img/favicon.svg, testes.html, README.md, CLAUDE.md, projeto/documento-mestre.md, projeto/arquitetura.md, projeto/plano-gamificacao.md. (Nenhum arquivo novo nas Partes 3 e 4 nem no modo apresentação.)
 - Funciona abrindo o index.html com dois cliques (sem servidor).
-- testes.html: testes das regras do jogo e da calculadora no navegador, com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação (sem e com a missão do dia) e confere os textos do painel, do feedback do erro, da tela Missões, da vitória e do onboarding, e o contraste dos textos corrigidos em 04/11 (com o estilo.css de verdade). 96 testes, todos passando (04/11, ajustes antes da apresentação).
+- testes.html: testes das regras do jogo e da calculadora no navegador, com dois cliques. Inclui a simulação dos 3 alunos do plano da gamificação (sem e com a missão do dia) e confere os textos do painel, do feedback do erro, da tela Missões, da vitória e do onboarding, o modo apresentação (a liberação, as telas e a gaveta do aparelho, esta com uma gaveta de mentira, sem mexer no que está salvo) e o contraste dos textos corrigidos em 04/11 e do interruptor (com o estilo.css de verdade). 104 testes, todos passando (04/11, noite, modo apresentação).
 - O arquitetura.md guarda as regras do código e o passo a passo para criar lições. A versão oficial fica em projeto/arquitetura.md.
 - O app confere o dados-licoes.js e mostra um aviso vermelho no topo se algo estiver fora do padrão.
 - Depois da apresentação, as regras do arquitetura.md viram uma skill de arquiteto.
@@ -182,11 +201,11 @@ Ordem: "Como a gente te chama?" → avatar → tutorial "Como usar o FinEdu" →
 - Data: 11/11/2026, de manhã.
 - Roda num tablet Samsung (Android) e num notebook. Vai ter internet no local.
 - No notebook: dois cliques no index.html. No tablet: pelo link do GitHub Pages (abrir o arquivo direto no Android costuma falhar).
-- Publicado no GitHub Pages (repositório público, branch main, pasta raiz): https://fagneraposo.github.io/FinEdu/ (o link antigo, com FinEduu, dá 404 desde 01/11).
-- Para zerar entre uma apresentação e outra: Mais → Reiniciar progresso (o Perfil também tem o atalho "Abrir Configurações").
+- Publicado no GitHub Pages (repositório público, branch main, pasta raiz): https://fagnerfilho.github.io/FinEdu/ (desde 04/11, quando o líder trocou o nome da conta; o https://fagneraposo.github.io/FinEdu/ dá 404, e o link com FinEduu dá 404 desde 01/11).
+- Para zerar entre uma apresentação e outra: Mais → Reiniciar progresso (o Perfil também tem o atalho "Abrir Configurações"). O modo apresentação continua ligado.
+- Modo apresentação (04/11, noite): em Mais → Apresentação, libera todas as lições para a equipe mostrar o app sem refazer as lições (seção Modo apresentação). Ligar uma vez no tablet e no notebook antes do ensaio.
 - Entram na apresentação: Trilha 1 com a Unidade 1, gamificação, Calculadora de Metas (pronta), missão do dia e o onboarding com o tutorial "Como usar o FinEdu". Ficam "Em breve": Ligas, Unidades 2 e 3, Trilha 2.
-- Banner impresso (obrigatório), feito pelo João, com QR code para a turma abrir o FinEdu no celular e jogar junto durante a apresentação. Link do QR: https://fagneraposo.github.io/FinEdu/. Gráfica leva de 1 a 3 dias: arquivo na gráfica até 06 ou 07/11.
-- Modo apresentação (aprovado em 01/11): botão que deixa o app pronto para demonstrar (por exemplo, lições 1 e 2 concluídas, 1 vida e 20 moedas). Agora precisa considerar o onboarding (já vir com apelido e avatar, ou mostrar o onboarding na demonstração).
+- Banner impresso (obrigatório), feito pelo João, com QR code para a turma abrir o FinEdu no celular e jogar junto durante a apresentação. Link do QR: https://fagnerfilho.github.io/FinEdu/ (o endereço antigo, fagneraposo, dá 404 desde 04/11: conferir que o QR do João usa o novo). Gráfica leva de 1 a 3 dias: arquivo na gráfica até 06 ou 07/11.
 - Instalar como app: se sobrar tempo; senão, depois da apresentação.
 - Questionário antes e depois: fora (sem tempo).
 - Relatório de extensão: depois da apresentação, no modelo que a faculdade vai enviar.
@@ -195,7 +214,7 @@ Ordem: "Como a gente te chama?" → avatar → tutorial "Como usar o FinEdu" →
   - 05/11: Parte 3 (missão do dia). Feita antes, na madrugada de 04/11.
   - 05 e 06/11: Parte 4 (onboarding).
   - 06 ou 07/11: banner na gráfica.
-  - 07/11: questões novas da Unidade 1 no código; modo apresentação.
+  - 07/11: questões novas da Unidade 1 no código. O modo apresentação foi feito antes, na noite de 04/11.
   - 08/11, noite: planejar a apresentação (slides, quem fala o quê, respostas para a banca).
   - 09/11: teste completo no tablet e ensaio.
   - 10/11: código congelado, só correção de erro.
@@ -230,6 +249,8 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 
   3. "Planejamento e orçamento" (Samuel de Assunção).
   4. "Consumo e dívidas" (Samuel de Assunção).
 - Unidades 2 e 3 (a 3 entrou no design do João) e Trilha 2 (investimentos): "Em breve".
+- Conteúdo novo (04/11, noite): o planejamento está escrevendo as Unidades 2 e 3 e uma unidade básica de investimentos, que vai ser a Unidade 4 da Trilha 1 (não é a primeira unidade da Trilha 2).
+  - Cuidado com a ordem de entrada: fora do modo apresentação, uma lição só libera com a anterior concluída, e uma lição "Em breve" nunca é concluída. Se a Unidade 4 entrar no código antes das Unidades 2 e 3, ela fica trancada para quem não liga o modo. Melhor entrarem juntas (ou decidir antes como liberar).
 - Questões novas da Unidade 1: a equipe não aprovou as atuais (01/11). Os dois Samuels reescrevem, seguindo o guia de escrita (5 questões por lição: 2 fáceis, 2 médias, 1 difícil; 4 alternativas; explicação em cada alternativa; situações de adolescente; nada de conta de cabeça; alternativas erradas tentadoras; sem infantilizar). Depois: o planejamento formata, o Claude Code coloca no código (só no dados-licoes.js), e o professor revisa.
 - Regra das contas (01/11):
   - A Unidade 1 não tem nenhuma questão de conta. O conceito fica na pergunta, e a conta vai para a explicação.
@@ -375,19 +396,34 @@ Plano, simulação e motivos em projeto/plano-gamificacao.md (a gamificação 2 
 - Checklist da seção 9 do arquitetura.md: sem erro no console e sem caixa vermelha; lição com erro (volta na revisão); Reiniciar progresso e o onboarding pelo teclado até a trilha, com o avatar na saudação; painel; as 3 abas da calculadora e o erro de digitação; Missões; celular e tablet pelos prints (os do código de agora saíram iguais aos aprovados); 320px com apelido comprido, sem rolagem para o lado.
 - Prints de antes e depois em `finedu-v1/antes-depois/ajustes-04-11` (folhas com legenda em `ajustes-04-11/folhas`), feitos com `antes-depois/ferramentas/prints-ajustes.ps1` e `folhas-ajustes.ps1`.
 
+### Modo apresentação (Claude Code, 04/11, noite)
+- Pedido e decisões do líder na mesma noite (item 10 da fila; detalhes na seção "Modo apresentação"). Plano mostrado e aprovado antes do código. Decidido junto: o público passa a ser principalmente o ensino médio; o planejamento está escrevendo as Unidades 2 e 3 e a Unidade 4, básica de investimentos (seção Conteúdo).
+- O que mudou (regras do código nas seções 1, 2, 5, 6 e 9 do arquitetura.md):
+  - armazenamento.js: gaveta nova, `finedu-modo-apresentacao`, com `carregarModoApresentacao()` e `salvarModoApresentacao(ligado)`. Todas as funções que leem ou gravam ganharam um último parâmetro opcional, `gaveta`, só para os testes usarem uma gaveta de mentira.
+  - jogo.js: `situacaoDaLicao()` recebe o modo e, ligado, devolve a situação nova `'liberada'` no lugar de `'bloqueada'`.
+  - app.js: `estado.modoApresentacao` (lido quando o app abre); `abrirLicao()` e a trilha usam o modo; a ação `modo-apresentacao` (`alternarModoApresentacao()`) liga ou desliga, salva e mostra o aviso.
+  - telas.js: na trilha, o selo e os discos liberados; em Mais, a seção "Apresentação"; `mostrarModoApresentacao()` muda o interruptor no lugar, sem redesenhar a tela (o foco fica nele).
+  - estilo.css: o interruptor (`.interruptor`, com as medidas em variáveis novas) e a linha do selo (`.trilha-topo`). Nenhuma cor nova.
+- testes.html: 104 testes (eram 96). Grupo novo "Modo apresentação" (7 testes: desligado, ligado, unidades e trilha novas, o resto do jogo igual, a gaveta do aparelho, Mais e trilha) e 1 no grupo "Contraste" (o interruptor). Conferido que eles falham com a regra estragada de propósito: modo ignorado, modo sempre ligado, "Reiniciar" que apaga o modo e o contorno do ligado sem o roxo claro.
+- Checklist da seção 9 do arquitetura.md, no navegador: sem erro no console e sem caixa vermelha; com o modo ligado, a lição 3 feita direto, errando uma questão (aquecimento, revisão, 1 vida a menos, +50 XP e +10 moedas); recarregar a página (o modo continua); "Reiniciar progresso" (o onboarding volta e o modo continua); onboarding com o campo vazio, "Pular", voltar, avançar e recarregar no meio; "Trocar apelido e avatar" (Salvar e Cancelar); "Ver tutorial"; o painel e o Esc; as 3 abas da calculadora e o erro de digitação; Missões; o interruptor pelo teclado (Enter e espaço); 320px, também com apelido comprido, sem rolagem para o lado.
+- Prints de antes e depois (celular 390 × 844 e tablet 1280 × 800, a tela inteira) em `finedu-v1/antes-depois/modo-apresentacao`, com folhas de legenda em `modo-apresentacao/folhas`, feitos com `antes-depois/ferramentas/prints-modo.ps1` e `folhas-modo.ps1`. Com o modo desligado, a trilha saiu igual ao antes, pixel por pixel.
+- Para o líder e o João: ver os prints (a seção nova em Mais, o interruptor, o selo e os discos liberados) e dizer se fica.
+- Também em 04/11, à noite: o site e o repositório mudaram de endereço (a conta do líder virou FagnerFilho). Os links foram corrigidos neste documento, no CLAUDE.md e no README (o link do README ficou sem o `#apelido`, que só fazia o app abrir no onboarding).
+
 ## Pendências
-- Fila até 11/11 (detalhes no CLAUDE.md): Parte 1 (documentos, feita em 03/11), Parte 2 (correções do design, feita em 04/11), Parte 3 (missão do dia, feita em 04/11, de madrugada), Parte 4 (onboarding, feita em 04/11, à tarde), questões novas da Unidade 1, modo apresentação, teste no tablet (09/11) e código congelado (10/11).
+- Fila até 11/11 (detalhes no CLAUDE.md): Parte 1 (documentos, feita em 03/11), Parte 2 (correções do design, feita em 04/11), Parte 3 (missão do dia, feita em 04/11, de madrugada), Parte 4 (onboarding, feita em 04/11, à tarde), questões novas da Unidade 1, modo apresentação (feito em 04/11, à noite), teste no tablet (09/11) e código congelado (10/11).
 - Onboarding: o João vê os prints da Parte 4 (`finedu-v1/antes-depois/parte-4/folhas`), aprovada pelo líder em 04/11, e, se quiser, redesenha os 6 avatares (provisórios).
-- Missão do dia: o João vê a linha nova da vitória (prints da Parte 3). No ensaio de 09/11 a missão é a da lição perfeita; para ensaiar com a de 11/11 ("Conclua 1 lição"), mudar a data do tablet. O modo apresentação pode considerar a missão.
-- Testar no tablet Samsung pelo link do Pages (https://fagneraposo.github.io/FinEdu/). Nunca foi testado no tablet.
-- Trocar o link antigo do site (com FinEduu, dá 404) onde ele foi divulgado: mensagens da equipe, favorito no tablet e QR code, se tiver.
+- Missão do dia: o João vê a linha nova da vitória (prints da Parte 3). No ensaio de 09/11 a missão é a da lição perfeita; para ensaiar com a de 11/11 ("Conclua 1 lição"), mudar a data do tablet. O modo apresentação não mexe na missão (decisão de 04/11, noite).
+- Testar no tablet Samsung pelo link do Pages (https://fagnerfilho.github.io/FinEdu/). Nunca foi testado no tablet.
+- Trocar os links antigos do site onde eles foram divulgados (o com FinEduu e o https://fagneraposo.github.io/FinEdu/, os dois dão 404): mensagens da equipe, favorito no tablet e, principalmente, o QR code do banner, que precisa usar https://fagnerfilho.github.io/FinEdu/ antes de ir para a gráfica.
 - Questões novas da Unidade 1 (Samuels), depois formatadas pelo planejamento.
 - Professor: revisar a Unidade 1 (marcas // REVISAR) e as abas com juros da calculadora.
 - João: ver os prints da Parte 2 (`finedu-v1/antes-depois/parte-2`), aprovada pelo líder em 04/11, e dizer se quer ajustar algo.
 - Acessibilidade: os 4 textos abaixo do contraste mínimo foram corrigidos em 04/11. Ficam o menu com 47,4px a 360px (ver "Parte 2 · Correções do design") e os discos da trilha com 46px de altura (achado na Parte 4), que não entraram nos ajustes de 04/11, a pedido do líder.
 - Título final da Unidade 1.
 - Banner: texto e QR code (o planejamento pode adiantar), arte do João, gráfica até 06 ou 07/11. Confirmar tamanho e modelo exigidos pela faculdade.
-- Modo apresentação: depois do onboarding, considerando o apelido e o avatar.
+- Modo apresentação (feito em 04/11, à noite): o líder e o João veem os prints (`finedu-v1/antes-depois/modo-apresentacao/folhas`). Antes do ensaio de 09/11, ligar o modo no tablet e no notebook.
+- Unidades 2, 3 e 4 (o planejamento está escrevendo): entrar no código juntas, ou decidir antes como liberar a 4 (ver Conteúdo).
 - Roteiro da demonstração e da apresentação (08/11): onboarding, uma lição com erro (revisão e vida), missão do dia, nível subindo, calculadora. Respostas para a banca: por que não tem login (LGPD), Ligas "Em breve", o lobo.
 - Instruções do Projeto no Claude: trocar as cores da seção DESIGN pela paleta do João, tirar o mascote Estrela, trocar o menu pela regra da orientação e dizer que o Guia é o tutorial "Como usar o FinEdu".
 - Depois da apresentação: relatório de extensão; Trilha 2, com as "moedas que rendem"; Unidades 2 e 3; Ligas (amigos por QR code); instalar como app (se não entrar antes); aquecimento ou níveis mais finos, se o uso real pedir; skill de arquiteto.

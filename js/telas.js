@@ -237,15 +237,23 @@ function esconderProblemasDoConteudo() {
 // 3. TRILHA
 // ============================================================
 
-function desenharTrilha(lugar, progresso) {
+// modoApresentacao: Mais → Apresentação. Ligado, as lições fora da ordem
+// ficam liberadas (o jogo.js decide) e o selo "Modo apresentação" aparece
+// no topo, para a equipe saber que ele está ligado.
+function desenharTrilha(lugar, progresso, modoApresentacao = false) {
   let html = '<h1 class="visualmente-oculto">Sua trilha</h1>';
   // Saudação com o apelido (Parte 4), com o avatar pequeno ao lado.
   // Sem apelido, nada aparece.
+  let saudacao = '';
   if (progresso.apelido) {
     const avatar = avatarPeloId(progresso.avatar);
     const desenho = avatar ? `<span class="trilha-saudacao-avatar">${icone(`avatar-${avatar.id}`)}</span>` : '';
-    html += `<p class="trilha-saudacao">${desenho}<span>Oi, ${escaparHtml(progresso.apelido)}!</span></p>`;
+    saudacao = `<p class="trilha-saudacao">${desenho}<span>Oi, ${escaparHtml(progresso.apelido)}!</span></p>`;
   }
+  // Com o modo apresentação, o selo fica na linha da saudação, à direita
+  html += modoApresentacao
+    ? `<div class="trilha-topo">${saudacao}<p class="selo trilha-selo">Modo apresentação</p></div>`
+    : saudacao;
   let numeroGlobalDaUnidade = 0;
 
   for (const trilha of CONTEUDO.trilhas) {
@@ -295,7 +303,8 @@ function desenharTrilha(lugar, progresso) {
           trilha,
           licao,
           `Unidade ${numeroGlobalDaUnidade}, lição ${j + 1}`,
-          curvas[posNaCurva++]
+          curvas[posNaCurva++],
+          modoApresentacao
         );
       });
 
@@ -351,15 +360,18 @@ function desenharUnidadeEmBreve(unidade, numero, tema) {
     </section>`;
 }
 
-// Bolinha de lição: disco oval 3D com estrela de 5 pontas (ou check quando concluída)
-function desenharNoDaLicao(progresso, trilha, licao, nome, curva) {
-  const situacao = situacaoDaLicao(progresso, trilha, licao.id);
+// Bolinha de lição: disco oval 3D com estrela de 5 pontas (ou check quando concluída).
+// A liberada pelo modo apresentação fica colorida como a atual, mas sem o anel:
+// o anel continua só na próxima lição da ordem normal.
+function desenharNoDaLicao(progresso, trilha, licao, nome, curva, modoApresentacao = false) {
+  const situacao = situacaoDaLicao(progresso, trilha, licao.id, modoApresentacao);
 
   const desenho = situacao === 'concluida' ? 'check' : 'estrela-licao';
 
   const descricao = {
     concluida: `${nome}, ${licao.titulo}: concluída. Toque para treinar.`,
     atual: `${nome}, ${licao.titulo}: começar.`,
+    liberada: `${nome}, ${licao.titulo}: liberada pelo modo apresentação.`,
     bloqueada: `${nome}, ${licao.titulo}: trancada.`,
     'em-breve': `${nome}: em breve.`
   }[situacao];
@@ -1214,8 +1226,9 @@ function desenharPerfil(lugar, progresso) {
     </div>`;
 }
 
-// Tela "Mais": as configurações do aplicativo (reiniciar progresso, ajuda e sobre)
-function desenharConfiguracoes(lugar, progresso, podeSalvar) {
+// Tela "Mais": as configurações do aplicativo (reiniciar progresso, modo
+// apresentação, ajuda e sobre)
+function desenharConfiguracoes(lugar, progresso, podeSalvar, modoApresentacao = false) {
   lugar.innerHTML = `
     <div class="perfil">
       <header class="perfil-topo">
@@ -1250,6 +1263,21 @@ function desenharConfiguracoes(lugar, progresso, podeSalvar) {
           ${podeSalvar ? '' : `
             <p class="alerta-salvar">${icone('alerta')}
               Este navegador não está deixando salvar. O progresso some quando a página fechar.</p>`}
+        </div>
+      </section>
+
+      <section aria-labelledby="titulo-apresentacao">
+        <h2 class="secao-titulo" id="titulo-apresentacao">${icone('estrela-licao')} Apresentação</h2>
+        <div class="painel">
+          <div class="config-linha config-linha--interruptor">
+            <div>
+              <p class="config-nome" id="nome-modo-apresentacao">Modo apresentação</p>
+              <p class="config-desc" id="desc-modo-apresentacao">Libera todas as lições para mostrar o app.</p>
+            </div>
+            <button type="button" class="interruptor" role="switch" aria-checked="${modoApresentacao}"
+              aria-labelledby="nome-modo-apresentacao" aria-describedby="desc-modo-apresentacao"
+              data-acao="modo-apresentacao"><span class="interruptor-trilho"><span class="interruptor-bolinha"></span></span></button>
+          </div>
         </div>
       </section>
 
@@ -1294,6 +1322,13 @@ function mostrarConfirmacaoDeReinicio(mostrar) {
   if (botao) botao.setAttribute('aria-expanded', String(mostrar));
   if (mostrar) caixa.querySelector('[data-acao="cancelar-reinicio"]').focus();
   else if (botao) botao.focus();
+}
+
+// O interruptor do modo apresentação muda no lugar, sem redesenhar a tela
+// Mais: o foco continua nele, e o leitor de tela fala "ligado" ou "desligado"
+function mostrarModoApresentacao(ligado) {
+  const interruptor = document.querySelector('[data-acao="modo-apresentacao"]');
+  if (interruptor) interruptor.setAttribute('aria-checked', String(ligado));
 }
 
 

@@ -68,8 +68,10 @@
     <div id="resultados"></div>
   </main>
 
-  <!-- O conteúdo, as regras e os textos do telas.js: os testes não mexem na tela do app nem no progresso salvo -->
+  <!-- O conteúdo, o armazenamento, as regras e os textos do telas.js: os testes não mexem na tela do app nem
+       no que está salvo no aparelho (os do armazenamento.js usam uma gaveta de mentira) -->
   <script src="js/dados-licoes.js"></script>
+  <script src="js/armazenamento.js"></script>
   <script src="js/jogo.js"></script>
   <script src="js/telas.js"></script>
   <script>
@@ -229,6 +231,18 @@
       progresso.licoesConcluidas = [LICAO_1.id, LICAO_2.id];
       Object.assign(progresso, { vidas: 3, moedas: 35, xp: 105, sequencia: 1 });
       return progresso;
+    }
+
+    // Uma gaveta de mentira, com os mesmos três comandos do localStorage. Os
+    // testes do armazenamento.js usam ela, para não mexer no que está salvo
+    // no aparelho.
+    function gavetaDeMentira() {
+      const guardado = new Map();
+      return {
+        getItem: chave => (guardado.has(chave) ? guardado.get(chave) : null),
+        setItem: (chave, valor) => { guardado.set(chave, String(valor)); },
+        removeItem: chave => { guardado.delete(chave); }
+      };
     }
 
 
@@ -1301,23 +1315,147 @@
     });
 
 
+    grupo('Modo apresentação (Mais → Apresentação)');
+
+    teste('Desligado: a regra de sempre (a lição 2 só libera depois da 1, e nenhuma fica "liberada")', () => {
+      const progresso = novoProgresso();
+      const situacoes = modo => UNIDADE.licoes.map(licao => situacaoDaLicao(progresso, TRILHA, licao.id, modo));
+      confere(situacoes(undefined), ['atual', 'bloqueada', 'bloqueada', 'bloqueada'], 'sem dizer o modo');
+      confere(situacoes(false), ['atual', 'bloqueada', 'bloqueada', 'bloqueada'], 'desligado');
+      concluirAcertandoTudo(progresso, LICAO_1);
+      confere(situacoes(false), ['concluida', 'atual', 'bloqueada', 'bloqueada'], 'desligado, depois da lição 1');
+    });
+
+    teste('Ligado: todas as lições liberadas, e a concluída continua sendo treino', () => {
+      const progresso = novoProgresso();
+      const situacoes = () => UNIDADE.licoes.map(licao => situacaoDaLicao(progresso, TRILHA, licao.id, true));
+      confere(situacoes(), ['atual', 'liberada', 'liberada', 'liberada'], 'progresso novo');
+      concluirAcertandoTudo(progresso, LICAO_3);
+      confere(situacoes(), ['atual', 'liberada', 'concluida', 'atual'], 'depois da lição 3 (a 4 vira a próxima da ordem)');
+      confere([iniciarLicao(progresso, LICAO_3).treino, iniciarLicao(progresso, LICAO_2).treino],
+        [true, false], 'refazer a lição 3 é treino; a lição 2, liberada, é lição nova');
+    });
+
+    teste('Ligado: vale para as unidades e a trilha que entrarem depois (Unidade 4 e Trilha 2)', () => {
+      // Lições de mentira, com as questões da lição 1 (aqui só a ordem importa)
+      const licao = id => ({ id, titulo: id, questoes: LICAO_1.questoes });
+      const comUnidade4 = { ...TRILHA, unidades: [...TRILHA.unidades,
+        { id: 'teste-unidade-4', titulo: 'Investimentos básicos', licoes: [licao('teste-u4-l1'), licao('teste-u4-l2')] }] };
+      const trilha2 = { id: 'teste-trilha-2', titulo: 'Investimentos', unidades: [
+        { id: 'teste-t2-u1', titulo: 'Unidade 1', licoes: [licao('teste-t2-l1'), licao('teste-t2-l2')] },
+        { id: 'teste-t2-u2', titulo: 'Unidade 2', licoes: [licao('teste-t2-l3'), { id: 'teste-t2-l4', titulo: 'Em breve', emBreve: true }] }] };
+      const progresso = novoProgresso();
+      confere(['teste-u4-l1', 'teste-u4-l2'].map(id => situacaoDaLicao(progresso, comUnidade4, id, true)),
+        ['liberada', 'liberada'], 'Unidade 4, ligado');
+      const daTrilha2 = modo => ['teste-t2-l1', 'teste-t2-l2', 'teste-t2-l3', 'teste-t2-l4']
+        .map(id => situacaoDaLicao(progresso, trilha2, id, modo));
+      confere(daTrilha2(false), ['atual', 'bloqueada', 'bloqueada', 'em-breve'], 'Trilha 2, desligado');
+      confere(daTrilha2(true), ['atual', 'liberada', 'liberada', 'em-breve'], 'Trilha 2, ligado (a "Em breve" continua)');
+    });
+
+    teste('Ligado: o resto do jogo continua igual (a lição 3 feita direto dá vidas, XP, moedas e missão como sempre)', () => {
+      const progresso = novoProgresso();
+      const sessao = iniciarLicao(progresso, LICAO_3);
+      confere([sessao.treino, sessao.aquecimento.length], [false, 1], 'lição nova, com o aquecimento da lição 2');
+      jogar(progresso, sessao, errandoDePrimeira([0]));
+      confere(progresso.vidas, VIDAS_MAXIMAS - 1, 'vidas (o erro na questão nova tirou 1)');
+      const resumo = concluirLicao(progresso, sessao, DIA_DA_APRESENTACAO);
+      confere([resumo.xp, resumo.moedas], [4 * XP_POR_ACERTO + 2 * XP_DE_REVISAO, MOEDAS_POR_LICAO],
+        'XP (4 de primeira, 1 consertada na revisão e o aquecimento) e moedas');
+      confere([resumo.missaoConcluida, progresso.xp], [true, resumo.xp + XP_DA_MISSAO], 'missão de 11/11 ("Conclua 1 lição")');
+      confere(situacaoDoBau(progresso, UNIDADE), 'trancado', 'baú (continua pedindo as 4 lições)');
+    });
+
+    teste('Fica salvo no aparelho: continua ligado depois de fechar o site e de "Reiniciar progresso" (gaveta de mentira)', () => {
+      const gaveta = gavetaDeMentira();
+      confere(carregarModoApresentacao(gaveta), false, 'aparelho novo: desligado');
+      salvarProgresso(alunoNoMeio(), gaveta);
+      salvarModoApresentacao(true, gaveta);
+      confere(carregarModoApresentacao(gaveta), true, 'ligado (é o que o app lê quando abre de novo)');
+      reiniciarProgresso(gaveta);
+      confere([carregarProgresso(gaveta), carregarModoApresentacao(gaveta)], [null, true],
+        'depois do Reiniciar: progresso apagado e modo ligado');
+      confere('modoApresentacao' in prepararProgresso(null, HOJE), false, 'o modo não fica no progresso do aluno');
+      salvarModoApresentacao(false, gaveta);
+      confere(carregarModoApresentacao(gaveta), false, 'desligado pelo interruptor');
+    });
+
+    teste('Mais: seção "Apresentação", depois de "Progresso", com o interruptor "Modo apresentação"', () => {
+      const caixa = document.createElement('div');
+      desenharConfiguracoes(caixa, novoProgresso(), true, false);
+      confere([...caixa.querySelectorAll('.secao-titulo')].map(textoDe),
+        ['Progresso', 'Apresentação', 'Como funciona', 'Sobre o FinEdu'], 'seções');
+      const interruptor = caixa.querySelector('[data-acao="modo-apresentacao"]');
+      confere([interruptor.tagName, interruptor.getAttribute('role'), interruptor.getAttribute('aria-checked')],
+        ['BUTTON', 'switch', 'false'], 'interruptor desligado');
+      confere(textoDe(interruptor.closest('.config-linha')), 'Modo apresentação Libera todas as lições para mostrar o app.', 'textos');
+      const nome = caixa.querySelector('#' + interruptor.getAttribute('aria-labelledby'));
+      const apoio = caixa.querySelector('#' + interruptor.getAttribute('aria-describedby'));
+      confere([textoDe(nome), textoDe(apoio)], ['Modo apresentação', 'Libera todas as lições para mostrar o app.'],
+        'o que o leitor de tela fala');
+      desenharConfiguracoes(caixa, novoProgresso(), true, true);
+      confere(caixa.querySelector('[data-acao="modo-apresentacao"]').getAttribute('aria-checked'), 'true', 'interruptor ligado');
+    });
+
+    teste('Trilha: ligado, o selo "Modo apresentação" aparece e nenhuma lição fica trancada; desligado, nada muda', () => {
+      const progresso = novoProgresso();
+      definirApelido(progresso, 'Duda');
+      const trilha = document.createElement('div');
+      desenharTrilha(trilha, progresso);
+      const semDizerOModo = trilha.innerHTML;
+      desenharTrilha(trilha, progresso, false);
+      confere(trilha.innerHTML === semDizerOModo, true, 'desligado é igual a sem dizer o modo');
+      confere([trilha.querySelector('.trilha-selo'), trilha.querySelectorAll('.no--bloqueada').length], [null, 3],
+        'desligado: sem selo e as lições 2 a 4 trancadas');
+
+      desenharTrilha(trilha, progresso, true);
+      const topo = trilha.querySelector('.trilha-topo');
+      confere([textoDe(topo.querySelector('.trilha-saudacao')), textoDe(topo.querySelector('.trilha-selo'))],
+        ['Oi, Duda!', 'Modo apresentação'], 'saudação e selo na mesma linha');
+      confere(['.no--bloqueada', '.no--liberada', '.no--atual', '.no--bau-trancado'].map(classe => trilha.querySelectorAll(classe).length),
+        [0, 3, 1, 1], 'ligado: nenhuma trancada, 3 liberadas, o anel só na lição 1 e o baú trancado');
+      confere(trilha.querySelector('.no--liberada .no-botao').getAttribute('aria-label'),
+        `Unidade 1, lição 2, ${LICAO_2.titulo}: liberada pelo modo apresentação.`, 'leitor de tela');
+
+      progresso.apelido = '';
+      desenharTrilha(trilha, progresso, true);
+      confere([trilha.querySelector('.trilha-saudacao'), textoDe(trilha.querySelector('.trilha-topo'))], [null, 'Modo apresentação'],
+        'sem apelido, só o selo');
+    });
+
+
     grupo('Contraste (estilo.css)');
 
-    // Contraste entre a cor do texto e o fundo atrás dele, do jeito que a regra
-    // de acessibilidade mede (WCAG): de 1 (igual) a 21 (preto no branco). O
-    // elemento precisa estar na página, para o navegador calcular as cores.
-    function contrasteDe(elemento) {
-      const rgb = cor => cor.match(/[\d.]+/g).map(Number);
+    // Os números de uma cor do navegador: "rgb(27, 31, 60)" vira [27, 31, 60]
+    // (com transparência, "rgba(...)", vem um quarto número)
+    function numerosDaCor(cor) {
+      return cor.match(/[\d.]+/g).map(Number);
+    }
+
+    // Contraste entre duas cores, do jeito que a regra de acessibilidade mede
+    // (WCAG): de 1 (igual) a 21 (preto no branco)
+    function contrasteEntre(corA, corB) {
       const luz = ([r, g, b]) => [r, g, b]
         .map(c => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; })
         .reduce((soma, c, i) => soma + c * [0.2126, 0.7152, 0.0722][i], 0);
-      let fundo = null;
-      for (let no = elemento; no && !fundo; no = no.parentElement) {
-        const cor = rgb(getComputedStyle(no).backgroundColor);
-        if (cor.length === 3 || cor[3] === 1) fundo = cor;   // o primeiro fundo sem transparência
-      }
-      const [claro, escuro] = [luz(rgb(getComputedStyle(elemento).color)), luz(fundo)].sort((a, b) => b - a);
+      const [claro, escuro] = [luz(numerosDaCor(corA)), luz(numerosDaCor(corB))].sort((a, b) => b - a);
       return (claro + 0.05) / (escuro + 0.05);
+    }
+
+    // O primeiro fundo sem transparência atrás de um elemento (nele ou num pai)
+    function fundoAtras(elemento) {
+      for (let no = elemento; no; no = no.parentElement) {
+        const cor = getComputedStyle(no).backgroundColor;
+        const numeros = numerosDaCor(cor);
+        if (numeros.length === 3 || numeros[3] === 1) return cor;
+      }
+      return null;
+    }
+
+    // Contraste entre a cor do texto e o fundo atrás dele. O elemento precisa
+    // estar na página, para o navegador calcular as cores.
+    function contrasteDe(elemento) {
+      return contrasteEntre(getComputedStyle(elemento).color, fundoAtras(elemento));
     }
 
     teste('Os textos corrigidos em 04/11 passam de 4,5 (Aquecimento, "Do seu bolso", botão vermelho, letra da errada e "Sair da lição")', () => {
@@ -1335,6 +1473,30 @@
           ['botão vermelho', '.botao--erro'], ['letra da errada', '.alternativa-letra'], ['Sair da lição', '.botao--texto']
         ].map(([nome, seletor]) => [nome, Number(contrasteDe(caixa.querySelector(seletor)).toFixed(2))]);
         confere(medidos.filter(([, valor]) => valor < 4.5), [], 'textos abaixo de 4,5');
+      } finally {
+        caixa.remove();
+      }
+    });
+
+    teste('Interruptor do modo apresentação: contorno e bolinha passam de 3, desligado e ligado (componente, regra 16)', () => {
+      const interruptor = ligado => `<button type="button" class="interruptor" role="switch" aria-checked="${ligado}">` +
+        '<span class="interruptor-trilho"><span class="interruptor-bolinha"></span></span></button>';
+      const caixa = document.createElement('div');
+      caixa.innerHTML = interruptor(false) + interruptor(true);
+      document.body.append(caixa);
+      try {
+        const [desligado, ligado] = [...caixa.querySelectorAll('.interruptor')].map(botao => ({
+          trilho: getComputedStyle(botao.querySelector('.interruptor-trilho')),
+          bolinha: getComputedStyle(botao.querySelector('.interruptor-bolinha')).backgroundColor
+        }));
+        const fundo = fundoAtras(caixa);
+        const medidos = [
+          ['desligado: contorno', contrasteEntre(desligado.trilho.borderTopColor, fundo)],
+          ['desligado: bolinha', contrasteEntre(desligado.bolinha, fundo)],
+          ['ligado: contorno', contrasteEntre(ligado.trilho.borderTopColor, fundo)],
+          ['ligado: bolinha no trilho', contrasteEntre(ligado.bolinha, ligado.trilho.backgroundColor)]
+        ].map(([nome, valor]) => [nome, Number(valor.toFixed(2))]);
+        confere(medidos.filter(([, valor]) => valor < 3), [], 'partes abaixo de 3');
       } finally {
         caixa.remove();
       }

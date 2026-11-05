@@ -169,6 +169,9 @@
   --largura-no: 71px;
   --altura-no: 46px;
   --amplitude-curva: 84px;
+  --largura-interruptor: 52px;     /* interruptor do modo apresentação (Mais) */
+  --altura-interruptor: 32px;
+  --bolinha-interruptor: 20px;
 
   /* ---------- Tempo das animações ---------- */
   --tempo-rapido: 90ms;
@@ -634,6 +637,25 @@ h3:focus {
 .trilha-saudacao-avatar .icone {
   width: 34px;
   height: 34px;
+}
+
+/* Modo apresentação ligado (Mais → Apresentação): o selo fica na linha do
+   "Oi, Duda!", à direita (sem apelido, sozinho à direita). Com um apelido
+   comprido, ele desce para a linha de baixo. */
+.trilha-topo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--espaco-m);
+  margin-bottom: var(--espaco-m);
+}
+
+.trilha-topo .trilha-saudacao {
+  margin-bottom: 0;
+}
+
+.trilha-selo {
+  margin-left: auto;
 }
 
 /* Temas de cor alternados por unidade (roxo, laranja, verde) */
@@ -2084,6 +2106,70 @@ dialog.folha::backdrop {
   max-width: 42ch;
   color: var(--cor-texto-secundario);
   font-size: var(--tamanho-pequeno);
+}
+
+/* Linha com interruptor (Mais → Apresentação): o texto quebra a linha, e o
+   interruptor fica sempre à direita dele, também no celular */
+.config-linha--interruptor {
+  flex-wrap: nowrap;
+}
+
+.config-linha--interruptor > div {
+  flex: 1;
+  min-width: 0;
+}
+
+/* No celular, a descrição quebra em linhas do mesmo tamanho, sem deixar
+   uma ou duas palavras sozinhas embaixo */
+.config-linha--interruptor .config-desc {
+  text-wrap: balance;
+}
+
+/* Interruptor (botão com role="switch"). Desligado: só o contorno cinza e a
+   bolinha cinza à esquerda. Ligado: o trilho roxo e a bolinha clara à
+   direita. A posição da bolinha mostra o estado sem depender da cor. O
+   contorno do ligado usa o roxo claro de texto: o #4B53F5 sozinho tem 2,95
+   contra o fundo, e um componente precisa de 3. */
+.interruptor {
+  display: grid;
+  place-items: center;
+  min-width: var(--alvo-minimo);
+  min-height: var(--alvo-minimo);
+  flex-shrink: 0;
+  border-radius: var(--raio-total);
+  touch-action: manipulation;
+}
+
+.interruptor-trilho {
+  position: relative;
+  width: var(--largura-interruptor);
+  height: var(--altura-interruptor);
+  border: var(--borda) solid var(--cor-texto-secundario);
+  border-radius: var(--raio-total);
+  transition: background-color var(--tempo-rapido), border-color var(--tempo-rapido);
+}
+
+.interruptor-bolinha {
+  position: absolute;
+  top: 50%;
+  left: var(--espaco-pp);
+  width: var(--bolinha-interruptor);
+  height: var(--bolinha-interruptor);
+  border-radius: 50%;
+  background: var(--cor-texto-secundario);
+  transform: translateY(-50%);
+  transition: transform var(--tempo-rapido), background-color var(--tempo-rapido);
+}
+
+.interruptor[aria-checked="true"] .interruptor-trilho {
+  border-color: var(--cor-destaque-texto);
+  background: var(--cor-destaque-claro);
+}
+
+/* A bolinha anda o trilho todo, menos as duas bordas, as duas folgas e ela mesma */
+.interruptor[aria-checked="true"] .interruptor-bolinha {
+  background: var(--cor-sobre-destaque);
+  transform: translate(calc(var(--largura-interruptor) - 2 * var(--borda) - 2 * var(--espaco-pp) - var(--bolinha-interruptor)), -50%);
 }
 
 .confirmacao {

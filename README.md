@@ -1,10 +1,10 @@
 # FinEdu
 
-Site no estilo Duolingo que ensina educação financeira para os alunos do CETI Dom Severino (Teresina-PI). Projeto de extensão do curso de Engenharia de Computação da Uni-CET.
+Site no estilo Duolingo que ensina educação financeira para os alunos do CETI Dom Severino (Teresina-PI), principalmente do ensino médio. Projeto de extensão do curso de Engenharia de Computação da Uni-CET.
 
 Versão 1: HTML, CSS e JavaScript puro, sem servidor e sem cadastro. O progresso fica salvo só no aparelho de quem usa.
 
-Site: https://fagnerfilho.github.io/FinEdu/#apelido
+Site: https://fagnerfilho.github.io/FinEdu/
 
 Equipe: Fagner (líder), João (design), Eufy (calculadora), Samuel de Assunção e Samuel Medeiros (conteúdo) e William.
 
@@ -16,9 +16,11 @@ Equipe: Fagner (líder), João (design), Eufy (calculadora), Samuel de Assunçã
 
 **Para zerar entre uma apresentação e outra:** Mais → Reiniciar progresso (o Perfil também tem o atalho "Abrir Configurações"). O app volta para o começo: apelido, avatar e o tutorial "Como usar o FinEdu".
 
+**Para mostrar o app sem refazer as lições:** Mais → Apresentação → ligue o "Modo apresentação". Todas as lições ficam liberadas (o resto do jogo continua igual), e a trilha mostra o selo "Modo apresentação". Ele continua ligado depois de fechar o site e depois do "Reiniciar progresso", e só desliga pelo próprio interruptor.
+
 ## Como testar as regras
 
-Dê dois cliques no `testes.html`. Ele roda os testes das regras do jogo (XP e níveis, moedas, vidas, revisão, aquecimento, recarga, treino, missão do dia e a simulação de 3 alunos) e da Calculadora de Metas, confere os textos do painel "Como funciona", da tela Missões e do onboarding (apelido, avatar e tutorial) e o contraste dos textos corrigidos, e mostra cada um como "Passou" ou "Falhou". Depois de mexer no `js/jogo.js` ou no `js/telas.js`, todos têm que passar.
+Dê dois cliques no `testes.html`. Ele roda os testes das regras do jogo (XP e níveis, moedas, vidas, revisão, aquecimento, recarga, treino, missão do dia e a simulação de 3 alunos) e da Calculadora de Metas, confere os textos do painel "Como funciona", da tela Missões e do onboarding (apelido, avatar e tutorial), o modo apresentação e o contraste dos textos corrigidos e do interruptor, e mostra cada um como "Passou" ou "Falhou". Os testes não mexem no que está salvo no aparelho. Depois de mexer no `js/jogo.js`, no `js/telas.js` ou no `js/armazenamento.js`, todos têm que passar.
 
 ## Publicar no GitHub Pages
 
@@ -36,8 +38,8 @@ No plano gratuito do GitHub, o repositório precisa ser público. Depois de cada
 | `css/estilo.css` | Todo o visual; cores, fontes e espaços em variáveis no topo |
 | `css/fontes/` | Fontes Fredoka, Figtree e Baloo 2 (licença SIL OFL) |
 | `js/dados-licoes.js` | Conteúdo: trilhas, unidades, lições e questões |
-| `js/armazenamento.js` | Único arquivo que lê e grava o progresso |
-| `js/jogo.js` | Regras: XP e níveis, moedas, vidas, sequência, liberação, aquecimento, revisão, recarga, treino, baú, missão do dia, apelido e avatar, e as contas da Calculadora de Metas |
+| `js/armazenamento.js` | Único arquivo que lê e grava no aparelho: o progresso e o modo apresentação |
+| `js/jogo.js` | Regras: XP e níveis, moedas, vidas, sequência, liberação (com o modo apresentação), aquecimento, revisão, recarga, treino, baú, missão do dia, apelido e avatar, e as contas da Calculadora de Metas |
 | `js/telas.js` | Desenha as telas (onboarding, trilha, lição, Calculadora, Ligas, Missões, Loja, Perfil, Mais...) |
 | `js/app.js` | Inicia o app, troca de tela e responde aos toques |
 | `img/` | Favicon (a logo, o lobo, é um ícone dentro do `index.html`) |

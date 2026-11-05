@@ -2,8 +2,9 @@
 // jogo.js — As regras do FinEdu
 // ============================================================
 // XP, níveis, moedas, vidas, sequência de dias, o que está liberado
-// na trilha, o aquecimento, a revisão, a recarga, o treino, o baú,
-// a missão do dia e o apelido e o avatar do onboarding.
+// na trilha (e o que o modo apresentação libera), o aquecimento, a
+// revisão, a recarga, o treino, o baú, a missão do dia e o apelido e
+// o avatar do onboarding.
 // Este arquivo só faz contas e decide regras: não desenha nada
 // (isso é o telas.js) e não salva nada (quem salva é o app.js,
 // usando o armazenamento.js).
@@ -332,11 +333,20 @@ function licaoConcluida(progresso, idLicao) {
 // Situação de uma lição na trilha:
 //   'concluida' → já feita (dá para refazer)
 //   'atual'     → liberada: é a próxima a fazer
+//   'liberada'  → liberada pelo modo apresentação, fora da ordem
 //   'bloqueada' → precisa concluir a anterior primeiro
 //   'em-breve'  → ainda sem conteúdo
 // Regra: uma lição libera quando a anterior DA MESMA TRILHA está
 // concluída. A primeira lição de cada trilha já começa liberada.
-function situacaoDaLicao(progresso, trilha, idLicao) {
+//
+// Modo apresentação (Mais → Apresentação, para a equipe mostrar o app):
+// com ele ligado, a lição que seria 'bloqueada' fica 'liberada'. A regra
+// olha cada lição, então vale para qualquer unidade e trilha que entrar
+// depois. Só a liberação muda: vidas, XP, moedas, missão do dia, revisão,
+// aquecimento e baú continuam iguais, e a lição concluída continua sendo
+// treino. Quem guarda se o modo está ligado é o app.js (é uma configuração
+// do aparelho, não do aluno).
+function situacaoDaLicao(progresso, trilha, idLicao, modoApresentacao = false) {
   const lista = licoesDaTrilha(trilha);
   const posicao = lista.findIndex(item => item.licao.id === idLicao);
   const licao = lista[posicao].licao;
@@ -346,7 +356,7 @@ function situacaoDaLicao(progresso, trilha, idLicao) {
 
   const anterior = lista[posicao - 1];
   if (!anterior || licaoConcluida(progresso, anterior.licao.id)) return 'atual';
-  return 'bloqueada';
+  return modoApresentacao ? 'liberada' : 'bloqueada';
 }
 
 // Uma unidade está "em breve" quando nenhuma lição dela tem conteúdo
