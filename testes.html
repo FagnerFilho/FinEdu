@@ -245,6 +245,19 @@
       };
     }
 
+    // Troca as trilhas do CONTEUDO por outras (de mentira) enquanto a função
+    // roda e devolve as de verdade no fim, mesmo se der erro. A constante
+    // CONTEUDO continua a mesma: só a lista de trilhas dentro dela muda.
+    function comTrilhas(trilhas, funcao) {
+      const deVerdade = CONTEUDO.trilhas;
+      CONTEUDO.trilhas = trilhas;
+      try {
+        return funcao();
+      } finally {
+        CONTEUDO.trilhas = deVerdade;
+      }
+    }
+
 
     // ============================================================
     // 3. OS TESTES
@@ -252,7 +265,7 @@
 
     grupo('Conteúdo');
 
-    teste('A Unidade 1 passa na conferência do dados-licoes.js', () => {
+    teste('O conteúdo inteiro (Unidades 1, 2 e 3 e Trilha 2) passa na conferência do dados-licoes.js', () => {
       confere(conferirConteudo(), [], 'problemas encontrados');
     });
 
@@ -262,6 +275,25 @@
         confere(sessao.questoes.map(questao => questao.dificuldade),
           ['facil', 'facil', 'media', 'media', 'dificil'], licao.titulo);
       }
+    });
+
+    // Os ids ficam salvos no progresso do aluno: mudar um id depois que a
+    // lição vai ao ar faz o aparelho "esquecer" que ela foi concluída
+    teste('Unidades 2 e 3 e Trilha 2 (05/11): 4 lições cada, com os ids combinados e 5 questões do fácil para o difícil', () => {
+      const novas = [TRILHA.unidades[1], TRILHA.unidades[2], CONTEUDO.trilhas[1].unidades[0]];
+      confere(novas.map(unidade => [unidade.id, unidade.titulo, unidade.licoes.map(licao => licao.id)]), [
+        ['ef-unidade-2', 'Dinheiro no mundo real', ['primeiro-salario', 'pix-e-golpes', 'cartao-de-credito', 'apostas-e-dinheiro-facil']],
+        ['ef-unidade-3', 'Planejando o futuro', ['inflacao', 'juros-compostos', 'reserva-de-emergencia', 'metas-grandes']],
+        ['inv-unidade-1', 'Começando a investir', ['poupar-ou-investir', 'renda-fixa', 'risco-retorno-liquidez', 'promessa-boa-demais']]
+      ], 'unidades e lições, na ordem');
+      for (const unidade of novas) {
+        for (const licao of unidade.licoes) {
+          const sessao = abrir(novoProgresso(), licao);
+          confere(sessao.questoes.map(questao => questao.dificuldade),
+            ['facil', 'facil', 'media', 'media', 'dificil'], licao.titulo);
+        }
+      }
+      confere(CONTEUDO.trilhas.flatMap(licoesDaTrilha).filter(item => item.licao.emBreve).length, 0, 'lições "Em breve" que sobraram');
     });
 
 
@@ -700,13 +732,22 @@
       const xpMaximo = textoDe(montar(desenharPainel(maximo)).querySelector('.painel-parte--xp'));
       if (!xpMaximo.includes('Nível 5, Investidor: o mais alto.') || xpMaximo.includes('Faltam')) throw new Error(`nível 5: ${xpMaximo}`);
 
-      const fimDaUnidade = novoProgresso();
-      fimDaUnidade.licoesConcluidas = UNIDADE.licoes.map(licao => licao.id);
-      fimDaUnidade.bausAbertos = [UNIDADE.id];
-      fimDaUnidade.xp = 235;
-      const xpFim = textoDe(montar(desenharPainel(fimDaUnidade)).querySelector('.painel-parte--xp'));
+      // Desde 05/11, depois da Unidade 1 vem a Unidade 2: o aviso só aparece
+      // com tudo feito (todas as lições e todos os baús, das duas trilhas)
+      const fimDaUnidade1 = novoProgresso();
+      fimDaUnidade1.licoesConcluidas = UNIDADE.licoes.map(licao => licao.id);
+      fimDaUnidade1.bausAbertos = [UNIDADE.id];
+      fimDaUnidade1.xp = 235;
+      const xpUnidade1 = textoDe(montar(desenharPainel(fimDaUnidade1)).querySelector('.painel-parte--xp'));
+      if (xpUnidade1.includes('chegam em breve')) throw new Error(`fim da Unidade 1 (vem a Unidade 2): ${xpUnidade1}`);
+
+      const tudoFeito = novoProgresso();
+      tudoFeito.licoesConcluidas = CONTEUDO.trilhas.flatMap(licoesDaTrilha).map(item => item.licao.id);
+      tudoFeito.bausAbertos = CONTEUDO.trilhas.flatMap(trilha => trilha.unidades.map(unidade => unidade.id));
+      tudoFeito.xp = 235;
+      const xpFim = textoDe(montar(desenharPainel(tudoFeito)).querySelector('.painel-parte--xp'));
       if (!xpFim.includes('Faltam 65 XP para o nível 4, Estrategista. As próximas lições chegam em breve.')) {
-        throw new Error(`fim da unidade: ${xpFim}`);
+        throw new Error(`tudo feito: ${xpFim}`);
       }
     });
 
@@ -1235,6 +1276,21 @@
       confere(situacaoDaLicao(progresso, TRILHA, LICAO_2.id), 'atual', 'lição 2');
     });
 
+    teste('Liberação (05/11): a Unidade 2 espera a última lição da Unidade 1, e a Trilha 2 já começa liberada', () => {
+      const progresso = novoProgresso();
+      const TRILHA_2 = CONTEUDO.trilhas[1];
+      const primeiraDaUnidade2 = TRILHA.unidades[1].licoes[0];
+      const primeiraDaTrilha2 = TRILHA_2.unidades[0].licoes[0];
+      confere([situacaoDaLicao(progresso, TRILHA, primeiraDaUnidade2.id), situacaoDaLicao(progresso, TRILHA_2, primeiraDaTrilha2.id)],
+        ['bloqueada', 'atual'], 'aluno novo (a primeira lição de cada trilha começa liberada)');
+      progresso.licoesConcluidas = UNIDADE.licoes.map(licao => licao.id);
+      confere(situacaoDaLicao(progresso, TRILHA, primeiraDaUnidade2.id), 'atual', 'com a Unidade 1 concluída');
+      // O aquecimento atravessa a unidade: vem da última lição da Unidade 1.
+      // A primeira lição da Trilha 2 não tem aquecimento.
+      confere(iniciarLicao(progresso, primeiraDaUnidade2).aquecimento.map(questao => questao.idLicao), [LICAO_4.id], 'aquecimento da Unidade 2');
+      confere(iniciarLicao(progresso, primeiraDaTrilha2).aquecimento.length, 0, 'aquecimento da Trilha 2');
+    });
+
     teste('O baú libera com as 4 lições e abre uma vez só (+20 XP, +20 moedas)', () => {
       const progresso = novoProgresso();
       confere(situacaoDoBau(progresso, UNIDADE), 'trancado', 'antes');
@@ -1275,14 +1331,43 @@
     });
 
     teste('Trilha: unidade sem lições vira um cartão "Em breve", sem discos, e a faixa não tem botão do guia', () => {
+      // Desde 05/11 nenhuma unidade de verdade está "Em breve": o teste usa
+      // trilhas de mentira, com a Unidade 1 de verdade, duas unidades e uma
+      // trilha ainda sem conteúdo
+      const emBreve = id => ({ id, titulo: 'Em breve', emBreve: true });
       const caixa = document.createElement('div');
-      desenharTrilha(caixa, novoProgresso());
+      comTrilhas([
+        { ...TRILHA, unidades: [UNIDADE,
+          { id: 'teste-u2', titulo: 'Em breve', licoes: [emBreve('teste-u2-l1'), emBreve('teste-u2-l2')] },
+          { id: 'teste-u3', titulo: 'Planejando o futuro', licoes: [emBreve('teste-u3-l1')] }] },
+        { id: 'teste-trilha-2', titulo: 'Investimentos', unidades: [] }
+      ], () => desenharTrilha(caixa, novoProgresso()));
       confere(caixa.querySelectorAll('.bloco-unidade').length, 1, 'unidades com caminho de discos');
       confere(caixa.querySelectorAll('.no').length, 6, 'discos da Unidade 1 (4 lições, baú e troféu)');
       confere(textoDe(caixa.querySelector('.unidade-rotulo')), 'Unidade 1', 'rótulo da faixa');
-      confere([...caixa.querySelectorAll('.unidade-futura')].map(textoDe),
-        ['Unidade 2 Em breve', 'Unidade 3 Em breve'], 'cartões das unidades em breve');
+      confere([...caixa.querySelectorAll('.unidade-futura, .trilha-futura')].map(textoDe),
+        ['Unidade 2 Em breve', 'Unidade 3 Planejando o futuro Em breve', 'Investimentos Em breve'],
+        'cartões "Em breve" (sem título, com título e a trilha)');
       confere(caixa.querySelector('a[href="#guia"]'), null, 'link para o guia');
+    });
+
+    teste('Trilha (05/11): as Unidades 2 e 3 viram caminho de discos, e a unidade da Trilha 2 vem depois, como Unidade 4', () => {
+      const caixa = document.createElement('div');
+      desenharTrilha(caixa, novoProgresso());
+      const blocos = [...caixa.querySelectorAll('.bloco-unidade')];
+      confere(blocos.map(bloco => [textoDe(bloco.querySelector('.unidade-rotulo')), textoDe(bloco.querySelector('.unidade-titulo')), bloco.className]), [
+        ['Unidade 1', 'Primeiros Passos', 'bloco-unidade bloco-unidade--tema-1'],
+        ['Unidade 2', 'Dinheiro no mundo real', 'bloco-unidade bloco-unidade--tema-2'],
+        ['Unidade 3', 'Planejando o futuro', 'bloco-unidade bloco-unidade--tema-3'],
+        ['Unidade 4', 'Começando a investir', 'bloco-unidade bloco-unidade--tema-1']
+      ], 'faixas: número, título e cor (rodízio roxo, laranja e verde: a 4ª volta ao roxo)');
+      confere(caixa.querySelectorAll('.unidade-futura, .trilha-futura').length, 0, 'cartões "Em breve"');
+      // Em cada unidade: 4 lições, o baú entre a 3ª e a 4ª e o troféu no fim
+      const tipoDoNo = no => (no.classList.contains('no--bau') ? 'baú' : no.classList.contains('no--trofeu') ? 'troféu' : 'lição');
+      for (const bloco of blocos) {
+        confere([...bloco.querySelectorAll('.no')].map(tipoDoNo), ['lição', 'lição', 'lição', 'baú', 'lição', 'troféu'],
+          textoDe(bloco.querySelector('.unidade-rotulo')));
+      }
     });
 
     teste('Faixa da unidade: só "Unidade 1" e o título, sem a seta que não levava a lugar nenhum', () => {
@@ -1405,15 +1490,19 @@
       const semDizerOModo = trilha.innerHTML;
       desenharTrilha(trilha, progresso, false);
       confere(trilha.innerHTML === semDizerOModo, true, 'desligado é igual a sem dizer o modo');
-      confere([trilha.querySelector('.trilha-selo'), trilha.querySelectorAll('.no--bloqueada').length], [null, 3],
-        'desligado: sem selo e as lições 2 a 4 trancadas');
+      // As contagens olham a Unidade 1 (o primeiro caminho de discos), para
+      // não mudarem a cada unidade nova
+      const unidade1 = () => trilha.querySelector('.bloco-unidade');
+      confere([trilha.querySelector('.trilha-selo'), unidade1().querySelectorAll('.no--bloqueada').length], [null, 3],
+        'desligado: sem selo e as lições 2 a 4 da Unidade 1 trancadas');
 
       desenharTrilha(trilha, progresso, true);
       const topo = trilha.querySelector('.trilha-topo');
       confere([textoDe(topo.querySelector('.trilha-saudacao')), textoDe(topo.querySelector('.trilha-selo'))],
         ['Oi, Duda!', 'Modo apresentação'], 'saudação e selo na mesma linha');
-      confere(['.no--bloqueada', '.no--liberada', '.no--atual', '.no--bau-trancado'].map(classe => trilha.querySelectorAll(classe).length),
-        [0, 3, 1, 1], 'ligado: nenhuma trancada, 3 liberadas, o anel só na lição 1 e o baú trancado');
+      confere(trilha.querySelectorAll('.no--bloqueada').length, 0, 'ligado: nenhuma lição trancada na trilha inteira');
+      confere(['.no--liberada', '.no--atual', '.no--bau-trancado'].map(classe => unidade1().querySelectorAll(classe).length),
+        [3, 1, 1], 'ligado, na Unidade 1: 3 liberadas, o anel só na lição 1 e o baú trancado');
       confere(trilha.querySelector('.no--liberada .no-botao').getAttribute('aria-label'),
         `Unidade 1, lição 2, ${LICAO_2.titulo}: liberada pelo modo apresentação.`, 'leitor de tela');
 
