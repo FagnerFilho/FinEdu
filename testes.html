@@ -1351,7 +1351,7 @@
       confere(caixa.querySelector('a[href="#guia"]'), null, 'link para o guia');
     });
 
-    teste('Trilha (05/11): as Unidades 2 e 3 viram caminho de discos, e a unidade da Trilha 2 vem depois, como Unidade 4', () => {
+    teste('Trilha (05/11): as Unidades 2 e 3 viram caminho de discos, e a Trilha 2 aparece com o nome dela e a Unidade 1 dela', () => {
       const caixa = document.createElement('div');
       desenharTrilha(caixa, novoProgresso());
       const blocos = [...caixa.querySelectorAll('.bloco-unidade')];
@@ -1359,15 +1359,39 @@
         ['Unidade 1', 'Primeiros Passos', 'bloco-unidade bloco-unidade--tema-1'],
         ['Unidade 2', 'Dinheiro no mundo real', 'bloco-unidade bloco-unidade--tema-2'],
         ['Unidade 3', 'Planejando o futuro', 'bloco-unidade bloco-unidade--tema-3'],
-        ['Unidade 4', 'Começando a investir', 'bloco-unidade bloco-unidade--tema-1']
-      ], 'faixas: número, título e cor (rodízio roxo, laranja e verde: a 4ª volta ao roxo)');
+        ['Unidade 1', 'Começando a investir', 'bloco-unidade bloco-unidade--tema-1']
+      ], 'faixas: o número e a cor (roxo, laranja e verde) contam dentro de cada trilha');
+      // O nome da trilha só aparece da Trilha 2 em diante, logo antes da primeira unidade dela
+      const nomes = [...caixa.querySelectorAll('.trilha-titulo')];
+      confere(nomes.map(textoDe), ['Investimentos'], 'nome da trilha na tela');
+      confere(nomes[0].nextElementSibling === blocos[3], true, 'o nome vem logo antes da unidade da Trilha 2');
       confere(caixa.querySelectorAll('.unidade-futura, .trilha-futura').length, 0, 'cartões "Em breve"');
       // Em cada unidade: 4 lições, o baú entre a 3ª e a 4ª e o troféu no fim
       const tipoDoNo = no => (no.classList.contains('no--bau') ? 'baú' : no.classList.contains('no--trofeu') ? 'troféu' : 'lição');
       for (const bloco of blocos) {
         confere([...bloco.querySelectorAll('.no')].map(tipoDoNo), ['lição', 'lição', 'lição', 'baú', 'lição', 'troféu'],
-          textoDe(bloco.querySelector('.unidade-rotulo')));
+          textoDe(bloco.querySelector('.unidade-titulo')));
       }
+      // O leitor de tela ouve de que trilha é a unidade; na Trilha 1, continua como era
+      confere([blocos[0], blocos[3]].map(bloco => bloco.querySelector('.no-botao').getAttribute('aria-label')), [
+        'Unidade 1, lição 1, Querer ou precisar?: começar.',
+        'Unidade 1 de Investimentos, lição 1, Poupar × investir: começar.'
+      ], 'leitor de tela, na primeira lição de cada trilha');
+    });
+
+    teste('Trilha: o nome da trilha entra na tela e no leitor de tela como texto, sem virar HTML', () => {
+      const perigoso = 'Investir & <b>poupar</b>';
+      const caixa = document.createElement('div');
+      comTrilhas([TRILHA, { id: 'teste-trilha-2', titulo: perigoso, unidades: [
+        { id: 'teste-t2-u1', titulo: 'Unidade de teste', licoes: [{ id: 'teste-t2-l1', titulo: 'Lição de teste', questoes: LICAO_1.questoes }] }] }],
+        () => desenharTrilha(caixa, novoProgresso()));
+      confere([textoDe(caixa.querySelector('.trilha-titulo')), caixa.querySelectorAll('b').length], [perigoso, 0], 'nome na tela');
+      const bloco = caixa.querySelectorAll('.bloco-unidade')[3];
+      confere([...bloco.querySelectorAll('.no-botao')].map(botao => botao.getAttribute('aria-label')), [
+        `Unidade 1 de ${perigoso}, lição 1, Lição de teste: começar.`,
+        `Baú da unidade 1 de ${perigoso}: trancado.`,
+        `Troféu da unidade 1 de ${perigoso}: conclua as lições da unidade para conquistar.`
+      ], 'leitor de tela (lição, baú e troféu)');
     });
 
     teste('Faixa da unidade: só "Unidade 1" e o título, sem a seta que não levava a lugar nenhum', () => {

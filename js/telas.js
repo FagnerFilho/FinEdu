@@ -254,28 +254,34 @@ function desenharTrilha(lugar, progresso, modoApresentacao = false) {
   html += modoApresentacao
     ? `<div class="trilha-topo">${saudacao}<p class="selo trilha-selo">Modo apresentação</p></div>`
     : saudacao;
-  let numeroGlobalDaUnidade = 0;
-
-  for (const trilha of CONTEUDO.trilhas) {
+  CONTEUDO.trilhas.forEach((trilha, indiceDaTrilha) => {
     if (trilha.unidades.length === 0) {
       html += `
         <section class="trilha trilha-futura">
           <h2 class="trilha-nome">${escaparHtml(trilha.titulo)}</h2>
           <span class="selo">Em breve</span>
         </section>`;
-      continue;
+      return;
     }
 
-    html += `<section class="trilha" aria-label="${escaparHtml(trilha.titulo)}">`;
+    // Da Trilha 2 em diante, o nome da trilha aparece em cima da primeira
+    // unidade dela, e as unidades contam de novo a partir de 1. O leitor de
+    // tela ouve de que trilha é a unidade ("Unidade 1 de Investimentos").
+    // A Trilha 1 fica sem nome, como no design do João.
+    const mostrarNome = indiceDaTrilha > 0;
+    const deQualTrilha = mostrarNome ? ` de ${trilha.titulo}` : '';
 
-    trilha.unidades.forEach((unidade) => {
-      numeroGlobalDaUnidade += 1;
-      // Alterna a cor de cada unidade: 1 = roxo, 2 = laranja, 3 = verde
-      const tema = ((numeroGlobalDaUnidade - 1) % 3) + 1;
+    html += `<section class="trilha" aria-label="${escaparHtml(trilha.titulo)}">`;
+    if (mostrarNome) html += `<h2 class="trilha-titulo">${escaparHtml(trilha.titulo)}</h2>`;
+
+    trilha.unidades.forEach((unidade, indiceDaUnidade) => {
+      const numero = indiceDaUnidade + 1;
+      // Alterna a cor das unidades de cada trilha: 1 = roxo, 2 = laranja, 3 = verde
+      const tema = ((numero - 1) % 3) + 1;
 
       // Unidade sem nenhuma lição pronta: só um cartão compacto "Em breve"
       if (unidadeEmBreve(unidade)) {
-        html += desenharUnidadeEmBreve(unidade, numeroGlobalDaUnidade, tema);
+        html += desenharUnidadeEmBreve(unidade, numero, tema);
         return;
       }
 
@@ -286,7 +292,7 @@ function desenharTrilha(lugar, progresso, modoApresentacao = false) {
       let posNaCurva = 0;
 
       html += `<div class="bloco-unidade bloco-unidade--tema-${tema}">`;
-      html += desenharCabecalhoDaUnidade(unidade, numeroGlobalDaUnidade);
+      html += desenharCabecalhoDaUnidade(unidade, numero);
       html += '<ol class="caminho">';
 
       unidade.licoes.forEach((licao, j) => {
@@ -294,7 +300,7 @@ function desenharTrilha(lugar, progresso, modoApresentacao = false) {
           html += desenharNoDoBau(
             progresso,
             unidade,
-            `Baú da unidade ${numeroGlobalDaUnidade}`,
+            `Baú da unidade ${numero}${deQualTrilha}`,
             curvas[posNaCurva++]
           );
         }
@@ -302,7 +308,7 @@ function desenharTrilha(lugar, progresso, modoApresentacao = false) {
           progresso,
           trilha,
           licao,
-          `Unidade ${numeroGlobalDaUnidade}, lição ${j + 1}`,
+          `Unidade ${numero}${deQualTrilha}, lição ${j + 1}`,
           curvas[posNaCurva++],
           modoApresentacao
         );
@@ -312,7 +318,7 @@ function desenharTrilha(lugar, progresso, modoApresentacao = false) {
         html += desenharNoDoBau(
           progresso,
           unidade,
-          `Baú da unidade ${numeroGlobalDaUnidade}`,
+          `Baú da unidade ${numero}${deQualTrilha}`,
           curvas[posNaCurva++]
         );
       }
@@ -320,14 +326,14 @@ function desenharTrilha(lugar, progresso, modoApresentacao = false) {
       html += desenharNoDoTrofeu(
         progresso,
         unidade,
-        `Troféu da unidade ${numeroGlobalDaUnidade}`
+        `Troféu da unidade ${numero}${deQualTrilha}`
       );
 
       html += '</ol></div>';
     });
 
     html += '</section>';
-  }
+  });
 
   lugar.innerHTML = html;
 }
@@ -399,7 +405,7 @@ function desenharNoDoBau(progresso, unidade, nome, curva) {
     <li class="no no--bau no--bau-${situacao}" style="--curva: ${curva}">
       <div class="no-anel">
         <button type="button" class="no-botao no-botao--bau" data-acao="abrir-bau" data-id="${escaparHtml(unidade.id)}"
-          aria-label="${descricao}">${icone(situacao === 'aberto' ? 'bau-aberto' : 'bau')}</button>
+          aria-label="${escaparHtml(descricao)}">${icone(situacao === 'aberto' ? 'bau-aberto' : 'bau')}</button>
       </div>
     </li>`;
 }
@@ -419,7 +425,7 @@ function desenharNoDoTrofeu(progresso, unidade, nome) {
     <li class="no no--trofeu no--trofeu-${estadoTrofeu}" style="--curva: 0">
       <div class="no-anel">
         <button type="button" class="no-botao no-botao--trofeu" data-acao="abrir-trofeu" data-id="${escaparHtml(unidade.id)}"
-          aria-label="${descricao}">${icone('trofeu')}</button>
+          aria-label="${escaparHtml(descricao)}">${icone('trofeu')}</button>
       </div>
     </li>`;
 }

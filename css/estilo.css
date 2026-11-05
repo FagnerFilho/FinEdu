@@ -658,6 +658,15 @@ h3:focus {
   margin-left: auto;
 }
 
+/* Nome da trilha, da Trilha 2 em diante (a Trilha 1 fica sem nome, como no
+   design do João), em cima da primeira unidade dela. A margem negativa
+   desconta o espaço entre as unidades (o gap da .trilha): o nome fica a
+   12px da faixa, como o "Oi, Duda!" fica da faixa da Unidade 1. */
+.trilha-titulo {
+  margin-bottom: calc(var(--espaco-m) - var(--espaco-xgg));
+  font-size: var(--tamanho-titulo-m);
+}
+
 /* Temas de cor alternados por unidade (roxo, laranja, verde) */
 .bloco-unidade {
   --cor-unidade: var(--cor-unidade-1);
