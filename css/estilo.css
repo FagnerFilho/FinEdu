@@ -632,11 +632,13 @@ h3:focus {
   border: var(--borda) solid var(--cor-borda-cartao);
   border-radius: 50%;
   background: var(--cor-cartao);
+  overflow: hidden;
 }
 
 .trilha-saudacao-avatar .icone {
-  width: 34px;
-  height: 34px;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 
 /* Modo apresentação ligado (Mais → Apresentação): o selo fica na linha do
@@ -1980,6 +1982,7 @@ dialog.folha::backdrop {
   border-radius: 50%;
   background: var(--cor-cartao);
   color: var(--cor-destaque-claro);
+  overflow: hidden;
 }
 
 .perfil-avatar-icone {
@@ -1987,10 +1990,11 @@ dialog.folha::backdrop {
   height: 44px;
 }
 
-/* O avatar do onboarding ocupa mais o círculo que o chapéu */
+/* O avatar do onboarding ocupa o círculo inteiro */
 .perfil-avatar-bicho {
-  width: 64px;
-  height: 64px;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 
 .perfil-quem {
@@ -2371,11 +2375,13 @@ dialog.folha::backdrop {
   height: 72px;
   border-radius: 50%;
   background: var(--cor-cartao);
+  overflow: hidden;
 }
 
 .avatar-desenho {
-  width: 60px;
-  height: 60px;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 
 .avatar-nome {
@@ -2592,7 +2598,7 @@ dialog.folha::backdrop {
   .contador { padding: 0 var(--espaco-pp); min-width: 40px; }
   :root { --amplitude-curva: 64px; }
   .avatar-figura { width: 60px; height: 60px; }
-  .avatar-desenho { width: 50px; height: 50px; }
+  .avatar-desenho { width: 100%; height: 100%; }
   .avatar-nome { font-size: var(--tamanho-pequeno); }
   /* Perfil e Mais: o círculo vai para cima do título, que ganha a largura
      toda ("Configurações" não cabia ao lado do círculo e empurrava a tela) */
